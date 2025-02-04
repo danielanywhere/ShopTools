@@ -1,0 +1,279 @@
+[
+	{
+		"PropertyName": "Action",
+		"DataType": "PlotActionEnum",
+		"Internal": true,
+		"SortIndex": 1
+	},
+	{
+		"PropertyName": "Angle",
+		"DataType": "AngleString",
+		"SortIndex": 14,
+		"IncludeOperationActions": [
+			"DrawLineAngleLength",
+			"MoveAngleLength"
+		]
+	},
+	{
+		"PropertyName": "Depth",
+		"DataType": "MeasurementString",
+		"SortIndex": 16,
+		"ExcludeOperationActions": [
+			"MoveAngleLength",
+			"MoveXY"
+		]
+	},
+	{
+		"PropertyName": "EndOffsetX",
+		"DataType": "MeasurementString",
+		"SortIndex": 10,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "EndOffsetXOrigin",
+		"DataType": "OffsetLeftRightEnum",
+		"SortIndex": 11,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "EndOffsetY",
+		"DataType": "MeasurementString",
+		"SortIndex": 12,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "EndOffsetYOrigin",
+		"DataType": "OffsetTopBottomEnum",
+		"SortIndex": 13,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "Kerf",
+		"DataType": "DirectionLeftRightEnum",
+		"SortIndex": 17,
+		"ExcludeOperationActions": [
+			"PointXY"
+		]
+	},
+	{
+		"PropertyName": "Length",
+		"DataType": "MeasurementString",
+		"SortIndex": 15,
+		"IncludeOperationActions": [
+			"DrawEllipseLengthWidth",
+			"DrawLineAngleLength",
+			"DrawLineLengthWidth",
+			"DrawRectangleLengthWidth",
+			"FillEllipseLengthWidth",
+			"FillRectangleLengthWidth",
+			"MoveAngleLength"
+		]
+	},
+	{
+		"PropertyName": "OffsetX",
+		"DataType": "MeasurementString",
+		"SortIndex": 6,
+		"IncludeOperationActions": [
+			"DrawCircleCenterDiameter",
+			"DrawCircleCenterRadius",
+			"DrawCircleDiameter",
+			"DrawCircleRadius",
+			"DrawEllipseCenterDiameterXY",
+			"DrawEllipseCenterRadiusXY",
+			"DrawEllipseDiameterXY",
+			"DrawEllipseLengthWidth",
+			"DrawEllipseRadiusXY",
+			"DrawLineAngleLength",
+			"DrawLineLengthWidth",
+			"DrawRectangleLengthWidth",
+			"FillCircleCenterDiameter",
+			"FillCircleCenterRadius",
+			"FillCircleDiameter",
+			"FillCircleRadius",
+			"FillEllipseCenterDiameterXY",
+			"FillEllipseCenterRadiusXY",
+			"FillEllipseDiameterXY",
+			"FillEllipseLengthWidth",
+			"FillEllipseRadiusXY",
+			"FillRectangleLengthWidth",
+			"MoveXY",
+			"PointXY"
+		]
+	},
+	{
+		"PropertyName": "OffsetXOrigin",
+		"DataType": "OffsetLeftRightEnum",
+		"SortIndex": 7,
+		"IncludeOperationActions": [
+			"DrawCircleCenterDiameter",
+			"DrawCircleCenterRadius",
+			"DrawCircleDiameter",
+			"DrawCircleRadius",
+			"DrawEllipseCenterDiameterXY",
+			"DrawEllipseCenterRadiusXY",
+			"DrawEllipseDiameterXY",
+			"DrawEllipseLengthWidth",
+			"DrawEllipseRadiusXY",
+			"DrawLineAngleLength",
+			"DrawLineLengthWidth",
+			"DrawRectangleLengthWidth",
+			"FillCircleCenterDiameter",
+			"FillCircleCenterRadius",
+			"FillCircleDiameter",
+			"FillCircleRadius",
+			"FillEllipseCenterDiameterXY",
+			"FillEllipseCenterRadiusXY",
+			"FillEllipseDiameterXY",
+			"FillEllipseLengthWidth",
+			"FillEllipseRadiusXY",
+			"FillRectangleLengthWidth",
+			"MoveXY",
+			"PointXY"
+		]
+	},
+	{
+		"PropertyName": "OffsetY",
+		"DataType": "MeasurementString",
+		"SortIndex": 8,
+		"IncludeOperationActions": [
+			"DrawCircleCenterDiameter",
+			"DrawCircleCenterRadius",
+			"DrawCircleDiameter",
+			"DrawCircleRadius",
+			"DrawEllipseCenterDiameterXY",
+			"DrawEllipseCenterRadiusXY",
+			"DrawEllipseDiameterXY",
+			"DrawEllipseLengthWidth",
+			"DrawEllipseRadiusXY",
+			"DrawLineAngleLength",
+			"DrawLineLengthWidth",
+			"DrawRectangleLengthWidth",
+			"FillCircleCenterDiameter",
+			"FillCircleCenterRadius",
+			"FillCircleDiameter",
+			"FillCircleRadius",
+			"FillEllipseCenterDiameterXY",
+			"FillEllipseCenterRadiusXY",
+			"FillEllipseDiameterXY",
+			"FillEllipseLengthWidth",
+			"FillEllipseRadiusXY",
+			"FillRectangleLengthWidth",
+			"MoveXY",
+			"PointXY"
+		]
+	},
+	{
+		"PropertyName": "OffsetYOrigin",
+		"DataType": "OffsetTopBottomEnum",
+		"SortIndex": 9,
+		"IncludeOperationActions": [
+			"DrawCircleCenterDiameter",
+			"DrawCircleCenterRadius",
+			"DrawCircleDiameter",
+			"DrawCircleRadius",
+			"DrawEllipseCenterDiameterXY",
+			"DrawEllipseCenterRadiusXY",
+			"DrawEllipseDiameterXY",
+			"DrawEllipseLengthWidth",
+			"DrawEllipseRadiusXY",
+			"DrawLineAngleLength",
+			"DrawLineLengthWidth",
+			"DrawRectangleLengthWidth",
+			"FillCircleCenterDiameter",
+			"FillCircleCenterRadius",
+			"FillCircleDiameter",
+			"FillCircleRadius",
+			"FillEllipseCenterDiameterXY",
+			"FillEllipseCenterRadiusXY",
+			"FillEllipseDiameterXY",
+			"FillEllipseLengthWidth",
+			"FillEllipseRadiusXY",
+			"FillRectangleLengthWidth",
+			"MoveXY",
+			"PointXY"
+		]
+	},
+	{
+		"PropertyName": "OperationName",
+		"DataType": "String",
+		"SortIndex": 0,
+		"Internal": true
+	},
+	{
+		"PropertyName": "StartOffsetX",
+		"DataType": "MeasurementString",
+		"SortIndex": 2,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "StartOffsetXOrigin",
+		"DataType": "OffsetLeftRightEnum",
+		"SortIndex": 3,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "StartOffsetY",
+		"DataType": "MeasurementString",
+		"SortIndex": 4,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "StartOffsetYOrigin",
+		"DataType": "OffsetTopBottomEnum",
+		"SortIndex": 5,
+		"IncludeOperationActions": [
+			"DrawEllipseXY",
+			"DrawLineXY",
+			"DrawRectangleXY",
+			"FillEllipseXY",
+			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "Tool",
+		"DataType": "ToolName",
+		"SortIndex": 18
+	}
+]

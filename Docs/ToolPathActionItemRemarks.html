@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script type="text/javascript" src="scripts/jquery-3.4.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="styles/default.css" />
+	<title>ToolPathActionItem Remarks</title>
+</head>
+
+<body>
+	<p>The following content is placed in the &lt;remarks&gt; section of the comments for
+		ToolPathActionItem.</p>
+
+	<p>Note that there are some interrelated properties available
+		on this class, many of which are exclusive to one or more others.</p>
+	<p>The following sections enumerate the contexts in which the
+		properties are used, as well as their order of precedence when
+		considering exclusivity.</p>
+	<h3>Contexts</h3>
+	<ul>
+		<li><b>Dimensioning</b>. Following are the general dimensioning
+			properties used in this version.
+			<ul>
+				<li><b>Angle</b>. The angle at which to point from the reference.
+					In this version, for absolute angles, the angular system is based
+					upon a right-facing ray whose angular value increases in a
+					counterclockwise directon. When used as a deviation from a
+					current movement, a positive number will increase to the
+					left, while a negative number will increase to the right of
+					that movement.</li>
+			</ul>
+		</li>
+		<li><b>Elliptical Cuts</b>. Some properties are only used when
+			making elliptical movements.
+			<ul>
+				<li><b>Diameter</b>. The singular value of the X and Y diameters
+					for the elliptical pattern, resulting in a circle.</li>
+				<li><b>Radius</b>. The singular value of the X and Y radii for the
+					elliptical pattern, resulting in a circle.</li>
+				<li><b>Diameter X</b>. The X diameter of the elliptical pattern.</li>
+				<li><b>Diameter Y</b>. The Y diameter of the elliptical pattern.</li>
+				<li><b>Radius X</b>. The X radius of the elliptical pattern.</li>
+				<li><b>Radius Y</b>. The Y radius of the elliptical pattern.</li>
+			</ul>
+		</li>
+		<li><b>Positioning</b>. Different types of positioning values are
+		 allowed, depending upon the type of cut to be made.
+			<ul>
+				<li><b>X</b> and <b>Y</b> represent offsets of a shape from its
+				corner, center, or other scalar position. They are used for drill
+				points, lines, paths, rectangles, curves, and elliptical cuts.</li>
+				<li><b>X1</b>, <b>Y1</b>, <b>X2</b>, <b>Y2</b> are all used when the
+					shape is defined by two points.</li>
+				<li><b>Z</b>, in this version, is a special case because the head has
+				 only a depth measurement (eh-hm, please post related Issues on
+					the GitHub site if you want to see 2.5D carving capabilities before
+					I otherwise get around to it...).</li>
+			</ul>
+		</li>
+	</ul>
+	<h3>Cut Types</h3>
+	<p>Following are the currently supported cutting styles, associated with
+		the names of the properties they align with.</p>
+	<table>
+		<tr><th>Cut Type</th><th>Properties</th><th>Description</th></tr>
+		<tr>
+			<td>DrawCircleCenterDiameter</td>
+			<td>X, Y, Diameter</td>
+			<td>Draw a circle using a center reference point and diameter.</td>
+		</tr>
+		<tr>
+			<td>DrawCircleCenterRadius</td>
+			<td>X, Y, Radius</td>
+			<td>Draw a circle using a center reference point and radius.</td>
+		</tr>
+		<tr>
+			<td>DrawCircleDiameter</td>
+			<td>X, Y, Diameter</td>
+			<td>Draw a circle using corner X, Y references and diameter.</td>
+		</tr>
+		<tr>
+			<td>DrawCircleRadius</td>
+			<td>X, Y, Radius</td>
+			<td>Draw a circle using corner X, Y references and radius.</td>
+		</tr>
+		<tr>
+			<td>DrawEllipseCenterDiameterXY</td>
+			<td>X, Y, DiameterX, DiameterY</td>
+			<td>Draw an ellipse using a center reference point and independent
+				diameters.</td>
+		</tr>
+		<tr>
+			<td>DrawEllipseCenterRadiusXY</td>
+			<td>X, Y, RadiusX, RadiusY</td>
+			<td>Draw an ellipse using a center reference point and independent
+				radii.</td>
+		</tr>
+		<tr>
+			<td>DrawEllipseDiameterXY</td>
+			<td>X, Y, DiameterX, DiameterY</td>
+			<td>Draw an ellipse using corner X, Y references and independent
+				diameters.</td>
+		</tr>
+		<tr>
+			<td>DrawEllipseRadiusXY</td>
+			<td>X, Y, RadiusX, RadiusY</td>
+			<td>Draw an ellipse using corner X, Y references and independent
+				radii.</td>
+		</tr>
+		<tr>
+			<td>DrawLineAngleLength</td>
+			<td>X, Y, Angle, Length</td>
+			<td>Draw a line using a point, an angle, and a length.</td>
+		</tr>
+		<tr>
+			<td>DrawLineLengthWidth</td>
+			<td>X, Y, Length, Width</td>
+			<td>Draw a line using a point, a length, and a width.</td>
+		</tr>
+		<tr>
+			<td>DrawLineXY</td>
+			<td>X1, Y1, X2, Y2</td>
+			<td>Draw a line using two points.</td>
+		</tr>
+		<tr>
+			<td>DrawPath</td>
+			<td>PathData</td>
+			<td>Draw the path specified in the PathData property.</td>
+		</tr>
+		<tr>
+			<td>DrawRectangleLengthWidth</td>
+			<td>X, Y, Length, Width</td>
+			<td>Draw a rectangle using a corner, length, and width.</td>
+		</tr>
+		<tr>
+			<td>DrawRectangleXY</td>
+			<td>X1, Y1, X2, Y2</td>
+			<td>Draw a rectangle using two corner points.</td>
+		</tr>
+		<tr>
+			<td>FillCircleCenterDiameter</td>
+			<td>X, Y, Diameter</td>
+			<td>Fill a circle using the center reference and a diameter.</td>
+		</tr>
+		<tr>
+			<td>FillCircleCenterRadius</td>
+			<td>X, Y, Radius</td>
+			<td>Fill a circle using its center reference and a radius.</td>
+		</tr>
+		<tr>
+			<td>FillCircleDiameter</td>
+			<td>X, Y, Diameter</td>
+			<td>Fill a circle using its corner reference and a diameter.</td>
+		</tr>
+		<tr>
+			<td>FillCircleRadius</td>
+			<td>X, Y, Radius</td>
+			<td>Fill a circle using its corner reference and a radius.</td>
+		</tr>
+		<tr>
+			<td>FillEllipseCenterDiameterXY</td>
+			<td>X, Y, DiameterX, DiameterY</td>
+			<td>Fill an ellipse using a center reference point and independent
+				diameter values.</td>
+		</tr>
+		<tr>
+			<td>FillEllipseCenterRadiusXY</td>
+			<td>X, Y, RadiusX, RadiusY</td>
+			<td>Fill an ellipse using a center reference point and independent
+				radii.</td>
+		</tr>
+		<tr>
+			<td>FillEllipseDiameterXY</td>
+			<td>X, Y, DiameterX, DiameterY</td>
+			<td>Fill an ellipse using a corner point and independent diameter
+				values.</td>
+		</tr>
+		<tr>
+			<td>FillEllipseRadiusXY</td>
+			<td>X, Y, RadiusX, RadiusY</td>
+			<td>Fill an ellipse using a corner point and independent radii.</td>
+		</tr>
+		<tr>
+			<td>FillPath</td>
+			<td>PathData</td>
+			<td>Fill the path specified in the PathData property.</td>
+		</tr>
+		<tr>
+			<td>FillRectangleLengthWidth</td>
+			<td>X, Y, Length, Width</td>
+			<td>Fill a rectangle using one corner, width, and height.</td>
+		</tr>
+		<tr>
+			<td>FillRectangleXY</td>
+			<td>X1, Y1, X2, Y2</td>
+			<td>Fill a rectangle using two corners.</td>
+		</tr>
+		<tr>
+			<td>MoveAngleLength</td>
+			<td>X, Y, Angle, Length</td>
+			<td>Move the tool, without cutting, at an angle, by a specified
+				length.</td>
+		</tr>
+		<tr>
+			<td>MoveXY</td>
+			<td>X, Y</td>
+			<td>Move the tool, without cutting, to the specified coordinate.</td>
+		</tr>
+		<tr>
+			<td>PointXY</td>
+			<td>X, Y</td>
+			<td>Drill at a point represented by the X and Y coordinates.</td>
+		</tr>
+	</table>
+</body>
+
+</html>

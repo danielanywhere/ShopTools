@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="copyright" content="Copyright © 2024 - 2025 Daniel Patterson, MCSD (danielanywhere)">
+	<script type="text/javascript" src="scripts/jquery-3.4.1.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="styles/default.css" />
+	<title>Offset Checks</title>
+</head>
+<body>
+	<h1>Offset Checks</h1>
+	
+	<table>
+		<tr>
+			<td>Table X Dimension (width):</td>
+			<td><input id="txtXDimension" value="500" /></td>
+		</tr>
+		<tr>
+			<td>Table Y Dimension (height):</td>
+			<td><input id="txtYDimension" value="400" /></td>
+		</tr>
+		<tr>
+			<td>Table Origin:</td><td><select id="cmboOriginXY">
+				<option value="bottom">Bottom</option>
+				<option value="bottomleft">Bottom Left</option>
+				<option value="bottomright">Bottom Right</option>
+				<option value="center">Center</option>
+				<option value="left">Left</option>
+				<option value="right">Right</option>
+				<option value="top">Top</option>
+				<option value="topleft">Top Left</option>
+				<option value="topright">Top Right</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td>Offset X:</td><td><input id="txtOffsetX" type="text" value="0" /></td>
+		</tr>
+		<tr>
+			<td>Offset X Type:</td><td><select id="cmboOffsetXOrigin">
+				<option value="center">Center</option>
+				<option value="left">Left</option>
+				<option value="relative" selected>Relative</option>
+				<option value="right">Right</option>
+				</select></td>
+		</tr>
+		<tr>
+			<td>Offset Y:</td><td><input id="txtOffsetY" type="text" value="0" /></td>
+		</tr>
+		<tr>
+			<td>Offset Y Type:</td><td><select id="cmboOffsetYOrigin">
+				<option value="bottom">Bottom</option>
+				<option value="center">Center</option>
+				<option value="relative" selected>Relative</option>
+				<option value="top">Top</option>
+			</select></td>
+		</tr>
+	</table>
+	<div id="pnlResult">
+
+	</div>
+<script type="text/javascript">
+var travelX = "right";
+var travelY = "up";
+
+function isNumeric(text)
+{
+	return /^-{0,1}\d+(\.\d+)?$/.test(text);
+}
+
+function toFloat(text)
+{
+	var result = 0.0;
+
+	if(text?.length > 0 && isNumeric(text))
+	{
+		result = parseFloat(text);
+	}
+	return result;
+}
+
+function updateResult()
+{
+	var height = toFloat($("#txtYDimension").val());
+	var offsetXType = $("#cmboOffsetXOrigin").val();
+	var offsetX = toFloat($("#txtOffsetX").val());
+	var offsetYType = $("#cmboOffsetYOrigin").val();
+	var offsetY = toFloat($("#txtOffsetY").val());
+	var width = toFloat($("#txtXDimension").val());
+	var x = 0.0;
+	var xyOrigin = $("#cmboOriginXY").val();
+	var y = 0.0;
+
+	console.log(`Raw Offset: ${offsetX}, ${offsetY}`);
+
+	//	X.
+	switch(xyOrigin)
+	{
+		case "bottomleft":
+		case "left":
+		case "topleft":
+			//	The origin is at the left side of the table.
+			switch(offsetXType)
+			{
+				case "center":
+					x = (width / 2) + offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+				case "left":
+					x = offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+				case "none":
+				case "relative":
+					x = offsetX;
+					break;
+				case "right":
+					x = width - offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+			}
+			break;
+		case "bottom":
+		case "center":
+		case "none":
+		case "top":
+			//	The origin is in the center of the table.
+			switch(offsetXType)
+			{
+				case "center":
+					x = offsetX;
+					break;
+				case "left":
+					x = (0 - (width / 2)) + offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+				case "none":
+				case "relative":
+					x = offsetX;
+					break;
+				case "right":
+					x = (width / 2) - offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+			}
+			break;
+		case "bottomright":
+		case "right":
+		case "topright":
+			//	The origin is at the right side of the table.
+			switch(offsetXType)
+			{
+				case "center":
+					x = (0 - (width / 2)) + offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+				case "left":
+					x = (0 - width) + offsetX;
+					if(travelX == "left")
+					{
+						x *= -1;
+					}
+					break;
+				case "none":
+				case "relative":
+					x = offsetX;
+					break;
+				case "right":
+					x = offsetX;
+					break;
+			}
+			break;
+	}
+	//	Y.
+	switch(xyOrigin)
+	{
+		case "top":
+		case "topleft":
+		case "topright":
+			//	Origin is at the top of the table.
+			switch(offsetYType)
+			{
+				case "bottom":
+					y = height - offsetY;
+					if(travelY == "up")
+					{
+						y *= -1;
+					}
+					break;
+				case "center":
+					y = (height / 2) - offsetY;
+					if(travelY == "up")
+					{
+						y *= -1;
+					}
+					break;
+				case "none":
+				case "relative":
+					y = offsetY;
+					break;
+				case "top":
+					y = offsetY;
+					break;
+			}
+			break;
+		case "center":
+		case "left":
+		case "none":
+		case "right":
+			//	Origin is at the center of the table.
+			switch(offsetYType)
+			{
+				case "bottom":
+					y = (height / 2) - offsetY;
+					if(travelY == "up")
+					{
+						y *= -1;
+					}
+					break;
+				case "center":
+					y = offsetY;
+					break;
+				case "none":
+				case "relative":
+					y = offsetY;
+					break;
+				case "top":
+					y = (0 - (height / 2)) + offsetY;
+					if(travelY == "up")
+					{
+						y *= -1;
+					}
+					break;
+			}
+			break;
+		case "bottom":
+		case "bottomleft":
+		case "bottomright":
+			//	Origin is at the bottom of the table.
+			switch(offsetYType)
+			{
+				case "bottom":
+					y = offsetY;
+					break;
+				case "center":
+					y = (height / 2) + offsetY;
+					if(travelY == "down")
+					{
+						y *= -1;
+					}
+					break;
+				case "none":
+				case "relative":
+					y = offsetY;
+					break;
+				case "top":
+					y = height - offsetY;
+					if(travelY == "down")
+					{
+						y *= -1;
+					}
+					break;
+			}
+			break;
+	}
+
+	$("#pnlResult").html(
+		`Travel X: ${travelX}; Travel Y: ${travelY};<br />` +
+		`X: ${x}; Y: ${y}`
+		);
+}
+
+$(document).ready(function()
+{
+	$("select").on("change", () => { updateResult(); });
+	$("input[type='text']").on("input", () => { updateResult(); });
+	updateResult();
+});
+</script>
+</body>
+</html>

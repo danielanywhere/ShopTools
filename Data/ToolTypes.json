@@ -1,0 +1,174 @@
+[
+	{
+		"ToolType": "Spiral Downcut End Mill",
+		"Supported": true,
+		"Groups": [
+			"Path",
+			"EndMill"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteCount",
+			"FluteLength",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Spiral Upcut End Mill",
+		"Supported": true,
+		"Groups": [
+			"Path",
+			"EndMill"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteCount",
+			"FluteLength",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Spiral Compression End Mill",
+		"Supported": true,
+		"Groups": [
+			"Path",
+			"EndMill"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteCount",
+			"FluteLength",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Chamfer Bit",
+		"Supported": false,
+		"Groups": [
+			"Edge",
+			"Guided"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"Angle",
+			"BottomGuideDiameter",
+			"BottomGuideHeight",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Core Box Bit",
+		"Supported": true,
+		"Groups": [
+			"Edge",
+			"Path",
+			"Rounded"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Cove Bit",
+		"Supported": false,
+		"Groups": [
+			"Edge",
+			"Guided",
+			"Rounded"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteLength",
+			"BottomGuideDiameter",
+			"BottomGuideHeight",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Drill Bit",
+		"Supported": true,
+		"Groups": [
+			"Point",
+			"Drill"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteLength",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Flush Trim Bit",
+		"Supported": false,
+		"Groups": [
+			"Edge",
+			"Guided"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteLength",
+			"BottomGuideDiameter",
+			"BottomGuideHeight",
+			"TopGuideDiameter",
+			"TopGuideHeight",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Rabbeting Bit",
+		"Supported": false,
+		"Groups": [
+			"Edge",
+			"Guided"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteLength",
+			"BottomGuideDiameter",
+			"BottomGuideHeight",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Round Over Bit",
+		"Supported": false,
+		"Groups": [
+			"Edge",
+			"Guided",
+			"Rounded"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteLength",
+			"BottomGuideDiameter",
+			"BottomGuideHeight",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "Straight Plunge Rounter Bit",
+		"Supported": true,
+		"Groups": [
+			"Point"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"FluteCount",
+			"FluteLength",
+			"ShaftLength"
+		]
+	},
+	{
+		"ToolType": "V-Groove Bit",
+		"Supported": true,
+		"Groups": [
+			"Path"
+		],
+		"PublishedProperties": [
+			"Diameter",
+			"Angle",
+			"ShaftLength"
+		]
+	}
+]

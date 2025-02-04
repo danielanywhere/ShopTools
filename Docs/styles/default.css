@@ -1,0 +1,27 @@
+body, th, td
+{
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 12pt;
+}
+
+footer
+{
+	margin-top: 80pt;
+	font-size: 7pt;
+}
+
+table
+{
+	border-collapse: collapse;
+}
+
+td, th
+{
+	padding: 8px;
+	border: 1px solid #a0a0a0;
+}
+
+th
+{
+	text-align: left;
+}
