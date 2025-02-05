@@ -7,13 +7,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>disable</ImplicitUsings>
 			 <GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
+				<Title>Dan's ShopTools Desktop</Title>
+				<Version>25.1205.3923</Version>
+				<Description>Dan's ShopTools desktop application for Windows.</Description>
+				<Copyright>Copyright(c) 2025. Daniel Patterson, MCSD (danielanywhere)</Copyright>
+				<PackageProjectUrl>https://github.com/danielanywhere/ShopTools</PackageProjectUrl>
+				<PackageReadmeFile>README.md</PackageReadmeFile>
+				<PackageTags>cnc;shop;tools;table;saw;router;drill</PackageTags>
+				<Authors>Daniel Patterson, MCSD (danielanywhere)</Authors>
+				<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="AngleString.cs" />
-    <Compile Remove="MeasurementString.cs" />
-    <Compile Remove="ToolName.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\..\Data\OperationActionProperties.json" Link="OperationActionProperties.json">

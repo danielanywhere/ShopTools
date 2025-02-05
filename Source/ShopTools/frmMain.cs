@@ -295,6 +295,27 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ExportGCode																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Export the contents of the current cut-list to g-code.
+		/// </summary>
+		/// <param name="filename">
+		/// Path and filename of the G-code file to create.
+		/// </param>
+		private void ExportGCode(string filename)
+		{
+			string content = "";
+
+			if(SessionWorkpieceInfo != null)
+			{
+				content = GCode.RenderGCode();
+				File.WriteAllText(filename, content);
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* InitializePatterns																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -472,6 +493,7 @@ namespace ShopTools
 		/// </param>
 		private void mnuFileExit_Click(object sender, EventArgs e)
 		{
+			this.Close();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -506,6 +528,38 @@ namespace ShopTools
 		/// </param>
 		private void mnuFileExportGCode_Click(object sender, EventArgs e)
 		{
+			SaveFileDialog dialog = null;
+
+			if(SessionWorkpieceInfo != null)
+			{
+				dialog = new SaveFileDialog();
+				dialog.AddExtension = true;
+				dialog.AutoUpgradeEnabled = true;
+				dialog.CheckFileExists = false;
+				dialog.CheckPathExists = true;
+				dialog.CreatePrompt = false;
+				dialog.DefaultExt = ".gcode";
+				dialog.DereferenceLinks = true;
+				dialog.Filter =
+					"GCode Files " +
+					"(*.gcode)|" +
+					"*.gcode;|" +
+					"(*.nc)|" +
+					"*.nc;|" +
+					"Text Files " +
+					"(*.txt)|" +
+					"*.txt;|" +
+					"All Files (*.*)|*.*";
+				dialog.FilterIndex = 0;
+				dialog.OverwritePrompt = true;
+				dialog.SupportMultiDottedExtensions = true;
+				dialog.Title = "Save G-code File";
+				dialog.ValidateNames = true;
+				if(dialog.ShowDialog() == DialogResult.OK)
+				{
+					ExportGCode(dialog.FileName);
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -803,7 +857,6 @@ namespace ShopTools
 			Size workspaceSize = Size.Empty;
 			float workspaceRatio = GetWorkspaceRatio();
 
-			//	TODO: Highlight the selected paths over the unselected ones.
 			workspaceSize = ResizeArea(
 				pnlWorkspace.Width - 16, pnlWorkspace.Height - 16, workspaceRatio);
 			scale = (float)workspaceSize.Width / systemSize.Width;
@@ -1191,163 +1244,6 @@ namespace ShopTools
 		/// </summary>
 		private void UpdateWorkpiece()
 		{
-			//OffsetLeftRightEnum baseHorz = OffsetLeftRightEnum.None;
-			//OffsetTopBottomEnum baseVert = OffsetTopBottomEnum.None;
-			//string measurement = "";
-			//FPoint routerLocation = SessionWorkpieceInfo.RouterLocation;
-			//FArea workspaceArea = GetWorkspaceArea();
-			//float workspaceHeight = workspaceArea.Height;
-			//FArea workpieceArea = SessionWorkpieceInfo.Area;
-			//float workpieceHeight = 0f;
-			//float workpieceWidth = 0f;
-			//float workpieceX = 0f;
-			//float workpieceY = 0f;
-			//float workspaceWidth = workspaceArea.Width;
-
-			//SessionWorkpieceInfo.WorkspaceArea = workspaceArea;
-
-			////	Length.
-			//SessionWorkpieceInfo.UserLength = txtWorkpieceLength.Text;
-			//measurement = GetMeasurementString(txtWorkpieceLength.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblWorkpieceLengthUnit.Text =
-			//	GetAltValue(measurement, txtWorkpieceLength.Text);
-			//workpieceWidth = GetMillimeters(txtWorkpieceLength.Text);
-			////workpieceArea.Width = GetMillimeters(txtWorkpieceLength.Text);
-			////	Width.
-			//SessionWorkpieceInfo.UserWidth = txtWorkpieceWidth.Text;
-			//measurement = GetMeasurementString(txtWorkpieceWidth.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblWorkpieceWidthUnit.Text =
-			//	GetAltValue(measurement, txtWorkpieceWidth.Text);
-			//workpieceHeight = GetMillimeters(txtWorkpieceWidth.Text);
-			////workpieceArea.Height = GetMillimeters(txtWorkpieceWidth.Text);
-			////	Depth.
-			//SessionWorkpieceInfo.UserDepth = txtWorkpieceDepth.Text;
-			//measurement = GetMeasurementString(txtWorkpieceDepth.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblWorkpieceDepthUnit.Text =
-			//	GetAltValue(measurement, txtWorkpieceDepth.Text);
-			//SessionWorkpieceInfo.Thickness = GetMillimeters(txtWorkpieceDepth.Text);
-
-			////	X.
-			//SessionWorkpieceInfo.UserOffsetX = txtWorkpieceX.Text;
-			//if(txtWorkpieceLength.Text == "48" &&
-			//	txtWorkpieceWidth.Text == "24")
-			//{
-			//	Trace.WriteLine("UpdateWorkpiece - Break here...");
-			//}
-			//measurement = GetMeasurementString(txtWorkpieceX.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblWorkpieceXUnit.Text =
-			//	GetAltValue(measurement, txtWorkpieceX.Text);
-			//if(cmboWorkpieceX.SelectedIndex > -1)
-			//{
-			//	switch(cmboWorkpieceX.SelectedItem.ToString().ToLower())
-			//	{
-			//		case "center to center":
-			//			baseHorz = OffsetLeftRightEnum.Center;
-			//			break;
-			//		case "left edge to center":
-			//			baseHorz = OffsetLeftRightEnum.LeftEdgeToCenter;
-			//			break;
-			//		case "right edge to center":
-			//			baseHorz = OffsetLeftRightEnum.RightEdgeToCenter;
-			//			break;
-			//		case "from left":
-			//			baseHorz = OffsetLeftRightEnum.Left;
-			//			break;
-			//		case "from right":
-			//			baseHorz = OffsetLeftRightEnum.Right;
-			//			break;
-			//	}
-			//}
-			//SessionWorkpieceInfo.UserOffsetXOrigin = baseHorz;
-			//workpieceX = GetMillimeters(txtWorkpieceX.Text);
-			//workpieceArea.Left =
-			//	TranslateOffset(workspaceArea, workpieceWidth, workpieceX, baseHorz);
-			//workpieceArea.Right = workpieceArea.Left + workpieceWidth;
-
-			////	Y.
-			//SessionWorkpieceInfo.UserOffsetY = txtWorkpieceY.Text;
-			//measurement = GetMeasurementString(txtWorkpieceY.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblWorkpieceYUnit.Text =
-			//	GetAltValue(measurement, txtWorkpieceY.Text);
-			//if(cmboWorkpieceY.SelectedIndex > -1)
-			//{
-			//	switch(cmboWorkpieceY.SelectedItem.ToString().ToLower())
-			//	{
-			//		case "bottom edge to center":
-			//			baseVert = OffsetTopBottomEnum.BottomEdgeToCenter;
-			//			break;
-			//		case "center to center":
-			//			baseVert = OffsetTopBottomEnum.Center;
-			//			break;
-			//		case "top edge to center":
-			//			baseVert = OffsetTopBottomEnum.TopEdgeToCenter;
-			//			break;
-			//		case "from top":
-			//			baseVert = OffsetTopBottomEnum.Top;
-			//			break;
-			//		case "from bottom":
-			//			baseVert = OffsetTopBottomEnum.Bottom;
-			//			break;
-			//	}
-			//}
-			//SessionWorkpieceInfo.UserOffsetYOrigin = baseVert;
-			//workpieceY = GetMillimeters(txtWorkpieceY.Text);
-			//workpieceArea.Top =
-			//	TranslateOffset(workspaceArea, workpieceHeight, workpieceY, baseVert);
-			//workpieceArea.Bottom = workpieceArea.Top + workpieceHeight;
-
-			//Trace.WriteLine(
-			//	$"UpdateWorkpiece - Space: {workspaceArea}; Piece: {workpieceArea}");
-
-			////if(ConfigProfile.TravelY == DirectionUpDownEnum.Up)
-			////{
-			////	workpieceY = 0 - workpieceY;
-			////}
-			////workspaceHeight = GetMillimeters(ConfigProfile.YDimension);
-			////switch(baseVert)
-			////{
-			////	case OffsetTopBottomEnum.Center:
-			////		//	Center to Center.
-			////		workpieceArea.Y =
-			////			(workspaceHeight / 2f) - (workpieceArea.Height / 2f) +
-			////				workpieceY;
-			////		break;
-			////	case OffsetTopBottomEnum.Top:
-			////		//	Top.
-			////		workpieceArea.Y = workpieceY;
-			////		break;
-			////	case OffsetTopBottomEnum.TopEdgeToCenter:
-			////		//	Edge to Center.
-			////		workpieceArea.Y = (workspaceHeight / 2f) + workpieceY;
-			////		break;
-			////	case OffsetTopBottomEnum.Bottom:
-			////		//	Bottom.
-			////		workpieceArea.Y =
-			////			(workspaceHeight - (workpieceY + workpieceArea.Height));
-			////		break;
-			////}
-
-			////	Router location X.
-			//SessionWorkpieceInfo.UserRouterLocationX = txtRouterPositionX.Text;
-			//measurement = GetMeasurementString(txtRouterPositionX.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblRouterPositionXUnit.Text =
-			//	GetAltValue(measurement, txtRouterPositionX.Text);
-			//routerLocation.X = GetMillimeters(txtRouterPositionX.Text);
-			////	Router location Y.
-			//SessionWorkpieceInfo.UserRouterLocationY = txtRouterPositionY.Text;
-			//measurement = GetMeasurementString(txtRouterPositionY.Text,
-			//	BaseUnit(ConfigProfile.DisplayUnits));
-			//lblRouterPositionYUnit.Text =
-			//	GetAltValue(measurement, txtRouterPositionY.Text);
-			//routerLocation.Y = GetMillimeters(txtRouterPositionY.Text);
-
-
 			OffsetLeftRightEnum baseHorz = OffsetLeftRightEnum.None;
 			OffsetTopBottomEnum baseVert = OffsetTopBottomEnum.None;
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -869,6 +869,81 @@ namespace ShopTools
 					}
 				}
 				catch { }
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* HasStartOffset																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the provided operation has an
+		/// explicitly stated starting offset.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation to inspect.
+		/// </param>
+		/// <returns>
+		/// True if the provided operation has an explicitly specified starting
+		/// offset for the type of action present. Otherwise, false, and the
+		/// start offset is implicit.
+		/// </returns>
+		public static bool HasStartOffset(PatternOperationItem operation)
+		{
+			bool result = false;
+
+			if(operation != null)
+			{
+				switch(operation.mAction)
+				{
+					case OperationActionEnum.DrawCircleCenterDiameter:
+					case OperationActionEnum.DrawCircleCenterRadius:
+					case OperationActionEnum.DrawCircleDiameter:
+					case OperationActionEnum.DrawCircleRadius:
+					case OperationActionEnum.DrawEllipseCenterDiameterXY:
+					case OperationActionEnum.DrawEllipseCenterRadiusXY:
+					case OperationActionEnum.DrawEllipseDiameterXY:
+					case OperationActionEnum.DrawEllipseLengthWidth:
+					case OperationActionEnum.DrawEllipseRadiusXY:
+					case OperationActionEnum.DrawLineAngleLength:
+					case OperationActionEnum.DrawLineLengthWidth:
+					case OperationActionEnum.DrawRectangleLengthWidth:
+					case OperationActionEnum.FillCircleCenterDiameter:
+					case OperationActionEnum.FillCircleCenterRadius:
+					case OperationActionEnum.FillCircleDiameter:
+					case OperationActionEnum.FillCircleRadius:
+					case OperationActionEnum.FillEllipseCenterDiameterXY:
+					case OperationActionEnum.FillEllipseCenterRadiusXY:
+					case OperationActionEnum.FillEllipseDiameterXY:
+					case OperationActionEnum.FillEllipseLengthWidth:
+					case OperationActionEnum.FillEllipseRadiusXY:
+					case OperationActionEnum.FillRectangleLengthWidth:
+					case OperationActionEnum.PointXY:
+						//	Starting OffsetX, OffsetY.
+						if(operation.OffsetX.Length > 0 ||
+							operation.OffsetXOrigin != OffsetLeftRightEnum.None ||
+							operation.OffsetY.Length > 0 ||
+							operation.OffsetYOrigin != OffsetTopBottomEnum.None)
+						{
+							result = true;
+						}
+						break;
+					case OperationActionEnum.DrawEllipseXY:
+					case OperationActionEnum.DrawLineXY:
+					case OperationActionEnum.DrawRectangleXY:
+					case OperationActionEnum.FillEllipseXY:
+					case OperationActionEnum.FillRectangleXY:
+						//	StartOffsetX, StartOffsetY.
+						if(operation.StartOffsetX.Length > 0 ||
+							operation.StartOffsetXOrigin != OffsetLeftRightEnum.None ||
+							operation.StartOffsetY.Length > 0 ||
+							operation.StartOffsetYOrigin != OffsetTopBottomEnum.None)
+						{
+							result = true;
+						}
+						break;
+				}
 			}
 			return result;
 		}

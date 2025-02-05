@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1587,160 +1587,6 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		////*-----------------------------------------------------------------------*
-		////* GetQuadrant																														*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the ordinal index of quadrant in which the specified angle is
-		///// located.
-		///// </summary>
-		///// <param name="angle">
-		///// The angle for which the quadrant index will be found, in radians.
-		///// </param>
-		///// <returns>
-		///// The ordinal quadrant index occupied by the specified angle.
-		///// </returns>
-		///// <remarks>
-		///// Following are the quadrant assignments in this version.
-		///// <list type="bullet">
-		///// <item><b>Quadrant 0</b>. +X, +Y.</item>
-		///// <item><b>Quadrant 1</b>. -X, +Y.</item>
-		///// <item><b>Quadrant 2</b>. -X, -Y.</item>
-		///// <item><b>Quadrant 3</b>. +X, -Y.</item>
-		///// </list>
-		///// </remarks>
-		//public static int GetQuadrant(float angle)
-		//{
-		//	//	TODO: Move this method to Geometry.
-		//	float part = (float)((double)Trig.NormalizeRad(angle) / Math.PI);
-		//	int result = 0;
-
-		//	if(part >= 0f && part < 0.5f)
-		//	{
-		//		result = 0;
-		//	}
-		//	else if(part >= 0.5 && part < 1.0f)
-		//	{
-		//		result = 1;
-		//	}
-		//	else if(part >= 1.0f && part < 1.5f)
-		//	{
-		//		result = 2;
-		//	}
-		//	else
-		//	{
-		//		result = 3;
-		//	}
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* GetQuadrantCrossings																									*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return an array containing the ordinal quadrant crossings of the
-		///// quadrants occupied by the specified arc.
-		///// </summary>
-		///// <param name="startAngle">
-		///// The starting angle, in radians.
-		///// </param>
-		///// <param name="endAngle">
-		///// The ending angle, in radians.
-		///// </param>
-		///// <param name="windingDirection">
-		///// The winding direction taken by the arc.
-		///// </param>
-		///// <returns>
-		///// Reference to an array of ordinal quadrants crossed out of by
-		///// the arc, if any where found. Otherwise, an empty array.
-		///// </returns>
-		///// <remarks>
-		///// In this version, quadrant 0 is the area in X+, Y+,
-		///// quadrant 1 is X-, Y-, quadrant 2 is X-, Y+,
-		///// and quadrant 3 is X+, Y+.
-		///// </remarks>
-		//public static int[] GetQuadrantCrossings(float startAngle, float endAngle,
-		//	ArcDirectionEnum windingDirection)
-		//{
-		//	//	TODO: Move this method to Geometry.
-		//	int quadrantEnd = GetQuadrant(endAngle);
-		//	int quadrantIndex = 0;
-		//	int quadrantStart = GetQuadrant(startAngle);
-		//	int[] result = null;
-
-		//	quadrantIndex = (quadrantStart << 2) | quadrantEnd;
-
-		//	switch(windingDirection)
-		//	{
-		//		case ArcDirectionEnum.Forward:
-		//			result = mQuadrantCrossingForward[quadrantIndex];
-		//			break;
-		//		case ArcDirectionEnum.Reverse:
-		//			result = mQuadrantCrossingReverse[quadrantIndex];
-		//			break;
-		//	}
-		//	if(result == null)
-		//	{
-		//		result = new int[0];
-		//	}
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* GetQuadrantsOccupied																									*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return an array containing the ordinal quadrant positions of the
-		///// quadrants occupied by the specified arc.
-		///// </summary>
-		///// <param name="startAngle">
-		///// The starting angle, in radians.
-		///// </param>
-		///// <param name="endAngle">
-		///// The ending angle, in radians.
-		///// </param>
-		///// <param name="windingDirection">
-		///// The winding direction taken by the arc.
-		///// </param>
-		///// <returns>
-		///// Reference to an array of ordinal quadrant positions occupied by
-		///// the arc, if any where found. Otherwise, an empty array.
-		///// </returns>
-		///// <remarks>
-		///// In this version, quadrant 0 is the area in X+, Y+,
-		///// quadrant 1 is X-, Y-, quadrant 2 is X-, Y+,
-		///// and quadrant 3 is X+, Y+.
-		///// </remarks>
-		//public static int[] GetQuadrantsOccupied(float startAngle, float endAngle,
-		//	ArcDirectionEnum windingDirection)
-		//{
-		//	//	TODO: Move this method to Geometry.
-		//	int quadrantEnd = GetQuadrant(endAngle);
-		//	int quadrantIndex = 0;
-		//	int quadrantStart = GetQuadrant(startAngle);
-		//	int[] result = null;
-
-		//	quadrantIndex = (quadrantStart << 2) | quadrantEnd;
-
-		//	switch(windingDirection)
-		//	{
-		//		case ArcDirectionEnum.Forward:
-		//			result = mQuadrantsForward[quadrantIndex];
-		//			break;
-		//		case ArcDirectionEnum.Reverse:
-		//			result = mQuadrantsReverse[quadrantIndex];
-		//			break;
-		//	}
-		//	if(result == null)
-		//	{
-		//		result = new int[0];
-		//	}
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
-
 		//*-----------------------------------------------------------------------*
 		//* GetSystemSize																													*
 		//*-----------------------------------------------------------------------*
@@ -2378,6 +2224,39 @@ namespace ShopTools
 			}
 
 			return dImage;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ResolveDepth																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the desired depth for the specified action.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation for which the depth will be checked.
+		/// </param>
+		/// <returns>
+		/// The depth of the operation, if specified, or the thickness of the
+		/// defined workpiece, if not specified.
+		/// </returns>
+		public static float ResolveDepth(PatternOperationItem operation)
+		{
+			float result = 0f;
+
+			if(operation != null)
+			{
+				if(operation.Depth.Length == 0)
+				{
+					//	If no depth was specified, the full depth is assumed.
+					result = mSessionWorkpieceInfo.Thickness;
+				}
+				else
+				{
+					result = GetMillimeters(operation.Depth);
+				}
+			}
+			return result;
 		}
 		//*-----------------------------------------------------------------------*
 

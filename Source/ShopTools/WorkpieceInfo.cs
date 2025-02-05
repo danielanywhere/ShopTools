@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,11 +23,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
 using Geometry;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 using static ShopTools.ShopToolsUtil;
-using Newtonsoft.Json.Converters;
 
 namespace ShopTools
 {
