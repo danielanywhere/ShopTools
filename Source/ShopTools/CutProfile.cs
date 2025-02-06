@@ -50,7 +50,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided cut profile collection.
+		/// Return a deep clone of the provided cut profile collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of cut profile items to clone.
@@ -144,7 +144,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided cut profile item.
+		/// Return a deep clone of the provided cut profile item.
 		/// </summary>
 		/// <param name="item">
 		/// Reference to the cut profile item to clone.

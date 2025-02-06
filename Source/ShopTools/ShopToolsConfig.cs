@@ -103,13 +103,13 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Create a memberwise clone of the caller's configuration profile.
+		/// Create a deep clone of the caller's configuration profile.
 		/// </summary>
 		/// <param name="item">
 		/// Reference to the item to be cloned.
 		/// </param>
 		/// <returns>
-		/// Reference to the full memberwise clone of the user's instance, if
+		/// Reference to the full deep clone of the user's instance, if
 		/// legitimate. Otherwise, an empty configuration profile.
 		/// </returns>
 		public static ShopToolsConfigItem Clone(ShopToolsConfigItem item)

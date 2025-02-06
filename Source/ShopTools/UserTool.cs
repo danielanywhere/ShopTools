@@ -47,14 +47,14 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of all of the items in the caller's
+		/// Return a deep clone of all of the items in the caller's
 		/// collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of items to be cloned.
 		/// </param>
 		/// <returns>
-		/// Reference to a new collection containing memberwise clones of the
+		/// Reference to a new collection containing deep clones of the
 		/// members of the original collection.
 		/// </returns>
 		public static UserToolCollection Clone(UserToolCollection items)
@@ -105,14 +105,14 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Create a member-level clone of the caller's item and return it.
+		/// Create a deep clone of the caller's item and return it.
 		/// </summary>
 		/// <param name="tool">
 		/// Reference to the user tool item to be cloned.
 		/// </param>
 		/// <returns>
-		/// Reference to the newly created user tool item that has been duplicated
-		/// at the member level.
+		/// Reference to the newly created user tool item that has been deeply
+		/// duplicated.
 		/// </returns>
 		public static UserToolItem Clone(UserToolItem tool)
 		{

@@ -51,8 +51,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a clone of the specified collection where all memberwise values
-		/// have been transferred.
+		/// Return a deep clone of the specified collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of template items to clone.
@@ -117,8 +116,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a clone of the specified item where all memberwise values
-		/// have been transferred.
+		/// Return a deep clone of the specified item.
 		/// </summary>
 		/// <param name="item">
 		/// Reference to the template item to clone.

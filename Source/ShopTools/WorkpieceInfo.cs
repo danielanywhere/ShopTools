@@ -53,7 +53,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided collection of workpiece
+		/// Return a deep clone of the provided collection of workpiece
 		/// information items.
 		/// </summary>
 		/// <param name="items">
@@ -229,7 +229,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided workpieceinformation item.
+		/// Return a deep clone of the provided workpieceinformation item.
 		/// </summary>
 		/// <param name="item">
 		/// Reference to the item to clone.

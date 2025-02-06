@@ -48,13 +48,13 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the items in the caller's collection.
+		/// Return a deep clone of the items in the caller's collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of items to be cloned.
 		/// </param>
 		/// <returns>
-		/// Reference to a newly created collection containing memberwise clones
+		/// Reference to a newly created collection containing deep clones
 		/// of the members of the caller's original collection.
 		/// </returns>
 		public static ToolTypeDefinitionCollection Clone(

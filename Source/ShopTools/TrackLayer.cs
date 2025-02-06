@@ -433,7 +433,7 @@ namespace ShopTools
 									FPoint.TransferValues(location, line1.PointB);
 								}
 							}
-							newSegment = CloneObject(segment);
+							newSegment = DeepClone(segment);
 							FPoint.TransferValues(line1.PointA, newSegment.StartOffset);
 							FPoint.TransferValues(line1.PointB, newSegment.EndOffset);
 							kerfSegments.Add(newSegment);

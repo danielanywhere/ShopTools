@@ -92,13 +92,13 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the caller's property collection.
+		/// Return a deep clone of the caller's property collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of properties to clone.
 		/// </param>
 		/// <returns>
-		/// A memberwise clone of the caller's original collection.
+		/// A deep clone of the caller's original collection.
 		/// </returns>
 		public static PropertyCollection Clone(PropertyCollection items)
 		{

@@ -137,10 +137,39 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* CloneObject																														*
+		//*	ConfigProfile																													*
+		//*-----------------------------------------------------------------------*
+		private static ShopToolsConfigItem mConfigProfile = null;
+		/// <summary>
+		/// Get/Set a reference to the loaded configuration for this session.
+		/// </summary>
+		public static ShopToolsConfigItem ConfigProfile
+		{
+			get { return mConfigProfile; }
+			set { mConfigProfile = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	ConfigurationFilename																									*
+		//*-----------------------------------------------------------------------*
+		private static string mConfigurationFilename = "";
+		/// <summary>
+		/// Get/Set the path and filename of the configuration file that was loaded
+		/// for this session.
+		/// </summary>
+		public static string ConfigurationFilename
+		{
+			get { return mConfigurationFilename; }
+			set { mConfigurationFilename = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DeepClone																															*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Create a complete, recursive memberwise clone of the provided object.
+		/// Create a complete, recursive deep clone of the provided object.
 		/// </summary>
 		/// <typeparam name="T">
 		/// The type to be cloned.
@@ -149,10 +178,10 @@ namespace ShopTools
 		/// Reference to the source object to be cloned.
 		/// </param>
 		/// <returns>
-		/// Reference to the newly cloned object, where all memberwise values
+		/// Reference to the newly cloned object, where all values
 		/// have been duplicated on a primitive level.
 		/// </returns>
-		public static T CloneObject<T>(T source)
+		public static T DeepClone<T>(T source)
 		{
 			object clone = null;
 			object clonedFieldValue = null;
@@ -237,31 +266,122 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//*	ConfigProfile																													*
+		//* DeepTransfer																													*
 		//*-----------------------------------------------------------------------*
-		private static ShopToolsConfigItem mConfigProfile = null;
 		/// <summary>
-		/// Get/Set a reference to the loaded configuration for this session.
+		/// Conduct a deep transfer of all of the lowest level values from the
+		/// source object to the target.
 		/// </summary>
-		public static ShopToolsConfigItem ConfigProfile
+		/// <typeparam name="T">
+		/// The type to be cloned.
+		/// </typeparam>
+		/// <param name="source">
+		/// Reference to the source object whose values will be cloned.
+		/// </param>
+		/// <param name="target">
+		/// Reference to the target object whose values will be updated at a base
+		/// level.
+		/// </param>
+		public static void DeepTransfer<T>(T source, T target)
 		{
-			get { return mConfigProfile; }
-			set { mConfigProfile = value; }
-		}
-		//*-----------------------------------------------------------------------*
+			bool bProcessed = false;
+			object clonedFieldValue = null;
+			MethodInfo cloneMethod = null;
+			FieldInfo[] fields = null;
+			Type fieldType = null;
+			object fieldValue = null;
+			MethodInfo genericCloneMethod = null;
+			List<string> stringListNew = null;
+			List<string> stringListOriginal = null;
+			object targetFieldValue = null;
+			Type type = null;
 
-		//*-----------------------------------------------------------------------*
-		//*	ConfigurationFilename																									*
-		//*-----------------------------------------------------------------------*
-		private static string mConfigurationFilename = "";
-		/// <summary>
-		/// Get/Set the path and filename of the configuration file that was loaded
-		/// for this session.
-		/// </summary>
-		public static string ConfigurationFilename
-		{
-			get { return mConfigurationFilename; }
-			set { mConfigurationFilename = value; }
+			if(source != null && target != null &&
+				source.GetType() == target.GetType())
+			{
+				type = source.GetType();
+				//	Return all private instance fields.
+				fields = type.GetFields(
+					BindingFlags.Instance | BindingFlags.NonPublic);
+				foreach(FieldInfo fieldItem in fields)
+				{
+					fieldValue = fieldItem.GetValue(source);
+					if(fieldValue == null)
+					{
+						fieldItem.SetValue(target, null);
+						bProcessed = true;
+					}
+					if(!bProcessed)
+					{
+						fieldType = fieldItem.FieldType;
+						if(fieldType.IsPrimitive ||
+							fieldType == typeof(string) ||
+							fieldType == typeof(decimal))
+						{
+							//	We can just copy the value if immutable or primitive.
+							fieldItem.SetValue(target, fieldValue);
+							bProcessed = true;
+						}
+					}
+					if(!bProcessed && fieldType == typeof(List<string>))
+					{
+						//	Special handling for basic string lists.
+						stringListOriginal = (List<string>)fieldValue;
+						//	Get the target list.
+						targetFieldValue = fieldItem.GetValue(target);
+						if(targetFieldValue == null)
+						{
+							stringListNew = new List<string>();
+							fieldItem.SetValue(target, stringListNew);
+						}
+						else
+						{
+							stringListNew = (List<string>)targetFieldValue;
+						}
+						foreach(string entryItem in stringListOriginal)
+						{
+							stringListNew.Add(entryItem);
+						}
+						bProcessed = true;
+					}
+					if(!bProcessed)
+					{
+						//	Attempt to transfer values from the source to the target.
+						cloneMethod = fieldType.GetMethod("TransferValues",
+							BindingFlags.Public | BindingFlags.Static);
+						if(cloneMethod != null)
+						{
+							//	The TransferValues public static method exists for this
+							//	class.
+							genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
+							genericCloneMethod.Invoke(null,
+								new object[] { fieldValue, target });
+							bProcessed = true;
+						}
+					}
+					if(!bProcessed)
+					{
+						//	Attempt to clone other objects using a static clone method.
+						cloneMethod = fieldType.GetMethod("Clone",
+							BindingFlags.Public | BindingFlags.Static);
+						if(cloneMethod != null)
+						{
+							//	The Clone public static method exists for this class.
+							genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
+							clonedFieldValue =
+								genericCloneMethod.Invoke(null, new object[] { fieldValue });
+							fieldItem.SetValue(target, clonedFieldValue);
+							bProcessed = true;
+						}
+					}
+					if(!bProcessed)
+					{
+						//	No Clone method exists for that item. Just pass a
+						//	simple reference.
+						fieldItem.SetValue(target, fieldValue);
+					}
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -2659,106 +2779,6 @@ namespace ShopTools
 				}
 			}
 			return builder.ToString();
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//* TransferValues																												*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Copy all of the lowest level member values from the source object to
-		/// the target.
-		/// </summary>
-		/// <typeparam name="T">
-		/// The type to be cloned.
-		/// </typeparam>
-		/// <param name="source">
-		/// Reference to the source object whose values will be cloned.
-		/// </param>
-		/// <param name="target">
-		/// Reference to the target object whose values will be updated at a base
-		/// level.
-		/// </param>
-		public static void TransferValues<T>(T source, T target)
-		{
-			object clonedFieldValue = null;
-			MethodInfo cloneMethod = null;
-			FieldInfo[] fields = null;
-			Type fieldType = null;
-			object fieldValue = null;
-			MethodInfo genericCloneMethod = null;
-			List<string> stringListNew = null;
-			List<string> stringListOriginal = null;
-			object targetFieldValue = null;
-			Type type = null;
-
-			if(source != null && target != null &&
-				source.GetType() == target.GetType())
-			{
-				type = source.GetType();
-				//	Return all private instance fields.
-				fields = type.GetFields(
-					BindingFlags.Instance | BindingFlags.NonPublic);
-				foreach(FieldInfo fieldItem in fields)
-				{
-					fieldValue = fieldItem.GetValue(source);
-					if(fieldValue == null)
-					{
-						fieldItem.SetValue(target, null);
-					}
-					else
-					{
-						fieldType = fieldItem.FieldType;
-						if(fieldType.IsPrimitive ||
-							fieldType == typeof(string) ||
-							fieldType == typeof(decimal))
-						{
-							//	We can just copy the value if immutable or primitive.
-							fieldItem.SetValue(target, fieldValue);
-						}
-						else if(fieldType == typeof(List<string>))
-						{
-							//	Special handling for basic string lists.
-							stringListOriginal = (List<string>)fieldValue;
-							//	Get the target list.
-							targetFieldValue = fieldItem.GetValue(target);
-							if(targetFieldValue == null)
-							{
-								stringListNew = new List<string>();
-								fieldItem.SetValue(target, stringListNew);
-							}
-							else
-							{
-								stringListNew = (List<string>)targetFieldValue;
-							}
-							foreach(string entryItem in stringListOriginal)
-							{
-								stringListNew.Add(entryItem);
-							}
-						}
-						else
-						{
-							//	Attempt to clone other objects using a static clone method.
-							cloneMethod = fieldType.GetMethod("Clone",
-								BindingFlags.Public | BindingFlags.Static);
-							if(cloneMethod != null)
-							{
-								//	The Clone public static method exists for this class.
-								genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
-								clonedFieldValue =
-									genericCloneMethod.Invoke(null, new object[] { fieldValue });
-								fieldItem.SetValue(target, clonedFieldValue);
-							}
-							else
-							{
-								//	No Clone method exists for that item. Just pass a
-								//	simple reference.
-								fieldItem.SetValue(target, fieldValue);
-							}
-						}
-					}
-				}
-			}
 		}
 		//*-----------------------------------------------------------------------*
 

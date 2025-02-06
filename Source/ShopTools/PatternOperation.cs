@@ -56,7 +56,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided pattern operation collection.
+		/// Return a deep clone of the provided pattern operation collection.
 		/// </summary>
 		/// <param name="items">
 		/// Reference to the collection of items to clone.
@@ -595,7 +595,7 @@ namespace ShopTools
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a memberwise clone of the provided pattern operation item.
+		/// Return a deep clone of the provided pattern operation item.
 		/// </summary>
 		/// <param name="item">
 		/// Reference to the item to clone.
