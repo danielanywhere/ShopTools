@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -37,13 +37,13 @@ namespace ShopTools
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Left.
-		/// </summary>
-		Left,
-		/// <summary>
 		/// Center.
 		/// </summary>
 		Center,
+		/// <summary>
+		/// Left.
+		/// </summary>
+		Left,
 		/// <summary>
 		/// Right.
 		/// </summary>

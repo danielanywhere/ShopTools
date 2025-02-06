@@ -137,6 +137,106 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* CloneObject																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Create a complete, recursive memberwise clone of the provided object.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The type to be cloned.
+		/// </typeparam>
+		/// <param name="source">
+		/// Reference to the source object to be cloned.
+		/// </param>
+		/// <returns>
+		/// Reference to the newly cloned object, where all memberwise values
+		/// have been duplicated on a primitive level.
+		/// </returns>
+		public static T CloneObject<T>(T source)
+		{
+			object clone = null;
+			object clonedFieldValue = null;
+			MethodInfo cloneMethod = null;
+			FieldInfo[] fields = null;
+			Type fieldType = null;
+			object fieldValue = null;
+			//MethodInfo genericCloneMethod = null;
+			//Type genericFieldType = null;
+			T result = default(T);
+			List<string> stringListNew = null;
+			List<string> stringListOriginal = null;
+			Type type = null;
+			//Type[] typeArgs = { typeof(object) };
+
+			if(source != null)
+			{
+				type = source.GetType();
+				// Create a new instance of the type.
+				// This technique requires a parameterless constructor.
+				clone = Activator.CreateInstance(type);
+				//	Return all private instance fields.
+				fields = type.GetFields(
+					BindingFlags.Instance | BindingFlags.NonPublic);
+				foreach(FieldInfo fieldItem in fields)
+				{
+					fieldValue = fieldItem.GetValue(source);
+					if(fieldValue == null)
+					{
+						fieldItem.SetValue(clone, null);
+					}
+					else
+					{
+						fieldType = fieldItem.FieldType;
+						if(fieldType.IsPrimitive ||
+							fieldType == typeof(string) ||
+							fieldType == typeof(decimal))
+						{
+							//	We can just copy the value if immutable or primitive.
+							fieldItem.SetValue(clone, fieldValue);
+						}
+						else if(fieldType == typeof(List<string>))
+						{
+							//	Special handling for basic string lists.
+							stringListOriginal = (List<string>)fieldValue;
+							//	Create a new list with the same elements.
+							stringListNew = new List<string>();
+							foreach(string entryItem in stringListOriginal)
+							{
+								stringListNew.Add(entryItem);
+							}
+							fieldItem.SetValue(clone, stringListNew);
+						}
+						else
+						{
+							//	Attempt to clone other objects using a static clone method.
+							cloneMethod = fieldType.GetMethod("Clone",
+								BindingFlags.Public | BindingFlags.Static);
+							if(cloneMethod != null)
+							{
+								//	The Clone public static method exists for this class.
+								//genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
+								//clonedFieldValue =
+								//	genericCloneMethod.Invoke(null, new object[] { fieldValue });
+								clonedFieldValue =
+									cloneMethod.Invoke(null, new object[] { fieldValue });
+								fieldItem.SetValue(clone, clonedFieldValue);
+							}
+							else
+							{
+								//	No Clone method exists for that item. Just pass a
+								//	simple reference.
+								fieldItem.SetValue(clone, fieldValue);
+							}
+						}
+					}
+				}
+				result = (T)clone;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	ConfigProfile																													*
 		//*-----------------------------------------------------------------------*
 		private static ShopToolsConfigItem mConfigProfile = null;
@@ -183,6 +283,10 @@ namespace ShopTools
 		/// </param>
 		/// <param name="scale">
 		/// Scale to apply to the positioning of the symbol on the drawing area.
+		/// </param>
+		/// <param name="selected">
+		/// Value indicating whether the hole and its offset should be drawn as
+		/// selected.
 		/// </param>
 		public static void DrawHole(
 			FPoint displayLocation, Graphics graphics,
@@ -2529,7 +2633,7 @@ namespace ShopTools
 		/// in the caller's list, where lines that end with a space are continued
 		/// without a line-break and all other lines are ended with a line break.
 		/// </summary>
-		/// <param name="value">
+		/// <param name="list">
 		/// Reference to the list of string values to be converted to a single
 		/// string.
 		/// </param>
@@ -2555,6 +2659,106 @@ namespace ShopTools
 				}
 			}
 			return builder.ToString();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* TransferValues																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Copy all of the lowest level member values from the source object to
+		/// the target.
+		/// </summary>
+		/// <typeparam name="T">
+		/// The type to be cloned.
+		/// </typeparam>
+		/// <param name="source">
+		/// Reference to the source object whose values will be cloned.
+		/// </param>
+		/// <param name="target">
+		/// Reference to the target object whose values will be updated at a base
+		/// level.
+		/// </param>
+		public static void TransferValues<T>(T source, T target)
+		{
+			object clonedFieldValue = null;
+			MethodInfo cloneMethod = null;
+			FieldInfo[] fields = null;
+			Type fieldType = null;
+			object fieldValue = null;
+			MethodInfo genericCloneMethod = null;
+			List<string> stringListNew = null;
+			List<string> stringListOriginal = null;
+			object targetFieldValue = null;
+			Type type = null;
+
+			if(source != null && target != null &&
+				source.GetType() == target.GetType())
+			{
+				type = source.GetType();
+				//	Return all private instance fields.
+				fields = type.GetFields(
+					BindingFlags.Instance | BindingFlags.NonPublic);
+				foreach(FieldInfo fieldItem in fields)
+				{
+					fieldValue = fieldItem.GetValue(source);
+					if(fieldValue == null)
+					{
+						fieldItem.SetValue(target, null);
+					}
+					else
+					{
+						fieldType = fieldItem.FieldType;
+						if(fieldType.IsPrimitive ||
+							fieldType == typeof(string) ||
+							fieldType == typeof(decimal))
+						{
+							//	We can just copy the value if immutable or primitive.
+							fieldItem.SetValue(target, fieldValue);
+						}
+						else if(fieldType == typeof(List<string>))
+						{
+							//	Special handling for basic string lists.
+							stringListOriginal = (List<string>)fieldValue;
+							//	Get the target list.
+							targetFieldValue = fieldItem.GetValue(target);
+							if(targetFieldValue == null)
+							{
+								stringListNew = new List<string>();
+								fieldItem.SetValue(target, stringListNew);
+							}
+							else
+							{
+								stringListNew = (List<string>)targetFieldValue;
+							}
+							foreach(string entryItem in stringListOriginal)
+							{
+								stringListNew.Add(entryItem);
+							}
+						}
+						else
+						{
+							//	Attempt to clone other objects using a static clone method.
+							cloneMethod = fieldType.GetMethod("Clone",
+								BindingFlags.Public | BindingFlags.Static);
+							if(cloneMethod != null)
+							{
+								//	The Clone public static method exists for this class.
+								genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
+								clonedFieldValue =
+									genericCloneMethod.Invoke(null, new object[] { fieldValue });
+								fieldItem.SetValue(target, clonedFieldValue);
+							}
+							else
+							{
+								//	No Clone method exists for that item. Just pass a
+								//	simple reference.
+								fieldItem.SetValue(target, fieldValue);
+							}
+						}
+					}
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -2896,6 +3100,9 @@ namespace ShopTools
 		/// <param name="offsetType">
 		/// The visual relative direction with which the offset is associated.
 		/// </param>
+		/// <param name="relativeOffset">
+		/// A base offset for the entire space.
+		/// </param>
 		/// <returns>
 		/// The physical offset, relative to the established direction of travel
 		/// on the table.
@@ -2924,6 +3131,9 @@ namespace ShopTools
 		/// </param>
 		/// <param name="offsetType">
 		/// The visual relative direction with which the offset is associated.
+		/// </param>
+		/// <param name="relativeOffset">
+		/// A base offset for the entire space.
 		/// </param>
 		/// <returns>
 		/// The physical offset, relative to the established direction of travel
@@ -2956,6 +3166,9 @@ namespace ShopTools
 		/// </param>
 		/// <param name="offsetType">
 		/// The visual relative direction with which the offset is associated.
+		/// </param>
+		/// <param name="relativeOffset">
+		/// A base offset for the entire space.
 		/// </param>
 		/// <returns>
 		/// The physical offset, relative to the established direction of travel
@@ -3037,6 +3250,9 @@ namespace ShopTools
 		/// </param>
 		/// <param name="offsetType">
 		/// The visual relative direction with which the offset is associated.
+		/// </param>
+		/// <param name="relativeOffset">
+		/// A base offset for the entire space.
 		/// </param>
 		/// <returns>
 		/// The physical offset, relative to the established direction of travel

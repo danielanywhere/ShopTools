@@ -109,6 +109,21 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//*	Operation																															*
+		//*-----------------------------------------------------------------------*
+		private PatternOperationItem mOperation = null;
+		/// <summary>
+		/// Get/Set a reference to the pattern operation from which this segment
+		/// was created.
+		/// </summary>
+		public PatternOperationItem Operation
+		{
+			get { return mOperation; }
+			set { mOperation = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	SegmentType																														*
 		//*-----------------------------------------------------------------------*
 		private TrackSegmentType mSegmentType = TrackSegmentType.None;

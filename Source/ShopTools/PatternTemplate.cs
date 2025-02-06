@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -120,8 +120,8 @@ namespace ShopTools
 		/// Return a clone of the specified item where all memberwise values
 		/// have been transferred.
 		/// </summary>
-		/// <param name="items">
-		/// Reference to the collection of template items to clone.
+		/// <param name="item">
+		/// Reference to the template item to clone.
 		/// </param>
 		/// <returns>
 		/// Reference to the newly created clone.

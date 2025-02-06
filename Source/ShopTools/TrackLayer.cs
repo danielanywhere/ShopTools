@@ -38,6 +38,54 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//* IsPlot																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the specified action is of a plotting
+		/// type, subject to kerf.
+		/// </summary>
+		/// <param name="action">
+		/// The action in question.
+		/// </param>
+		/// <returns>
+		/// True if the specified action plots a line and is subject to kerf
+		/// offset. Otherwise, false.
+		/// </returns>
+		/// <remarks>
+		/// Note that point operations are always center-oriented, while fill
+		/// operations always distribute the kerf to the inside area. As a result,
+		/// point and fill operations always return false from this method.
+		/// </remarks>
+		private static bool IsPlot(OperationActionEnum action)
+		{
+			bool result = false;
+
+			switch(action)
+			{
+				case OperationActionEnum.DrawCircleCenterDiameter:
+				case OperationActionEnum.DrawCircleCenterRadius:
+				case OperationActionEnum.DrawCircleDiameter:
+				case OperationActionEnum.DrawCircleRadius:
+				case OperationActionEnum.DrawEllipseCenterDiameterXY:
+				case OperationActionEnum.DrawEllipseCenterRadiusXY:
+				case OperationActionEnum.DrawEllipseDiameterXY:
+				case OperationActionEnum.DrawEllipseLengthWidth:
+				case OperationActionEnum.DrawEllipseRadiusXY:
+				case OperationActionEnum.DrawEllipseXY:
+				case OperationActionEnum.DrawLineAngleLength:
+				case OperationActionEnum.DrawLineLengthWidth:
+				case OperationActionEnum.DrawLineXY:
+				case OperationActionEnum.DrawPath:
+				case OperationActionEnum.DrawRectangleLengthWidth:
+				case OperationActionEnum.DrawRectangleXY:
+					result = true;
+					break;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
@@ -80,14 +128,19 @@ namespace ShopTools
 			float depth = 0f;
 			FPoint endOffset = null;
 			int index = 0;
+			float kerfClearance = 0f;
+			TrackSegmentCollection kerfSegments = null;
 			TrackLayerItem lastLayer = null;
 			FPoint lastLocation = null;
 			TrackLayerItem layer = null;
+			FLine line1 = new FLine();
+			FLine line2 = new FLine();
 			FPoint location = null;
 			float maxDepth = float.MinValue;
 			float maxDepthPerPass = 0f;
 			float minDepth = float.MaxValue;
-			List<PatternOperationItem> operations = null;
+			TrackSegmentItem nextSegment = null;
+			TrackSegmentItem newSegment = null;
 			TrackSegmentItem prevSegment = null;
 			TrackSegmentItem segment = null;
 			TrackSegmentCollection segments = null;
@@ -99,7 +152,6 @@ namespace ShopTools
 
 			if(cutList?.Count > 0 && workpiece != null)
 			{
-				operations = new List<PatternOperationItem>();
 				//	Initialize the maximum depth per pass.
 				tool = ConfigProfile.UserTools.FirstOrDefault(x =>
 					x.ToolName == ConfigProfile.GeneralCuttingTool);
@@ -111,7 +163,7 @@ namespace ShopTools
 						//	In general, the maximum depth per pass is 50% of the
 						//	tool diameter, unless the implement is a facing tool, in
 						//	which case, we need to adjust the feed rate.
-						maxDepthPerPass = GetMillimeters(text) * 0.5f;
+						kerfClearance = maxDepthPerPass = GetMillimeters(text) * 0.5f;
 					}
 				}
 				if(maxDepthPerPass == 0f)
@@ -148,12 +200,13 @@ namespace ShopTools
 					layer.CurrentDepth = maxDepth;
 					layer.TargetDepth = maxDepth;
 					segments = layer.Segments;
+					//	*** DRILLS ***
 					//	Get all plunges first.
 					//	All of the offsets need to be visited to assure correct
 					//	positioning.
 					location = lastLocation =
 						TransformFromAbsolute(workpiece.RouterLocation);
-					operations.Clear();
+					//	Plunges are always center kerf.
 					foreach(CutProfileItem cutItem in cutList)
 					{
 						foreach(PatternOperationItem operationItem in cutItem.Operations)
@@ -170,13 +223,15 @@ namespace ShopTools
 								{
 									segment = new TrackSegmentItem()
 									{
-										SegmentType = TrackSegmentType.Transit,
-										StartOffset = TransformToAbsolute(startOffset),
-										EndOffset = TransformToAbsolute(endOffset)
+										Operation = operationItem,
+										SegmentType = TrackSegmentType.Transit
 									};
+									FPoint.TransferValues(startOffset, segment.StartOffset);
+									FPoint.TransferValues(endOffset, segment.EndOffset);
 									segments.Add(segment);
 									segment = new TrackSegmentItem()
 									{
+										Operation = operationItem,
 										SegmentType = TrackSegmentType.Plunge,
 										Depth = ResolveDepth(operationItem)
 									};
@@ -195,6 +250,7 @@ namespace ShopTools
 						layer.TargetDepth = maxDepth;
 						segments = layer.Segments;
 					}
+					//	*** LINES AND SHAPES ***
 					//	Get all direct plots, skipping plunges.
 					location = lastLocation =
 						TransformFromAbsolute(workpiece.RouterLocation);
@@ -223,6 +279,7 @@ namespace ShopTools
 								case OperationActionEnum.DrawLineAngleLength:
 								case OperationActionEnum.DrawLineLengthWidth:
 								case OperationActionEnum.DrawLineXY:
+									//	Drawing a single line.
 									targetDepth = ResolveDepth(operationItem);
 									cutDepth = Math.Min(depth, targetDepth);
 									if(cutDepth > 0f)
@@ -231,20 +288,22 @@ namespace ShopTools
 										{
 											segment = new TrackSegmentItem()
 											{
-												StartOffset = TransformToAbsolute(lastLocation),
-												EndOffset = TransformToAbsolute(startOffset),
+												Operation = operationItem,
 												SegmentType = TrackSegmentType.Transit
 											};
+											FPoint.TransferValues(lastLocation, segment.StartOffset);
+											FPoint.TransferValues(startOffset, segment.EndOffset);
 											segments.Add(segment);
 										}
 										segment = new TrackSegmentItem()
 										{
-											StartOffset = TransformToAbsolute(startOffset),
-											EndOffset = TransformToAbsolute(endOffset),
+											Operation = operationItem,
 											SegmentType = TrackSegmentType.Plot,
 											Depth = cutDepth,
 											TargetDepth = targetDepth
 										};
+										FPoint.TransferValues(startOffset, segment.StartOffset);
+										FPoint.TransferValues(endOffset, segment.EndOffset);
 										segments.Add(segment);
 									}
 									break;
@@ -279,6 +338,144 @@ namespace ShopTools
 							lastLocation = location;
 						}
 					}
+					//	*** KERF ***
+					//	TODO: Debug kerf offsets.
+					//	Adjust initial segment set for kerf.
+					if(segments.Count > 0)
+					{
+						kerfSegments = new TrackSegmentCollection();
+						prevSegment = null;
+						count = segments.Count;
+						for(index = 0; index < count; index++)
+						{
+							segment = segments[index];
+							newSegment = null;
+							if(index + 1 < count)
+							{
+								nextSegment = segments[index + 1];
+							}
+							else
+							{
+								nextSegment = null;
+							}
+							FLine.TransferValues(line1,
+								segment.StartOffset, segment.EndOffset);
+							if(segment.SegmentType == TrackSegmentType.Plot)
+							{
+								//	Translate the current line for its assigned kerf.
+								switch(segment.Operation.Kerf)
+								{
+									case DirectionLeftRightEnum.Left:
+										FLine.TranslateVector(line1,
+											kerfClearance, ArcDirectionEnum.Forward);
+										break;
+									case DirectionLeftRightEnum.Right:
+										FLine.TranslateVector(line1,
+											kerfClearance, ArcDirectionEnum.Reverse);
+										break;
+								}
+							}
+							//	Blend with previous.
+							if(prevSegment != null &&
+								prevSegment.SegmentType == TrackSegmentType.Plot &&
+								prevSegment.EndOffset.Equals(segment.StartOffset))
+							{
+								//	The previous and current segments are joined.
+								if((int)prevSegment.Operation?.Kerf > 1 ||
+									(int)segment.Operation?.Kerf > 1)
+								{
+									//	Adjustment is only needed on this starting offset if
+									//	the previous or current segments have kerf.
+									FLine.TransferValues(line2,
+										prevSegment.StartOffset, prevSegment.EndOffset);
+									switch(prevSegment.Operation.Kerf)
+									{
+										case DirectionLeftRightEnum.Left:
+											FLine.TranslateVector(line2,
+												kerfClearance, ArcDirectionEnum.Forward);
+											break;
+										case DirectionLeftRightEnum.Right:
+											FLine.TranslateVector(line2,
+												kerfClearance, ArcDirectionEnum.Reverse);
+											break;
+									}
+									location = FLine.Intersect(line1, line2, true);
+									//	Update the starting location on the current segment.
+									FPoint.TransferValues(location, line1.PointA);
+								}
+							}
+							//	Blend with next.
+							if(nextSegment != null &&
+								nextSegment.SegmentType == TrackSegmentType.Plot &&
+								nextSegment.StartOffset.Equals(segment.EndOffset))
+							{
+								//	The current and next segments are joined.
+								if((int)nextSegment.Operation?.Kerf > 1 ||
+									(int)segment.Operation?.Kerf > 1)
+								{
+									//	Adjustment is needed on this ending offset if
+									//	the current or next segments have kerf.
+									FLine.TransferValues(line2,
+										nextSegment.StartOffset, nextSegment.EndOffset);
+									switch(nextSegment.Operation.Kerf)
+									{
+										case DirectionLeftRightEnum.Left:
+											FLine.TranslateVector(line2,
+												kerfClearance, ArcDirectionEnum.Forward);
+											break;
+										case DirectionLeftRightEnum.Right:
+											FLine.TranslateVector(line2,
+												kerfClearance, ArcDirectionEnum.Reverse);
+											break;
+									}
+									location = FLine.Intersect(line1, line2, true);
+									//	Update the ending location on the current segment.
+									FPoint.TransferValues(location, line1.PointB);
+								}
+							}
+							newSegment = CloneObject(segment);
+							FPoint.TransferValues(line1.PointA, newSegment.StartOffset);
+							FPoint.TransferValues(line1.PointB, newSegment.EndOffset);
+							kerfSegments.Add(newSegment);
+							prevSegment = segment;
+						}
+						//	Heal the start/end locations on transits.
+						lastLocation = new FPoint();
+						prevSegment = null;
+						for(index = 0; index < count; index ++)
+						{
+							segment = kerfSegments[index];
+							if(index + 1 < count)
+							{
+								nextSegment = kerfSegments[index + 1];
+							}
+							if(segment.SegmentType == TrackSegmentType.Transit)
+							{
+								if(prevSegment != null)
+								{
+									//	Connect the current start to previous end.
+									FPoint.TransferValues(
+										prevSegment.EndOffset, segment.StartOffset);
+								}
+								if(nextSegment != null)
+								{
+									//	Connect the current end to the next start.
+									FPoint.TransferValues(
+										nextSegment.StartOffset, segment.EndOffset);
+								}
+							}
+							else
+							{
+								FPoint.TransferValues(segment.EndOffset, lastLocation);
+							}
+							prevSegment = segment;
+						}
+						//	Transfer the adjusted segments to the general map.
+						segments.Clear();
+						segments.AddRange(kerfSegments);
+					}
+					//	*** RESOLVE TOOL PATH ***
+					//	Reversing paths until all layers are completed.
 					depth += maxDepthPerPass;
 					if(segments.Count > 0)
 					{
@@ -291,7 +488,6 @@ namespace ShopTools
 					}
 					startOffset = new FPoint();
 					endOffset = new FPoint();
-					lastLocation = TransformToAbsolute(lastLocation);
 					while(depth <= maxDepth)
 					{
 						//	Repeat the layers in opposite directions until the maximum
@@ -343,6 +539,17 @@ namespace ShopTools
 						else
 						{
 							break;
+						}
+					}
+					//	*** DRAWING SPACE TO PHYSICAL SPACE ***
+					foreach(TrackLayerItem layerItem in this)
+					{
+						foreach(TrackSegmentItem segmentItem in layerItem.Segments)
+						{
+							segmentItem.EndOffset =
+								TransformToAbsolute(segmentItem.EndOffset);
+							segmentItem.StartOffset =
+								TransformToAbsolute(segmentItem.StartOffset);
 						}
 					}
 				}

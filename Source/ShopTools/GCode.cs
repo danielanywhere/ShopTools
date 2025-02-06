@@ -331,9 +331,6 @@ namespace ShopTools
 		/// Return the G-code corresponding to the current configuration and
 		/// operations in the provided workpiece.
 		/// </summary>
-		/// <param name="workpiece">
-		/// Reference to the workpiece for which the G-code will be rendered.
-		/// </param>
 		/// <returns>
 		/// A string containing G-code instructions for the workpiece and its
 		/// operations, if present. Otherwise, an empty string.
