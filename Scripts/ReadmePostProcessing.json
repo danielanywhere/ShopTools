@@ -34,5 +34,17 @@
 		"FindPattern": "(?s:(?i:( |\\t)*\\{pre\\}(?<lineContent>.*?)( |\\t)*\\{/pre\\}))",
 		"ReplacePattern": "<pre>${lineContent}</pre>",
 		"UseRegEx": 1
+	},
+	{
+		"Remarks": "Replace Image folder references.",
+		"FindPattern": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images",
+		"ReplacePattern": "Images",
+		"UseRegEx": 0
+	},
+	{
+		"Remarks": "Set image width to 100%",
+		"FindPattern": "(?i:style=\\\"width\\:[^\\\"]+\\\")",
+		"ReplacePattern": "style=\"width:100%\"",
+		"UseRegEx": 1
 	}
 ]
