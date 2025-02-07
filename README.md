@@ -3,10 +3,11 @@ style="width:100%" />
 
 One of the biggest complaints I've heard about CNC routers in recent
 years is that even if you want to use your machine for simple ad-hoc
-drills and cuts, by the time you get everything planned out and
-configured, you would've saved a lot of time to just have walked over to
-your traditional power tools and had done it manually. That situation is
-about to change...
+drills and cuts, by the time you get everything planned out, drafted
+into your favorite CAD application, and configured with a matching CAM
+application, you would've saved a lot of time to just have walked over
+to your traditional power tools and had done it manually. That situation
+is about to change...
 
 Welcome to **ShopTools**, the application that finally makes CNC routing
 easier than using your old power tools - except now, you don’t have to
@@ -44,8 +45,13 @@ over the following jobs.
 
 Imagine defining your cuts *faster than you could mark them with a
 straightedge and pencil*. That’s what ShopTools delivers. No marking. No
-CAD. No CAM. No tool-path configurations. Just accurate positioning of
+CAD. No CAM. No tool-path configurations. You just accurately position
 your material on the waste board, and your CNC does the rest.
+
+-   **Use any numbering system**. Every measurement textbox supports
+    every popular distance-type measurement expression. You can specify
+    inches and fractions of an inch for one parameter, while using
+    decimal inches or millimeters for another.
 
 -   **Template-driven workflow**. Just drag and drop movements, drill
     positions, and cut lines into place.
