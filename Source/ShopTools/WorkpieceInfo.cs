@@ -356,6 +356,8 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the current calculated location of the router.
 		/// </summary>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
+		/// FPoint Documentation</seealso>
 		[JsonIgnore]
 		public FPoint RouterLocation
 		{

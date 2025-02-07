@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -45,6 +45,10 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		/// <summary>
+		/// Private member indicating whether the control raising the event is
+		/// busy and should not be updated.
+		/// </summary>
 		private bool mControlBusy = false;
 
 		//*-----------------------------------------------------------------------*
@@ -497,6 +501,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//* txtToolName_TextChanged																								*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A value indicating whether the text in the toolname has been changed
+		/// since it received the current focus.
+		/// </summary>
 		private bool mToolNameTextChanged = false;
 		/// <summary>
 		/// The text of the Tool Name textbox has been changed.
@@ -696,6 +704,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Configuration																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Configuration">Configuration</see>.
+		/// </summary>
 		private ShopToolsConfigItem mConfiguration = ConfigProfile;
 		/// <summary>
 		/// Get/Set a reference to the configuration profile to be used with this
@@ -715,6 +726,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SelectedTool																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SelectedTool">SelectedTool</see>.
+		/// </summary>
 		private UserToolItem mSelectedTool = null;
 		/// <summary>
 		/// Get/Set a reference to the currently selected user tool.
@@ -836,6 +850,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	WorkingUserTools																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="WorkingUserTools">WorkingUserTools</see>.
+		/// </summary>
 		private List<UserToolItem> mWorkingUserTools = new List<UserToolItem>();
 		/// <summary>
 		/// Get a reference to the collection of user tools isolated for this

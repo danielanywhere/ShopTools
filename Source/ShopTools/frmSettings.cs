@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -46,7 +46,14 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		/// <summary>
+		/// Value indicating whether the control causing the event is busy and
+		/// should not respond to related events.
+		/// </summary>
 		private bool mControlBusy = false;
+		/// <summary>
+		/// Established size for the origin symbol.
+		/// </summary>
 		private const int mOriginDotSize = 16;
 
 		//*-----------------------------------------------------------------------*
@@ -1086,6 +1093,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Configuration																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Configuration">Configuration</see>.
+		/// </summary>
 		private ShopToolsConfigItem mConfiguration =
 			ShopToolsConfigItem.Clone(ConfigProfile);
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -262,6 +262,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Unit																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Unit">Unit</see>.
+		/// </summary>
 		private string mUnit = "";
 		/// <summary>
 		/// Get/Set the unit of the measurement.
@@ -276,6 +279,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Value																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Value">Value</see>.
+		/// </summary>
 		private string mValue = "";
 		/// <summary>
 		/// Get/Set the value of the measurement.

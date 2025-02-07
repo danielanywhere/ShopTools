@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<doc>
+<members>
+<member name="F:ShopTools.frmCutEdit.btnCancel">
+	<summary>
+	Cancel button. Click this button to cancel any changes you have made while
+	creating or editing your cut.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.btnOK">
+	<summary>
+	OK button. Click this button to save the changes to your new or updated
+	cut.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.dgProperties">
+	<summary>
+		Properties Data Grid View.
+	</summary>
+	<remarks>
+		The cut editing form presents an object-based properties grid for handling
+		all of the user settings.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmCutEdit.menuCut">
+	<summary>
+		The main menu bar for the cut editing dialog.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.mnuForm">
+	<summary>
+		The Form menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.mnuFormCloseWithoutSaving">
+	<summary>
+		The Form / Close Without Saving menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.mnuFormSaveChangesClose">
+	<summary>
+		The Form / Save Changes and Close menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.pnlControl">
+	<summary>
+		The panel containing the user's controls for this session.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.pnlPreview">
+	<summary>
+		The panel upon which the graphic preview of the current cut is displayed.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.pnlWorkspace">
+	<summary>
+		The effective user workspace for this form, not including the OK and Cancel area.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.splitter1">
+	<summary>
+		The splitter between the control and preview panels.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.statMessage">
+	<summary>
+		Status message control on <see cref="statusCut">statusCut</see>.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.statusCut">
+	<summary>
+		The main status message bar for the form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmCutEdit.statValue">
+	<summary>
+		Current user editing value alternate display on <see cref="statusCut">statusCut</see>.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.btnAdd">
+	<summary>
+		Add button. Add a new user tool to the list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.btnCancel">
+	<summary>
+		Cancel button. Cancel any changes to the user tools definitions.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.btnDelete">
+	<summary>
+		Delete button. Delete the currently selected user tool definition.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.btnOK">
+	<summary>
+	OK button. Save changes to the user tool definitions and return to the
+	calling form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.cmboToolType">
+	<summary>
+	Base tool type drop-down list containing all of the predefined tool types
+	currently recognized by ShopTools.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.grpProperties">
+	<summary>
+		Properties group box.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblAngle">
+	<summary>
+		Angle title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblAngleUnit">
+	<summary>
+		Alternate measurement display for the angle textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblBottomGuideDiameter">
+	<summary>
+		Bottom Guide Diameter title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblBottomGuideDiameterUnit">
+	<summary>
+		Alternate measurement display for the bottom guide diameter textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblBottomGuideHeight">
+	<summary>
+		Bottom Guide Height title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblBottomGuideHeightUnit">
+	<summary>
+		Alternate measurement display for the bottom guide height textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblDefinedTools">
+	<summary>
+		Defined Tools title label for the defined tools list control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblDiameter">
+	<summary>
+		Diameter title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblDiameterUnit">
+	<summary>
+		Alternate measurement display for the diameter textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblFluteCount">
+	<summary>
+		Flute Count title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblFluteCountUnit">
+	<summary>
+		Alternate measurement display for the flute count textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblFluteLength">
+	<summary>
+		Flute Length title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblFluteLengthUnit">
+	<summary>
+		Alternate measurement display for the flute length textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblShaftLength">
+	<summary>
+		Shaft Length title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblShaftLengthUnit">
+	<summary>
+		Alternate measurement display for the shaft length textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblToolName">
+	<summary>
+		Tool Name title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblToolType">
+	<summary>
+		Tool Type title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblTopGuideDiameter">
+	<summary>
+		Top Guide Diameter title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblTopGuideDiameterUnit">
+	<summary>
+		Alternate measurement display for the top guide diameter textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblTopGuideHeight">
+	<summary>
+		Top Guide Height title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lblTopGuideHeightUnit">
+	<summary>
+		Alternate measurement display for the top guide height textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.lstDefinedTools">
+	<summary>
+		List of user-defined tools.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtAngle">
+	<summary>
+		The Angle textbox, expressing the angle of the cutting face of the tool to
+		the material.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtBottomGuideDiameter">
+	<summary>
+		The textbox for the diameter of the bottom guide of the tool, if present.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtBottomGuideHeight">
+	<summary>
+		The textbox containing the height of the bottom guide of the tool, if present.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtDiameter">
+	<summary>
+		The textbox expressing the outer diameter of the tool.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtFluteCount">
+	<summary>
+		The textbox expressing the number of flutes on the tool.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtFluteLength">
+	<summary>
+		The textbox describing the length of the flutes, or single-pass lateral
+		cutting height of the tool.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtShaftLength">
+	<summary>
+		The textbox displaying the length of the shaft.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtToolName">
+	<summary>
+		The textbox containing the current user-defined name for the tool.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtTopGuideDiameter">
+	<summary>
+		Textbox containing the diameter of the top guide on the tool, if present.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTools.txtTopGuideHeight">
+	<summary>
+		Textbox displaying the height of the tool's top guide, if present.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.btnGO">
+	<summary>
+ The GO button.
+	</summary>
+	<remarks>
+		<para>
+		Clicking this button will start the operation on the locally configured machine.
+		</para>
+		<para>
+ 	However, this button is currently disabled until communications ports have been implemented.
+		</para>
+		<para>
+ For the time-being, please export cut lists to g-code and send them through your
+ favorite g-code sender.
+		</para>
+	</remarks>
+</member>
+</members>
+</doc>

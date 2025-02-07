@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -76,10 +76,30 @@ namespace ShopTools
 		///	Currently defined tool names.
 		/// </summary>
 		private string[] mEntryNamesTool = GetToolNames();
+		/// <summary>
+		/// Reference to the list of operations that have been resolved while
+		/// editing.
+		/// </summary>
+		/// <remarks>
+		/// The contents of this list will be transferred to the caller's cut
+		/// profile if the edit session is saved.
+		/// </remarks>
 		List<PatternOperationItem> mResolvedOperations =
 			new List<PatternOperationItem>();
+		/// <summary>
+		/// Value indicating whether the timer until the next valid redraw has
+		/// elapsed.
+		/// </summary>
 		private bool mRedrawElapsed = false;
+		/// <summary>
+		/// Value indicating whether a redraw of the preview panel is needed.
+		/// </summary>
 		private bool mRedrawNeeded = false;
+		/// <summary>
+		/// The timer used to keep track if a redraw can be performed. This
+		/// control might no longer be needed since panel-level double-buffering
+		/// has been activated.
+		/// </summary>
 		private Timer mRedrawTimer = new Timer()
 		{
 			Enabled = true,
@@ -313,8 +333,12 @@ namespace ShopTools
 		/// <summary>
 		/// The cell has left the edit mode.
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// DataGridView event arguments.
+		/// </param>
 		private void dgProperties_CellEndEdit(object sender,
 			DataGridViewCellEventArgs e)
 		{
@@ -1073,6 +1097,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	CutProfile																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="CutProfile">CutProfile</see>.
+		/// </summary>
 		private CutProfileItem mCutProfile = null;
 		/// <summary>
 		/// Get/Set a reference to the cut profile to be edited in this session.
@@ -1110,6 +1137,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EditMode																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EditMode">EditMode</see>.
+		/// </summary>
 		private OperationEditModeEnum mEditMode = OperationEditModeEnum.None;
 		/// <summary>
 		/// Get/Set the mode under which this cut will be edited.
@@ -1164,6 +1194,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SettingsTable																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SettingsTable">SettingsTable</see>.
+		/// </summary>
 		private OperationVariableCollection mSettingsTable =
 			new OperationVariableCollection();
 		/// <summary>
@@ -1179,6 +1212,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	WorkpieceInfo																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="WorkpieceInfo">WorkpieceInfo</see>.
+		/// </summary>
 		private WorkpieceInfoItem mWorkpieceInfo =
 			WorkpieceInfoItem.Clone(SessionWorkpieceInfo);
 		/// <summary>

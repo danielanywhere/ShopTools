@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -195,10 +195,15 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndLocation																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Internal EndLocation member <see cref="EndLocation"/>
+		/// </summary>
 		private FPoint mEndLocation = new FPoint();
 		/// <summary>
 		/// Get/Set a reference to the end location of the router for this cut.
 		/// </summary>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
+		/// FPoint Documentation</seealso>
 		[JsonIgnore]
 		public FPoint EndLocation
 		{
@@ -210,10 +215,15 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartLocation																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Internal StartLocation member <see cref="StartLocation"/>.
+		/// </summary>
 		private FPoint mStartLocation = new FPoint();
 		/// <summary>
 		/// Get/Set a reference to the start location of the router for this cut.
 		/// </summary>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
+		/// FPoint Documentation</seealso>
 		[JsonIgnore]
 		public FPoint StartLocation
 		{

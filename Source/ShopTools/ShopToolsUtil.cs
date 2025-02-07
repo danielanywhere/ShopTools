@@ -35,6 +35,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 
 using Geometry;
+using System.CodeDom;
 
 namespace ShopTools
 {
@@ -183,83 +184,13 @@ namespace ShopTools
 		/// </returns>
 		public static T DeepClone<T>(T source)
 		{
-			object clone = null;
-			object clonedFieldValue = null;
-			MethodInfo cloneMethod = null;
-			FieldInfo[] fields = null;
-			Type fieldType = null;
-			object fieldValue = null;
-			//MethodInfo genericCloneMethod = null;
-			//Type genericFieldType = null;
+			string content = "";
 			T result = default(T);
-			List<string> stringListNew = null;
-			List<string> stringListOriginal = null;
-			Type type = null;
-			//Type[] typeArgs = { typeof(object) };
 
 			if(source != null)
 			{
-				type = source.GetType();
-				// Create a new instance of the type.
-				// This technique requires a parameterless constructor.
-				clone = Activator.CreateInstance(type);
-				//	Return all private instance fields.
-				fields = type.GetFields(
-					BindingFlags.Instance | BindingFlags.NonPublic);
-				foreach(FieldInfo fieldItem in fields)
-				{
-					fieldValue = fieldItem.GetValue(source);
-					if(fieldValue == null)
-					{
-						fieldItem.SetValue(clone, null);
-					}
-					else
-					{
-						fieldType = fieldItem.FieldType;
-						if(fieldType.IsPrimitive ||
-							fieldType == typeof(string) ||
-							fieldType == typeof(decimal))
-						{
-							//	We can just copy the value if immutable or primitive.
-							fieldItem.SetValue(clone, fieldValue);
-						}
-						else if(fieldType == typeof(List<string>))
-						{
-							//	Special handling for basic string lists.
-							stringListOriginal = (List<string>)fieldValue;
-							//	Create a new list with the same elements.
-							stringListNew = new List<string>();
-							foreach(string entryItem in stringListOriginal)
-							{
-								stringListNew.Add(entryItem);
-							}
-							fieldItem.SetValue(clone, stringListNew);
-						}
-						else
-						{
-							//	Attempt to clone other objects using a static clone method.
-							cloneMethod = fieldType.GetMethod("Clone",
-								BindingFlags.Public | BindingFlags.Static);
-							if(cloneMethod != null)
-							{
-								//	The Clone public static method exists for this class.
-								//genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
-								//clonedFieldValue =
-								//	genericCloneMethod.Invoke(null, new object[] { fieldValue });
-								clonedFieldValue =
-									cloneMethod.Invoke(null, new object[] { fieldValue });
-								fieldItem.SetValue(clone, clonedFieldValue);
-							}
-							else
-							{
-								//	No Clone method exists for that item. Just pass a
-								//	simple reference.
-								fieldItem.SetValue(clone, fieldValue);
-							}
-						}
-					}
-				}
-				result = (T)clone;
+				content = JsonConvert.SerializeObject(source);
+				result = JsonConvert.DeserializeObject<T>(content);
 			}
 			return result;
 		}
@@ -284,103 +215,12 @@ namespace ShopTools
 		/// </param>
 		public static void DeepTransfer<T>(T source, T target)
 		{
-			bool bProcessed = false;
-			object clonedFieldValue = null;
-			MethodInfo cloneMethod = null;
-			FieldInfo[] fields = null;
-			Type fieldType = null;
-			object fieldValue = null;
-			MethodInfo genericCloneMethod = null;
-			List<string> stringListNew = null;
-			List<string> stringListOriginal = null;
-			object targetFieldValue = null;
-			Type type = null;
+			string content = "";
 
-			if(source != null && target != null &&
-				source.GetType() == target.GetType())
+			if(source != null && target != null)
 			{
-				type = source.GetType();
-				//	Return all private instance fields.
-				fields = type.GetFields(
-					BindingFlags.Instance | BindingFlags.NonPublic);
-				foreach(FieldInfo fieldItem in fields)
-				{
-					fieldValue = fieldItem.GetValue(source);
-					if(fieldValue == null)
-					{
-						fieldItem.SetValue(target, null);
-						bProcessed = true;
-					}
-					if(!bProcessed)
-					{
-						fieldType = fieldItem.FieldType;
-						if(fieldType.IsPrimitive ||
-							fieldType == typeof(string) ||
-							fieldType == typeof(decimal))
-						{
-							//	We can just copy the value if immutable or primitive.
-							fieldItem.SetValue(target, fieldValue);
-							bProcessed = true;
-						}
-					}
-					if(!bProcessed && fieldType == typeof(List<string>))
-					{
-						//	Special handling for basic string lists.
-						stringListOriginal = (List<string>)fieldValue;
-						//	Get the target list.
-						targetFieldValue = fieldItem.GetValue(target);
-						if(targetFieldValue == null)
-						{
-							stringListNew = new List<string>();
-							fieldItem.SetValue(target, stringListNew);
-						}
-						else
-						{
-							stringListNew = (List<string>)targetFieldValue;
-						}
-						foreach(string entryItem in stringListOriginal)
-						{
-							stringListNew.Add(entryItem);
-						}
-						bProcessed = true;
-					}
-					if(!bProcessed)
-					{
-						//	Attempt to transfer values from the source to the target.
-						cloneMethod = fieldType.GetMethod("TransferValues",
-							BindingFlags.Public | BindingFlags.Static);
-						if(cloneMethod != null)
-						{
-							//	The TransferValues public static method exists for this
-							//	class.
-							genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
-							genericCloneMethod.Invoke(null,
-								new object[] { fieldValue, target });
-							bProcessed = true;
-						}
-					}
-					if(!bProcessed)
-					{
-						//	Attempt to clone other objects using a static clone method.
-						cloneMethod = fieldType.GetMethod("Clone",
-							BindingFlags.Public | BindingFlags.Static);
-						if(cloneMethod != null)
-						{
-							//	The Clone public static method exists for this class.
-							genericCloneMethod = cloneMethod.MakeGenericMethod(fieldType);
-							clonedFieldValue =
-								genericCloneMethod.Invoke(null, new object[] { fieldValue });
-							fieldItem.SetValue(target, clonedFieldValue);
-							bProcessed = true;
-						}
-					}
-					if(!bProcessed)
-					{
-						//	No Clone method exists for that item. Just pass a
-						//	simple reference.
-						fieldItem.SetValue(target, fieldValue);
-					}
-				}
+				content = JsonConvert.SerializeObject(source);
+				JsonConvert.PopulateObject(content, target);
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -2183,6 +2023,17 @@ namespace ShopTools
 		//	catch { }
 		//}
 		////*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* InitializeApplication																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Initialize all of the session-level functionality for the application.
+		/// </summary>
+		public static void InitializeApplication()
+		{
+		}
+		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* IsXFeed																																*

@@ -16,6 +16,7 @@
 				<PackageTags>cnc;shop;tools;table;saw;router;drill</PackageTags>
 				<Authors>Daniel Patterson, MCSD (danielanywhere)</Authors>
 				<GenerateDocumentationFile>True</GenerateDocumentationFile>
+				<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

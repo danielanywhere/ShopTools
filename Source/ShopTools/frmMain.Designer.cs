@@ -110,6 +110,7 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
+			btnStop = new System.Windows.Forms.Button();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -122,7 +123,7 @@ namespace ShopTools
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(207, 70);
+			lblSuggestion.Size = new System.Drawing.Size(187, 70);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
@@ -178,7 +179,7 @@ namespace ShopTools
 			// mnuFileImportConfiguration
 			// 
 			mnuFileImportConfiguration.Name = "mnuFileImportConfiguration";
-			mnuFileImportConfiguration.Size = new System.Drawing.Size(224, 26);
+			mnuFileImportConfiguration.Size = new System.Drawing.Size(183, 26);
 			mnuFileImportConfiguration.Text = "&Configuration";
 			// 
 			// mnuFileExport
@@ -191,18 +192,18 @@ namespace ShopTools
 			// mnuFileExportGCode
 			// 
 			mnuFileExportGCode.Name = "mnuFileExportGCode";
-			mnuFileExportGCode.Size = new System.Drawing.Size(224, 26);
+			mnuFileExportGCode.Size = new System.Drawing.Size(183, 26);
 			mnuFileExportGCode.Text = "&G-code";
 			// 
 			// mnuFileExportSep1
 			// 
 			mnuFileExportSep1.Name = "mnuFileExportSep1";
-			mnuFileExportSep1.Size = new System.Drawing.Size(221, 6);
+			mnuFileExportSep1.Size = new System.Drawing.Size(180, 6);
 			// 
 			// mnuFileExportConfiguration
 			// 
 			mnuFileExportConfiguration.Name = "mnuFileExportConfiguration";
-			mnuFileExportConfiguration.Size = new System.Drawing.Size(224, 26);
+			mnuFileExportConfiguration.Size = new System.Drawing.Size(183, 26);
 			mnuFileExportConfiguration.Text = "&Configuration";
 			// 
 			// mnuFileSep2
@@ -323,6 +324,7 @@ namespace ShopTools
 			pnlWorkpiece.Controls.Add(btnDeleteCut);
 			pnlWorkpiece.Controls.Add(btnDuplicateCut);
 			pnlWorkpiece.Controls.Add(btnEditCut);
+			pnlWorkpiece.Controls.Add(btnStop);
 			pnlWorkpiece.Controls.Add(btnGO);
 			pnlWorkpiece.Controls.Add(lblSuggestion);
 			pnlWorkpiece.Controls.Add(cmboWorkpieceY);
@@ -409,12 +411,15 @@ namespace ShopTools
 			// 
 			// btnGO
 			// 
+			btnGO.BackColor = System.Drawing.SystemColors.ButtonFace;
+			btnGO.Enabled = false;
+			btnGO.ForeColor = System.Drawing.SystemColors.ControlDark;
 			btnGO.Location = new System.Drawing.Point(160, 749);
 			btnGO.Name = "btnGO";
 			btnGO.Size = new System.Drawing.Size(94, 29);
 			btnGO.TabIndex = 31;
 			btnGO.Text = "&GO";
-			btnGO.UseVisualStyleBackColor = true;
+			btnGO.UseVisualStyleBackColor = false;
 			// 
 			// cmboWorkpieceY
 			// 
@@ -652,6 +657,18 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
+			// btnStop
+			// 
+			btnStop.BackColor = System.Drawing.SystemColors.ButtonFace;
+			btnStop.Enabled = false;
+			btnStop.ForeColor = System.Drawing.SystemColors.ControlDark;
+			btnStop.Location = new System.Drawing.Point(160, 783);
+			btnStop.Name = "btnStop";
+			btnStop.Size = new System.Drawing.Size(94, 29);
+			btnStop.TabIndex = 32;
+			btnStop.Text = "&Stop";
+			btnStop.UseVisualStyleBackColor = false;
+			// 
 			// frmMain
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -743,5 +760,6 @@ namespace ShopTools
 		private System.Windows.Forms.ToolStripMenuItem mnuFileSave;
 		private System.Windows.Forms.ToolStripMenuItem mnuFileSaveAs;
 		private System.Windows.Forms.ToolStripSeparator mnuFileSep2;
+		private System.Windows.Forms.Button btnStop;
 	}
 }

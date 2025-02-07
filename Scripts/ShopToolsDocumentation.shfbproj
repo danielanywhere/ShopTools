@@ -33,11 +33,11 @@
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, NonBrowsable, Privates, PrivateFields</VisibleItems>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Source\ShopTools\bin\Release\net8.0-windows\ShopTools.xml" />
-      <DocumentationSource sourceFile="..\Source\ShopTools\bin\Release\net8.0-windows\ShopTools.dll" />
-    </DocumentationSources>
+<DocumentationSource sourceFile="..\Source\ShopTools\bin\Release\net8.0-windows\ShopTools.dll" />
+<DocumentationSource sourceFile="..\Docs\AdditionalMemberDocumentation.xml" /></DocumentationSources>
     <HelpTitle>Dan&amp;#39%3bs ShopTools Desktop</HelpTitle>
     <HelpFileVersion>25.1206.4151</HelpFileVersion>
-    <NamingMethod>Guid</NamingMethod>
+    <NamingMethod>MemberName</NamingMethod>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <NamespaceGrouping>False</NamespaceGrouping>
@@ -52,8 +52,8 @@
     <ProjectSummary>
     </ProjectSummary>
     <NamespaceSummaries>
-      <NamespaceSummaryItem name="(global)" isDocumented="True">An easy-to-use GUI desktop application that allows you to get the most out of your CNC router without the need for CAD or CAM. See the full application description and source at &lt;a target=&quot;_blank&quot; href=&quot;https://github.com/danielanywhere/ShopTools&quot;&gt;https://github.com/danielanywhere/ShopTools&lt;/a&gt;</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="ShopTools" isDocumented="True">An easy-to-use GUI desktop application that allows you to get the most out of your CNC router without the need for CAD or CAM. See the full application description and source at &lt;a target=&quot;_blank&quot; href=&quot;https://github.com/danielanywhere/ShopTools&quot;&gt;https://github.com/danielanywhere/ShopTools&lt;/a&gt;</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="(global)" isDocumented="True">An easy-to-use GUI desktop application that allows you to get the most out of your CNC router without the need for CAD or CAM. See the full application description and source at &lt;a target="_blank" href="https://github.com/danielanywhere/ShopTools"&gt;https://github.com/danielanywhere/ShopTools&lt;/a&gt;</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="ShopTools" isDocumented="True">An easy-to-use GUI desktop application that allows you to get the most out of your CNC router without the need for CAD or CAM. See the full application description and source at &lt;a target="_blank" href="https://github.com/danielanywhere/ShopTools"&gt;https://github.com/danielanywhere/ShopTools&lt;/a&gt;</NamespaceSummaryItem>
     </NamespaceSummaries>
     <WarnOnMissingSourceContext>False</WarnOnMissingSourceContext>
     <WorkingPath>..\..\danielanywhere.github.io\ShopTools\Working\</WorkingPath>
@@ -90,6 +90,12 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ConversionCalc">
+      <HintPath>..\Source\ShopTools\bin\Release\net8.0-windows\ConversionCalc.dll</HintPath>
+    </Reference>
+    <Reference Include="Geometry">
+      <HintPath>..\Source\ShopTools\bin\Release\net8.0-windows\Geometry.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\Source\ShopTools\bin\Release\net8.0-windows\Newtonsoft.Json.dll</HintPath>
     </Reference>

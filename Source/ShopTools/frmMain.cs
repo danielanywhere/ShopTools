@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
+#define NoInternalTest
 
 using System;
 using System.Collections.Generic;
@@ -48,17 +49,60 @@ namespace ShopTools
 		//private bool mControlBusy = false;
 		//private bool mPaintEnabled = true;
 		//private Timer mPaintTimer = null;
+		/// <summary>
+		/// The first button row Y offset beneath the cut-list, which will be
+		/// adjustable in height.
+		/// </summary>
 		private int mCutButtonRowY1Offset = 0;
+		/// <summary>
+		/// The second button row Y offset beneath the cut-list, which will be
+		/// adjustable in height.
+		/// </summary>
 		private int mCutButtonRowY2Offset = 0;
+		/// <summary>
+		/// The third button row Y offset beneath the cut-list, which will be
+		/// adjustable in height.
+		/// </summary>
+		private int mCutButtonRowY3Offset = 0;
+		/// <summary>
+		/// Filename of the currently loaded cut-list file.
+		/// </summary>
 		private string mCutListFilename = "";
+		/// <summary>
+		/// Minimum height of the cut-list control.
+		/// </summary>
 		private int mCutListMinHeight = 0;
+		/// <summary>
+		/// Value indicating whether the control panel is toggled.
+		/// </summary>
 		private bool mPanelControlToggle = false;
+		/// <summary>
+		/// Current control panel width, when visible.
+		/// </summary>
 		private int mPanelControlWidth = 0;
+		/// <summary>
+		/// Value indicating whether the workpiece panel is toggled.
+		/// </summary>
 		private bool mPanelWorkpieceToggle = false;
+		/// <summary>
+		/// Current workpiece panel width, when visible.
+		/// </summary>
 		private int mPanelWorkpieceWidth = 0;
 		//private PointF mRouterLocation = new PointF();
+		/// <summary>
+		/// Timer for addressing a request to toggle the width of a panel.
+		/// </summary>
+		/// <remarks>
+		/// This timer is necessary for resetting the widths of the requested
+		/// panels outside of the event chain fired upon the double-click of the
+		/// associated splitter.
+		/// </remarks>
 		private Timer mToggleTimer = null;
 		//private RectangleF mWorkpieceArea = new RectangleF();
+		/// <summary>
+		/// Value indicating whether the workpiece is currently busy and should
+		/// not respond to related events, which are probably its own.
+		/// </summary>
 		private bool mWorkpieceBusy = false;
 		//private WorkpieceInfoItem mWorkpieceInfo = new WorkpieceInfoItem();
 
@@ -1058,6 +1102,118 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+#if InternalTest
+		//*-----------------------------------------------------------------------*
+		//* TestAbsoluteTransformation																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Test the transformation methods to and from an absolute value, with
+		/// regard to the display drawing space.
+		/// </summary>
+		private static void TestAbsoluteTransformation()
+		{
+			ShopToolsUtil.ConfigProfile = new ShopToolsConfigItem()
+			{
+				AxisXIsOpenEnded = true,
+				AxisYIsOpenEnded = false,
+				Depth = "30mm",
+				DisplayUnits = DisplayUnitEnum.UnitedStates,
+				GeneralCuttingTool = "1/8in",
+				TravelX = DirectionLeftRightEnum.Left,
+				TravelY = DirectionUpDownEnum.Up,
+				TravelZ = DirectionUpDownEnum.Up,
+				XDimension = "2438.4mm",
+				YDimension = "1219.2mm",
+				XYOrigin = OriginLocationEnum.BottomRight
+			};
+			FPoint absPoint = new FPoint(0f, 0f);
+			FPoint displayPoint = TransformFromAbsolute(absPoint);
+			Trace.WriteLine(
+				$"Transfer from {ConfigProfile.XYOrigin} origin - " +
+				$"{absPoint} -> {displayPoint}");
+			absPoint.X = 100f;
+			absPoint.Y = 100f;
+			displayPoint = TransformFromAbsolute(absPoint);
+			Trace.WriteLine(
+				$"Transfer from {ConfigProfile.XYOrigin} origin - " +
+				$"{absPoint} -> {displayPoint}");
+			absPoint.X = -100f;
+			absPoint.Y = -100f;
+			displayPoint = TransformFromAbsolute(absPoint);
+			Trace.WriteLine(
+				$"Transfer from {ConfigProfile.XYOrigin} origin - " +
+				$"{absPoint} -> {displayPoint}");
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* TestTransferValues																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Test the deep transfer of values using the reflection-based utility.
+		/// </summary>
+		private static void TestTransferValues()
+		{
+			string content = "";
+			CutProfileItem profile2 = new CutProfileItem()
+			{
+				EndLocation = new FPoint(10f, 20f),
+				StartLocation = new FPoint(50f, 60f)
+			};
+			CutProfileItem profile1 = new CutProfileItem()
+			{
+				DisplayFormat = "a display format",
+				EndLocation = new FPoint(10f, 20f),
+				IconFilename = "long/icon/filename.img",
+				Orientation = TemplateOrientationEnum.Workpiece,
+				PatternLength = "30in",
+				PatternWidth = "40mm",
+				StartLocation = new FPoint(50f, 60f),
+				TemplateName = "random name",
+				ToolSequenceStrict = false
+			};
+			profile1.Operations.Add(new PatternOperationItem()
+			{
+				Action = OperationActionEnum.DrawCircleCenterDiameter,
+				Angle = "70deg",
+				Depth = "80nm",
+				EndOffsetX = "90mm",
+				EndOffsetXOrigin = OffsetLeftRightEnum.Left,
+				EndOffsetY = "100mm",
+				EndOffsetYOrigin = OffsetTopBottomEnum.Top,
+				Kerf = DirectionLeftRightEnum.Right,
+				Length = "110mm",
+				OffsetX = "120mm",
+				OffsetXOrigin = OffsetLeftRightEnum.Right,
+				OffsetY = "130mm",
+				OffsetYOrigin = OffsetTopBottomEnum.Relative,
+				OperationName = "random operation",
+				StartOffsetX = "140mm",
+				StartOffsetXOrigin = OffsetLeftRightEnum.Right,
+				StartOffsetY = "150mm",
+				StartOffsetYOrigin = OffsetTopBottomEnum.Bottom,
+				Tool = "a random tool name",
+				Width = "160mm"
+			});
+			profile1.Remarks.Add("This is a comment for the profile.");
+			profile1.SharedVariables.AddRange(
+				new string[] { "Variable1", "Variable2" });
+			content = JsonConvert.SerializeObject(profile1, Formatting.Indented);
+			Trace.WriteLine($"TestTransferValues. Original: {content}");
+			DeepTransfer(profile1, profile2);
+			content = JsonConvert.SerializeObject(profile2, Formatting.Indented);
+			Trace.WriteLine($"TestTransferValues. Transfer: {content}");
+			profile2 = DeepClone(profile1);
+			content = JsonConvert.SerializeObject(profile2, Formatting.Indented);
+			Trace.WriteLine($"TestTransferValues. Clone:    {content}");
+			//	When using this form of cloning, make sure to recalculate any
+			//	members on the target that are ignored during JSON serialization.
+			//	In the above case, EndLocation and StartLocation are not serialized,
+			//	and as a result, are blank after cloning.
+		}
+		//*-----------------------------------------------------------------------*
+#endif
+
 		//*-----------------------------------------------------------------------*
 		//* txtRouterPositionX_TextChanged																				*
 		//*-----------------------------------------------------------------------*
@@ -1474,40 +1630,12 @@ namespace ShopTools
 		public frmMain()
 		{
 			InitializeComponent();
+			InitializeApplication();
 
-			////	*** TEST: Absolute Translation ***
-			//ShopToolsUtil.ConfigProfile = new ShopToolsConfigItem()
-			//{
-			//	AxisXIsOpenEnded = true,
-			//	AxisYIsOpenEnded = false,
-			//	Depth = "30mm",
-			//	DisplayUnits = DisplayUnitEnum.UnitedStates,
-			//	GeneralCuttingTool = "1/8in",
-			//	TravelX = DirectionLeftRightEnum.Left,
-			//	TravelY = DirectionUpDownEnum.Up,
-			//	TravelZ = DirectionUpDownEnum.Up,
-			//	XDimension = "2438.4mm",
-			//	YDimension = "1219.2mm",
-			//	XYOrigin = OriginLocationEnum.BottomRight
-			//};
-			//FPoint absPoint = new FPoint(0f, 0f);
-			//FPoint displayPoint = TransformFromAbsolute(absPoint);
-			//Trace.WriteLine(
-			//	$"Transfer from {ConfigProfile.XYOrigin} origin - " +
-			//	$"{absPoint} -> {displayPoint}");
-			//absPoint.X = 100f;
-			//absPoint.Y = 100f;
-			//displayPoint = TransformFromAbsolute(absPoint);
-			//Trace.WriteLine(
-			//	$"Transfer from {ConfigProfile.XYOrigin} origin - " +
-			//	$"{absPoint} -> {displayPoint}");
-			//absPoint.X = -100f;
-			//absPoint.Y = -100f;
-			//displayPoint = TransformFromAbsolute(absPoint);
-			//Trace.WriteLine(
-			//	$"Transfer from {ConfigProfile.XYOrigin} origin - " +
-			//	$"{absPoint} -> {displayPoint}");
-			////	*** /TEST: Absolute Translation ***
+#if InternalTest
+			TestAbsoluteTransformation();
+			TestTransferValues();
+#endif
 
 			pnlWorkspace.AllowDrop = true;
 			btnDeleteCut.Enabled = false;
@@ -1520,6 +1648,7 @@ namespace ShopTools
 			//	needs to be moveable.
 			mCutButtonRowY1Offset = btnGO.Top - lvCutList.Bottom;
 			mCutButtonRowY2Offset = btnDeleteCut.Top - lvCutList.Bottom;
+			mCutButtonRowY3Offset = btnStop.Top - lblCutList.Bottom;
 
 			//mPaintTimer = new Timer()
 			//{
