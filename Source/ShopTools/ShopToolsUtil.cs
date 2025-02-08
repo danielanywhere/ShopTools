@@ -62,6 +62,13 @@ namespace ShopTools
 		/// <summary>
 		/// Return the base unit of measure for the specified display unit.
 		/// </summary>
+		/// <param name="displayUnit">
+		/// The general display unit for which to find the default measurement
+		/// unit.
+		/// </param>
+		/// <returns>
+		/// The default measurement unit for the specified display unit.
+		/// </returns>
 		public static string BaseUnit(DisplayUnitEnum displayUnit)
 		{
 			string result = "mm";
@@ -140,6 +147,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ConfigProfile																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ConfigProfile">ConfigProfile</see>.
+		/// </summary>
 		private static ShopToolsConfigItem mConfigProfile = null;
 		/// <summary>
 		/// Get/Set a reference to the loaded configuration for this session.
@@ -154,6 +164,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ConfigurationFilename																									*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="ConfigurationFilename">ConfigurationFilename</see>.
+		/// </summary>
 		private static string mConfigurationFilename = "";
 		/// <summary>
 		/// Get/Set the path and filename of the configuration file that was loaded
@@ -1924,6 +1938,9 @@ namespace ShopTools
 		/// <summary>
 		/// Return the ratio of the current workspace's width to its height.
 		/// </summary>
+		/// <returns>
+		/// The ratio of the workspace width to its height.
+		/// </returns>
 		public static float GetWorkspaceRatio()
 		{
 			float height = 0f;
@@ -2398,6 +2415,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SessionConverter																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="SessionConverter">SessionConverter</see>.
+		/// </summary>
 		private static ConversionCalc.Converter mSessionConverter =
 			new ConversionCalc.Converter();
 		/// <summary>
@@ -2412,6 +2433,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SessionWorkpieceInfo																									*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="SessionWorkpieceInfo">SessionWorkpieceInfo</see>.
+		/// </summary>
 		private static WorkpieceInfoItem mSessionWorkpieceInfo =
 			new WorkpieceInfoItem();
 		/// <summary>

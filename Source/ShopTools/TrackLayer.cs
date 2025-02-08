@@ -105,6 +105,9 @@ namespace ShopTools
 		/// <summary>
 		/// Create a new instance of the TrackLayerCollection Item.
 		/// </summary>
+		/// <param name="cutList">
+		/// Reference to to a collection of cuts from which to generate tracks.
+		/// </param>
 		public TrackLayerCollection(CutProfileCollection cutList)
 		{
 			GenerateTracks(cutList);
@@ -582,6 +585,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	CurrentDepth																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="CurrentDepth">CurrentDepth</see>.
+		/// </summary>
 		private float mCurrentDepth = 0f;
 		/// <summary>
 		/// Get/Set the current depth assigned to this segment.
@@ -596,6 +602,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Segments																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Segments">Segments</see>.
+		/// </summary>
 		private TrackSegmentCollection mSegments = new TrackSegmentCollection();
 		/// <summary>
 		/// Get a reference to the collection of segments on this layer.
@@ -609,6 +618,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	TargetDepth																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="TargetDepth">TargetDepth</see>.
+		/// </summary>
 		private float mTargetDepth = 0f;
 		/// <summary>
 		/// Get/Set the target depth for this cut.

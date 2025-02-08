@@ -271,9 +271,25 @@
 		Textbox displaying the height of the tool's top guide, if present.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.btnDeleteCut">
+	<summary>
+		Delete Cut button. Delete the selected cut or cuts.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.btnDuplicateCut">
+	<summary>
+		Duplicate Cut button. Duplicate the selected cut or cuts, appending the new
+		cuts at the bottom of the list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.btnEditCut">
+	<summary>
+		Edit Cut button. Edit the selected cut.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.btnGO">
 	<summary>
- The GO button.
+ GO button. Not yet implemented.
 	</summary>
 	<remarks>
 		<para>
@@ -287,6 +303,656 @@
  favorite g-code sender.
 		</para>
 	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.btnStop">
+	<summary>
+		Stop bottom. Not yet implemented.
+	</summary>
+	<remarks>
+		<para>
+			Clicking this button will immediately stop the operation on the locally
+			configured machine.
+		</para>
+		<para>
+			However, this button is currently disabled until communications ports have been implemented.
+		</para>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.cmboWorkpieceX">
+	<summary>
+		Drop down list containing choices for X-axis alignment of the workpiece on
+		the canvas.
+	</summary>
+	<remarks>
+		<para>
+			Choices:
+		</para>
+		<list type="bullet">
+			<item>From Left. The workpiece is aligned to the left side of the canvas.
+			</item>
+			<item>Left Edge To Center. The left edge of the workpiece is aligned to the
+				center of the canvas.
+			</item>
+			<item>Center To Center. The center of the workpiece is aligned to the center
+				of the canvas.
+			</item>
+			<item>Right Edge To Center. The right edge of the workpiece is aligned to
+				the center of the canvas.
+			</item>
+			<item>From Right. The right edge of the workpiece is aligned to the right
+				side of the canvas.
+			</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.cmboWorkpieceY">
+	<summary>
+		Drop down list containing choices for Y-axis alignment of the workpiece on
+		the canvas.
+	</summary>
+	<remarks>
+		<para>
+			Choices:
+		</para>
+		<list type="bullet">
+			<item>From Top. The top edge of the workpiece is aligned to the top of
+				the canvas.
+			</item>
+			<item>Top Edge To Center. The top edge of the workpiece is aligned to
+				the center of the canvas.
+			</item>
+			<item>Center To Center. The center of the workpiece is aligned to the
+				center of the canvas.
+			</item>
+			<item>Bottom Edge To Center. The bottom edge of the workpiece is
+				aligned to the center of the canvas.
+			</item>
+			<item>From Bottom. The bottom edge of the workpiece is aligned to the
+				bottom of the canvas.
+			</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.ilPatterns">
+	<summary>
+		Image list containing icons for the patterns list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.ilPatternsSmall">
+	<summary>
+		Image list containing small copies of <see cref="ilPatterns">ilPatterns</see>
+		for use primarily in the cut list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblCutList">
+	<summary>
+		Cut List title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblPatterns">
+	<summary>
+		Pattern list label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblRouterPosition">
+	<summary>
+		Starting Router Position title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblRouterPositionX">
+	<summary>
+		Starting Router Position X title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblRouterPositionXUnit">
+	<summary>
+		Alternate measurement display for the Starting Router Position X textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblRouterPositionY">
+	<summary>
+		Starting Router Position Y title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblRouterPositionYUnit">
+	<summary>
+		Alternate measurement display for the Starting Router Position Y textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblSuggestion">
+	<summary>
+		Run-time suggestion label.
+	</summary>
+	<remarks>
+		The default text for this control is &quot;Use your CNC router to perform
+		REGULAR everyday power tool tasks.&quot;
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpiece">
+	<summary>
+		Workpiece title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceDepth">
+	<summary>
+		Workpiece Depth title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceDepthUnit">
+	<summary>
+		Alternate measurement display for the Workpiece Depth textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceLength">
+	<summary>
+		Workpiece Length title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceLengthUnit">
+	<summary>
+		Alternate measurement display for the Workpiece Length textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceWidth">
+	<summary>
+		Workpiece Width title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceWidthUnit">
+	<summary>
+		Alternate measurement display for the Workpiece Width textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceX">
+	<summary>
+		Workpiece X Offset title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceXUnit">
+	<summary>
+		Alternate measurement display for the Workpiece X Offset textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceY">
+	<summary>
+		Workpiece Y Offset title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblWorkpieceYUnit">
+	<summary>
+		Alternate measurement display for the Workpiece Y Offset textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lvCutList">
+	<summary>
+		Cut-List ListView control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lvCutListUnusedHeader">
+	<summary>
+		Unused header for the Cut-List ListView control.
+	</summary>
+	<remarks>
+		This is required to provide scrollable styles.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.lvPatterns">
+	<summary>
+		Patterns ListView control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuEdit">
+	<summary>
+	The main Edit menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuEditSettings">
+	<summary>
+		The Edit / Settings menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFile">
+	<summary>
+		The main File menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileExit">
+	<summary>
+		The File / Exit menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileExport">
+	<summary>
+		The File / Export menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileExportConfiguration">
+	<summary>
+		The File / Export / Configuration menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileExportGCode">
+	<summary>
+		The File / Export / G-code menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileExportSep1">
+	<summary>
+		File / Export menu separator 1.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileImport">
+	<summary>
+		The File / Import menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileImportConfiguration">
+	<summary>
+		The File / Import / Configuration menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileOpen">
+	<summary>
+		The File / Open menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileSave">
+	<summary>
+		The File / Save menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileSaveAs">
+	<summary>
+		The File / Save As menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileSep1">
+	<summary>
+		File menu separator 1.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileSep2">
+	<summary>
+		File menu separator 2.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuMain">
+	<summary>
+		The main menu bar.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.pnlControl">
+	<summary>
+		The pattern controls panel for adding patterns to the session.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.pnlWorkpiece">
+	<summary>
+		The user controls panel for setting workpiece dimensions and managing
+		the cut-list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.pnlWorkspace">
+	<summary>
+		The display canvas upon which the current workpiece and cuts are drawn.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.splitControl">
+	<summary>
+		The splitter control controlling the width of the patterns list area.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.splitWorkpiece">
+	<summary>
+		The splitter control controlling the width of the workpiece controls area.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.statFill">
+	<summary>
+		Filler area for status bar, usable for general messages, if desired.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.statMessage">
+	<summary>
+		Main message control at the left side of the status bar.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.statusMain">
+	<summary>
+		Main form status bar control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.statWorkspace">
+	<summary>
+		Workspace information status message control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtRouterPositionX">
+	<summary>
+		Textbox containing the Starting Router X position.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtRouterPositionY">
+	<summary>
+		Textbox containing the Starting Router Y position.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtWorkpieceDepth">
+	<summary>
+		Textbox containing the Workpiece Depth.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtWorkpieceLength">
+	<summary>
+		Textbox containing the Workpiece Length.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtWorkpieceWidth">
+	<summary>
+		Textbox containing the Workpiece Width.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtWorkpieceX">
+	<summary>
+		Textbox containing the Workpiece X Offset.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.txtWorkpieceY">
+	<summary>
+		Textbox containing the Workpiece Y Offset.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.btnCancel">
+	<summary>
+		Cancel button. Cancels changes to the settings and closes the dialog box,
+		returning to the calling form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.btnEditTools">
+	<summary>
+		Edit Tools button. Opens <see cref="frmEditTools">frmEditTools</see>.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.btnOK">
+	<summary>
+		OK button. Saves changes to configuration settings and closes the dialog
+		box, returning to the calling form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.chkXOpenEnded">
+	<summary>
+		X is open-ended checkbox.
+	</summary>
+	<remarks>
+		This value indicates whether the canvas is open-ended along the X-axis,
+		allowing for a potentially infinite feed.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.chkYOpenEnded">
+	<summary>
+		Y is open-ended checkbox.
+	</summary>
+	<remarks>
+		This value indicates whether the canvas is open-ended along the Y-axis,
+		allowing for a potentially infinite feed.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.cmboGeneralCuttingTool">
+	<summary>
+		Drop down list for selecting the default tool.
+	</summary>
+	<remarks>
+		This control contains the list of user-defined tools, one of which
+		can be selected to serve as the general tool to be used implicitly when no
+		tool has been explicitly selected for a cut.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.cmboXYOrigin">
+	<summary>
+		Drop down list for selecting the X/Y origin of the canvas.
+	</summary>
+	<remarks>
+		<para>Choices:</para>
+		<list type="bullet">
+			<item>Center. The origin is in the center of the table.</item>
+			<item>Top. The origin is at the top center of the table.</item>
+			<item>Top Left. The origin is at the top left corner of the table.</item>
+			<item>Left. The origin is at the left center of the table.</item>
+			<item>Bottom Left. The origin is at the bottom left corner of the table.</item>
+			<item>Bottom. The origin is at the bottom center of the table.</item>
+			<item>Bottom Right. The origin is at the bottom right corner of the table.</item>
+			<item>Right. The origin is at the right center of the table.</item>
+			<item>Top Right. The origin is at the top right corner of the table.</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.cmboZOrigin">
+	<summary>
+		Drop down list for selecting the Z origin of the canvas.
+	</summary>
+	<remarks>
+		<para>Choices:</para>
+		<list type="bullet">
+			<item>Top. The origin is at the top of the Z range, furthest from the table.</item>
+			<item>Center. The origin is in the center of the Z range.</item>
+			<item>Bottom. The origin is at the bottom of the Z range, closest to the table.</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.lblGeneralCuttingTool">
+	<summary>
+		General Cutting title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblStockAccess">
+	<summary>
+		Stock Access title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblStockAccessTip">
+	<summary>
+		Stock Access information tip title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblSystemSummary">
+	<summary>
+		System Summary title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblTools">
+	<summary>
+		Tools title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblTravel">
+	<summary>
+		Travel title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblUnits">
+	<summary>
+		Units title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblWorkingArea">
+	<summary>
+		Working Area (Canvas) title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblXDimension">
+	<summary>
+		X Dimension title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblXDimensionUnit">
+	<summary>
+		Alternate measurement display for the X Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblXYOrigin">
+	<summary>
+		X/Y Origin title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblYDimension">
+	<summary>
+		Y Dimension title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblYDimensionUnit">
+	<summary>
+		Alternate measurement display for the Y Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblZDimension">
+	<summary>
+		Z Dimension title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblZDimensionUnit">
+	<summary>
+		Alternate measurement display for the Z Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.lblZOrigin">
+	<summary>
+		Z Origin title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.optMetric">
+	<summary>
+		Metric (mm, cm, m) radio button.
+	</summary>
+	<remarks>
+		<para>
+			Selecting this option has two effects.
+		</para>
+		<list type="bullet">
+			<item>Metric values are displayed in all alternate unit labels
+				accompanying a measurement textbox.</item>
+			<item>When no unit of measurement is specified for a measurement
+				textbox, that number is assumed to be millimeters.
+			</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optUS">
+	<summary>
+		U.S. (in, ft, ', ") radio button.
+	</summary>
+	<remarks>
+		<para>
+			Selecting this option has two effects.
+		</para>
+		<list type="bullet">
+			<item>US decimal values are displayed in all alternate unit labels
+				accompanying a measurement textbox.</item>
+			<item>When no unit of measurement is specified for a measurement
+				textbox, that number is assumed to be inches.
+			</item>
+		</list>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optXPLeft">
+	<summary>
+		X+ Left radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of X increases in a leftward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optXPRight">
+	<summary>
+		X+ Right radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of X increases in a rightward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optYPDown">
+	<summary>
+		Y+ Down radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of Y increases in a downward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optYPUp">
+	<summary>
+		Y+ Up radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of Y increases in an upward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optZPDown">
+	<summary>
+		Z+ Down radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of Z increases in a downward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.optZPUp">
+	<summary>
+		Z+ Up radio button.
+	</summary>
+	<remarks>
+		This option indicates that the value of Z increases in an upward
+		direction.
+	</remarks>
+</member>
+<member name="F:ShopTools.frmSettings.pnlCanvasArea">
+	<summary>
+		Panel control in the general shape of the working table canvas, according
+		to the current dimensions and origin.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.pnlTravelX">
+	<summary>
+		Container for the X+ Travel options.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.pnlTravelY">
+	<summary>
+		Container for the Y+ Travel options.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.pnlTravelZ">
+	<summary>
+		Container for the Z+ Travel options.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.pnlUnits">
+	<summary>
+		Container for the Display Units options.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.txtSystemSummary">
+	<summary>
+		Written summary description of the current configuration of dimensions
+		and origin.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.txtXDimension">
+	<summary>
+	X Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.txtYDimension">
+	<summary>
+		Y Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmSettings.txtZDimension">
+	<summary>
+		Z Dimension textbox.
+	</summary>
 </member>
 </members>
 </doc>

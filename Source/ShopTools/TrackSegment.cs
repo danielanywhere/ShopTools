@@ -69,6 +69,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Depth																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Depth">Depth</see>.
+		/// </summary>
 		private float mDepth = 0f;
 		/// <summary>
 		/// Get/Set the depth of this segment.
@@ -83,6 +86,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndOffset																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndOffset">EndOffset</see>.
+		/// </summary>
 		private FPoint mEndOffset = new FPoint();
 		/// <summary>
 		/// Get/Set a reference to the ending offset.
@@ -99,6 +105,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	FeedRate																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="FeedRate">FeedRate</see>.
+		/// </summary>
 		private float mFeedRate = 500f;
 		/// <summary>
 		/// Get/Set the feed rate to be applied to the segment, if applicable.
@@ -113,6 +122,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Operation																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Operation">Operation</see>.
+		/// </summary>
 		private PatternOperationItem mOperation = null;
 		/// <summary>
 		/// Get/Set a reference to the pattern operation from which this segment
@@ -128,6 +140,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SegmentType																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SegmentType">SegmentType</see>.
+		/// </summary>
 		private TrackSegmentType mSegmentType = TrackSegmentType.None;
 		/// <summary>
 		/// Get/Set the type of path assigned to this segment.
@@ -142,6 +157,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartOffset																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="StartOffset">StartOffset</see>.
+		/// </summary>
 		private FPoint mStartOffset = new FPoint();
 		/// <summary>
 		/// Get/Set a reference to the starting offset.
@@ -158,6 +176,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	TargetDepth																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="TargetDepth">TargetDepth</see>.
+		/// </summary>
 		private float mTargetDepth = 0f;
 		/// <summary>
 		/// Get/Set the target depth of this segment.

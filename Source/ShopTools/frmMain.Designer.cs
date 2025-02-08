@@ -82,6 +82,7 @@ namespace ShopTools
 			btnDeleteCut = new System.Windows.Forms.Button();
 			btnDuplicateCut = new System.Windows.Forms.Button();
 			btnEditCut = new System.Windows.Forms.Button();
+			btnStop = new System.Windows.Forms.Button();
 			btnGO = new System.Windows.Forms.Button();
 			cmboWorkpieceY = new System.Windows.Forms.ComboBox();
 			cmboWorkpieceX = new System.Windows.Forms.ComboBox();
@@ -110,7 +111,6 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
-			btnStop = new System.Windows.Forms.Button();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -123,7 +123,7 @@ namespace ShopTools
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(187, 70);
+			lblSuggestion.Size = new System.Drawing.Size(267, 70);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
@@ -409,6 +409,18 @@ namespace ShopTools
 			btnEditCut.Text = "Edit &Cut";
 			btnEditCut.UseVisualStyleBackColor = true;
 			// 
+			// btnStop
+			// 
+			btnStop.BackColor = System.Drawing.SystemColors.ButtonFace;
+			btnStop.Enabled = false;
+			btnStop.ForeColor = System.Drawing.SystemColors.ControlDark;
+			btnStop.Location = new System.Drawing.Point(160, 783);
+			btnStop.Name = "btnStop";
+			btnStop.Size = new System.Drawing.Size(94, 29);
+			btnStop.TabIndex = 32;
+			btnStop.Text = "&Stop";
+			btnStop.UseVisualStyleBackColor = false;
+			// 
 			// btnGO
 			// 
 			btnGO.BackColor = System.Drawing.SystemColors.ButtonFace;
@@ -656,18 +668,6 @@ namespace ShopTools
 			splitWorkpiece.Size = new System.Drawing.Size(8, 396);
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
-			// 
-			// btnStop
-			// 
-			btnStop.BackColor = System.Drawing.SystemColors.ButtonFace;
-			btnStop.Enabled = false;
-			btnStop.ForeColor = System.Drawing.SystemColors.ControlDark;
-			btnStop.Location = new System.Drawing.Point(160, 783);
-			btnStop.Name = "btnStop";
-			btnStop.Size = new System.Drawing.Size(94, 29);
-			btnStop.TabIndex = 32;
-			btnStop.Text = "&Stop";
-			btnStop.UseVisualStyleBackColor = false;
 			// 
 			// frmMain
 			// 

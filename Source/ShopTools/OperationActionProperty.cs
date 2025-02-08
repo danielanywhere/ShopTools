@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -70,6 +70,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	DataType																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DataType">DataType</see>.
+		/// </summary>
 		private string mDataType = "";
 		/// <summary>
 		/// Get/Set the data type associated with this property.
@@ -85,6 +88,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ExcludeOperationActions																								*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="ExcludeOperationActions">ExcludeOperationActions</see>.
+		/// </summary>
 		private List<string> mExcludeOperationActions = new List<string>();
 		/// <summary>
 		/// Get a reference to the list of operation actions from which this
@@ -106,6 +113,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	IncludeOperationActions																								*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="IncludeOperationActions">IncludeOperationActions</see>.
+		/// </summary>
 		private List<string> mIncludeOperationActions = new List<string>();
 		/// <summary>
 		/// Get a reference to the list of operation actions into which this
@@ -125,6 +136,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Internal																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Internal">Internal</see>.
+		/// </summary>
 		private bool mInternal = false;
 		/// <summary>
 		/// Get/Set a value indicating whether this property is only used for
@@ -141,6 +155,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PropertyName																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="PropertyName">PropertyName</see>.
+		/// </summary>
 		private string mPropertyName = "";
 		/// <summary>
 		/// Get/Set the name of the operation property.
@@ -156,6 +173,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SortIndex																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SortIndex">SortIndex</see>.
+		/// </summary>
 		private int mSortIndex = 0;
 		/// <summary>
 		/// Get/Set the sorting index of this property within user interactions.

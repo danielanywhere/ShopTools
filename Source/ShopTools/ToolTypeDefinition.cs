@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -107,6 +107,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Groups																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Groups">Groups</see>.
+		/// </summary>
 		private List<string> mGroups = new List<string>();
 		/// <summary>
 		/// Get a reference to a list of names of conceptual groups to which this
@@ -121,6 +124,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PublishedProperties																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="PublishedProperties">PublishedProperties</see>.
+		/// </summary>
 		private List<string> mPublishedProperties = new List<string>();
 		/// <summary>
 		/// Get a reference to the list of property names published for this type
@@ -136,6 +143,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Supported																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Supported">Supported</see>.
+		/// </summary>
 		private bool mSupported = true;
 		/// <summary>
 		/// Get/Set a value indicating whether this tool type is currently
@@ -152,6 +162,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolType																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ToolType">ToolType</see>.
+		/// </summary>
 		private string mToolType = "";
 		/// <summary>
 		/// Get/Set the name of the tool type.

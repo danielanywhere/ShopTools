@@ -164,6 +164,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	DisplayFormat																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DisplayFormat">DisplayFormat</see>.
+		/// </summary>
 		private string mDisplayFormat = "";
 		/// <summary>
 		/// Get/Set the custom display format to use when preparing the string
@@ -440,6 +443,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	IconFilename																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="IconFilename">IconFilename</see>.
+		/// </summary>
 		private string mIconFilename = "";
 		/// <summary>
 		/// Get/Set the filename of the icon to load for the specified pattern.
@@ -455,6 +461,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Operations																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Operations">Operations</see>.
+		/// </summary>
 		private PatternOperationCollection mOperations =
 			new PatternOperationCollection();
 		/// <summary>
@@ -471,6 +480,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Orientation																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Orientation">Orientation</see>.
+		/// </summary>
 		private TemplateOrientationEnum mOrientation =
 			TemplateOrientationEnum.Workpiece;
 		/// <summary>
@@ -488,6 +500,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PatternLength																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="PatternLength">PatternLength</see>.
+		/// </summary>
 		private string mPatternLength = "";
 		/// <summary>
 		/// Get/Set the length dimension of the pattern, in the specified
@@ -504,6 +519,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PatternTemplateId																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="PatternTemplateId">PatternTemplateId</see>.
+		/// </summary>
 		private string mPatternTemplateId = Guid.NewGuid().ToString("D").ToLower();
 		/// <summary>
 		/// Get/Set the globally unique ID of this pattern template.
@@ -519,6 +538,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PatternWidth																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="PatternWidth">PatternWidth</see>.
+		/// </summary>
 		private string mPatternWidth = "";
 		/// <summary>
 		/// Get/Set the width dimension of the pattern, in the specified
@@ -535,6 +557,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Remarks																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Remarks">Remarks</see>.
+		/// </summary>
 		private List<string> mRemarks = new List<string>();
 		/// <summary>
 		/// Get a reference to the list of line continuation remarks used to
@@ -550,6 +575,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SharedVariables																												*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SharedVariables">SharedVariables</see>.
+		/// </summary>
 		private List<string> mSharedVariables = new List<string>();
 		/// <summary>
 		/// Get a reference to a list of variable names in this operation that are
@@ -741,6 +769,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	TemplateName																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="TemplateName">TemplateName</see>.
+		/// </summary>
 		private string mTemplateName = "";
 		/// <summary>
 		/// Get/Set the name of this template.
@@ -756,6 +787,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolSequenceStrict																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="ToolSequenceStrict">ToolSequenceStrict</see>.
+		/// </summary>
 		private bool mToolSequenceStrict = true;
 		/// <summary>
 		/// Get/Set a value indicating whether the entries in the ToolPaths

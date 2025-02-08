@@ -217,6 +217,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Action																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Action">Action</see>.
+		/// </summary>
 		private OperationActionEnum mAction = OperationActionEnum.None;
 		/// <summary>
 		/// Get/Set the action to execute on this operation.
@@ -233,6 +236,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Angle																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Angle">Angle</see>.
+		/// </summary>
 		private string mAngle = "";
 		/// <summary>
 		/// Get/Set the angle at which the operation will take place.
@@ -244,352 +250,6 @@ namespace ShopTools
 			set { mAngle = value; }
 		}
 		//*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* CalculateResultingValues																							*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Calculate the resulting system values for the supplied user values on
-		///// the provided operation.
-		///// </summary>
-		///// <param name="operation">
-		///// The operation for which user values have been provided.
-		///// </param>
-		///// <param name="workpiece">
-		///// Reference to information about the workpiece.
-		///// </param>
-		///// <param name="startingLocation">
-		///// Reference to the starting location from which the operation will
-		///// begin, in system units
-		///// </param>
-		///// <param name="previousToolName">
-		///// Name of the previous tool.
-		///// </param>
-		///// <returns>
-		///// Reference to the location at which the current operation will end,
-		///// in system units.
-		///// </returns>
-		///// <remarks>
-		///// <para>
-		///// The starting offsets of all actions are updated in StartOffset{X|Y},
-		///// since the abbreviated Offset{X|Y} is for user familiarity only.
-		///// </para>
-		///// <para>
-		///// All of the measurements here are meant to be absolute in the local
-		///// scope, relative to the workpiece.
-		///// </para>
-		///// </remarks>
-		//public static FPoint CalculateResultingValues(
-		//	PatternOperationItem operation,
-		//	WorkpieceInfoItem workpiece, FPoint startingLocation,
-		//	string previousToolName)
-		//{
-		//	float angle = 0f;
-		//	float length = 0f;
-		//	FPoint location = null;
-		//	float position = 0f;
-		//	FPoint result = new FPoint();
-		//	FPoint transform = new FPoint();
-		//	float width = 0f;
-
-		//	if(operation != null && workpiece != null)
-		//	{
-		//		location = FPoint.Clone(startingLocation);
-		//		//	First, convert every user value to system units.
-		//		//operation.mAngle = GetAngle(operation.mAngle).ToString("0.######");
-		//		if(operation.mDepth.Length == 0)
-		//		{
-		//			//	Depth wasn't specified. Get the workpiece depth.
-		//			operation.mDepth = $"{workpiece.Thickness:0.###}mm";
-		//		}
-		//		//if(operation.mKerf == DirectionLeftRightEnum.None)
-		//		//{
-		//		//	//	Default kerf is right.
-		//		//	operation.mKerf = DirectionLeftRightEnum.Right;
-		//		//}
-		//		if(operation.mTool?.Length == 0 ||
-		//			operation.mTool.ToLower() == "{generaltoolname}")
-		//		{
-		//			//	General tool specification.
-		//			operation.mTool = ConfigProfile.GeneralCuttingTool;
-		//		}
-		//		else if(operation.mTool.ToLower() == "{previoustoolname}")
-		//		{
-		//			//	Previously used tool.
-		//			operation.mTool = previousToolName;
-		//		}
-		//		//	StartX,Y.
-		//		switch(operation.mAction)
-		//		{
-		//			case OperationActionEnum.DrawCircleCenterDiameter:
-		//			case OperationActionEnum.DrawCircleCenterRadius:
-		//			case OperationActionEnum.DrawCircleDiameter:
-		//			case OperationActionEnum.DrawCircleRadius:
-		//			case OperationActionEnum.DrawEllipseCenterDiameterXY:
-		//			case OperationActionEnum.DrawEllipseCenterRadiusXY:
-		//			case OperationActionEnum.DrawEllipseDiameterXY:
-		//			case OperationActionEnum.DrawEllipseLengthWidth:
-		//			case OperationActionEnum.DrawEllipseRadiusXY:
-		//			case OperationActionEnum.DrawLineAngleLength:
-		//			case OperationActionEnum.DrawLineLengthWidth:
-		//			case OperationActionEnum.DrawRectangleLengthWidth:
-		//			case OperationActionEnum.FillCircleCenterDiameter:
-		//			case OperationActionEnum.FillCircleCenterRadius:
-		//			case OperationActionEnum.FillCircleDiameter:
-		//			case OperationActionEnum.FillCircleRadius:
-		//			case OperationActionEnum.FillEllipseCenterDiameterXY:
-		//			case OperationActionEnum.FillEllipseCenterRadiusXY:
-		//			case OperationActionEnum.FillEllipseDiameterXY:
-		//			case OperationActionEnum.FillEllipseLengthWidth:
-		//			case OperationActionEnum.FillEllipseRadiusXY:
-		//			case OperationActionEnum.FillRectangleLengthWidth:
-		//			case OperationActionEnum.PointXY:
-		//				//	Starting OffsetX, OffsetY.
-		//				//	X.
-		//				position = 0f;
-		//				if(operation.mOffsetX.Length > 0)
-		//				{
-		//					//	X was specified.
-		//					position = GetMillimeters(operation.mOffsetX);
-		//				}
-		//				operation.mStartOffsetXOrigin = operation.mOffsetXOrigin;
-		//				if(operation.mEndOffsetXOrigin != OffsetLeftRightEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f, location.X,
-		//						operation.mEndOffsetXOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = position;
-		//					transform.Y = 0f;
-		//					position = TransformFromAbsolute(transform).X;
-		//				}
-		//				operation.mStartOffsetX = operation.mOffsetX =
-		//					$"{position:0.###}mm";
-		//				//	Y.
-		//				position = 0f;
-		//				if(operation.mOffsetY.Length > 0)
-		//				{
-		//					//	Y was specified.
-		//					position = GetMillimeters(operation.mOffsetY);
-		//				}
-		//				operation.mStartOffsetYOrigin = operation.mOffsetYOrigin;
-		//				if(operation.mStartOffsetYOrigin != OffsetTopBottomEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f, location.Y,
-		//						operation.mOffsetYOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = 0f;
-		//					transform.Y = position;
-		//					position = TransformFromAbsolute(transform).Y;
-		//				}
-		//				operation.mStartOffsetY = operation.mOffsetY =
-		//					$"{position:0.###}mm";
-		//				break;
-		//			case OperationActionEnum.DrawEllipseXY:
-		//			case OperationActionEnum.DrawLineXY:
-		//			case OperationActionEnum.DrawRectangleXY:
-		//			case OperationActionEnum.FillEllipseXY:
-		//			case OperationActionEnum.FillRectangleXY:
-		//				//	StartOffsetX, StartOffsetY.
-		//				//	X.
-		//				position = 0f;
-		//				if(operation.mStartOffsetX.Length > 0)
-		//				{
-		//					//	X was specified.
-		//					position = GetMillimeters(operation.mStartOffsetX);
-		//				}
-		//				if(operation.mStartOffsetXOrigin != OffsetLeftRightEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f, location.X,
-		//						operation.mStartOffsetXOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = position;
-		//					transform.Y = 0f;
-		//					position = TransformFromAbsolute(transform).X;
-		//				}
-		//				operation.mStartOffsetX = $"{position:0.###}mm";
-		//				//	Y.
-		//				position = 0f;
-		//				if(operation.mStartOffsetY.Length > 0)
-		//				{
-		//					//	Y was specified.
-		//					position = GetMillimeters(operation.mStartOffsetY);
-		//				}
-		//				if(operation.mStartOffsetYOrigin != OffsetTopBottomEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f, location.Y,
-		//						operation.mStartOffsetYOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = 0f;
-		//					transform.Y = position;
-		//					position = TransformFromAbsolute(transform).Y;
-		//				}
-		//				operation.mStartOffsetY = $"{position:0.###}mm";
-		//				break;
-		//		}
-		//		//	Update the location from the starting point.
-		//		location.X = GetMillimeters(operation.mStartOffsetX);
-		//		location.Y = GetMillimeters(operation.mStartOffsetY);
-		//		//	Extent.
-		//		switch(operation.mAction)
-		//		{
-		//			case OperationActionEnum.DrawCircleCenterDiameter:
-		//			case OperationActionEnum.DrawCircleCenterRadius:
-		//			case OperationActionEnum.DrawCircleDiameter:
-		//			case OperationActionEnum.DrawCircleRadius:
-		//			case OperationActionEnum.DrawEllipseCenterDiameterXY:
-		//			case OperationActionEnum.DrawEllipseCenterRadiusXY:
-		//			case OperationActionEnum.DrawEllipseDiameterXY:
-		//			case OperationActionEnum.DrawEllipseLengthWidth:
-		//			case OperationActionEnum.DrawEllipseRadiusXY:
-		//			case OperationActionEnum.DrawEllipseXY:
-		//			case OperationActionEnum.FillCircleCenterDiameter:
-		//			case OperationActionEnum.FillCircleCenterRadius:
-		//			case OperationActionEnum.FillCircleDiameter:
-		//			case OperationActionEnum.FillCircleRadius:
-		//			case OperationActionEnum.FillEllipseCenterDiameterXY:
-		//			case OperationActionEnum.FillEllipseCenterRadiusXY:
-		//			case OperationActionEnum.FillEllipseDiameterXY:
-		//			case OperationActionEnum.FillEllipseLengthWidth:
-		//			case OperationActionEnum.FillEllipseRadiusXY:
-		//			case OperationActionEnum.FillEllipseXY:
-		//			case OperationActionEnum.PointXY:
-		//				//	End = Start.
-		//				operation.mEndOffsetX = operation.mStartOffsetX;
-		//				operation.mEndOffsetY = operation.mStartOffsetY;
-		//				break;
-		//			case OperationActionEnum.DrawLineAngleLength:
-		//			case OperationActionEnum.MoveAngleLength:
-		//				//	Angle, Length.
-		//				angle = GetAngle(operation.mAngle);
-		//				length = GetMillimeters(operation.mLength);
-		//				location = Trig.GetDestPoint(location, angle, length);
-		//				operation.mEndOffsetX = $"{location.X:0.###}mm";
-		//				operation.mEndOffsetY = $"{location.Y:0.###}mm";
-		//				break;
-		//			case OperationActionEnum.DrawLineLengthWidth:
-		//			case OperationActionEnum.DrawRectangleLengthWidth:
-		//			case OperationActionEnum.FillRectangleLengthWidth:
-		//				//	Length, Width.
-		//				length = GetMillimeters(operation.mLength);
-		//				width = GetMillimeters(operation.mWidth);
-		//				if(ConfigProfile.AxisXIsOpenEnded)
-		//				{
-		//					location.X += length;
-		//					location.Y += width;
-		//				}
-		//				else
-		//				{
-		//					location.X += width;
-		//					location.Y += length;
-		//				}
-		//				operation.mEndOffsetX = $"{location.X:0.###}mm";
-		//				operation.mEndOffsetY = $"{location.Y:0.###}mm";
-		//				break;
-		//			case OperationActionEnum.DrawLineXY:
-		//			case OperationActionEnum.DrawRectangleXY:
-		//			case OperationActionEnum.FillRectangleXY:
-		//				//	EndOffsetX, EndOffsetY.
-		//				//	X.
-		//				position = 0f;
-		//				if(operation.mEndOffsetX.Length > 0)
-		//				{
-		//					//	End offset was specified.
-		//					position = GetMillimeters(operation.mEndOffsetX);
-		//				}
-		//				if(operation.mEndOffsetXOrigin != OffsetLeftRightEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f,
-		//						GetMillimeters(operation.mStartOffsetX),
-		//						operation.mEndOffsetXOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = position;
-		//					transform.Y = 0f;
-		//					position = TransformFromAbsolute(transform).X;
-		//				}
-		//				operation.mEndOffsetX = $"{position:0.###}mm";
-		//				//	Y.
-		//				position = 0f;
-		//				if(operation.mEndOffsetY.Length > 0)
-		//				{
-		//					//	End offset was specified.
-		//					position = GetMillimeters(operation.mEndOffsetY);
-		//				}
-		//				if(operation.mEndOffsetYOrigin != OffsetTopBottomEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f,
-		//						GetMillimeters(operation.mStartOffsetY),
-		//						operation.mEndOffsetYOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = 0f;
-		//					transform.Y = position;
-		//					position = TransformFromAbsolute(transform).Y;
-		//				}
-		//				operation.mEndOffsetY = $"{position:0.###}mm";
-		//				break;
-		//			case OperationActionEnum.MoveXY:
-		//				//	Ending OffsetX, OffsetY.
-		//				//	X.
-		//				position = 0f;
-		//				if(operation.mOffsetX.Length > 0)
-		//				{
-		//					//	End offset was specified.
-		//					position = GetMillimeters(operation.mOffsetX);
-		//				}
-		//				if(operation.mOffsetXOrigin != OffsetLeftRightEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f,
-		//						GetMillimeters(operation.mStartOffsetX),
-		//						operation.mOffsetXOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = position;
-		//					transform.Y = 0f;
-		//					position = TransformFromAbsolute(transform).X;
-		//				}
-		//				operation.mEndOffsetX = operation.mOffsetX = $"{position:0.###}mm";
-		//				//	Y.
-		//				position = 0f;
-		//				if(operation.mOffsetY.Length > 0)
-		//				{
-		//					//	End offset was specified.
-		//					position = GetMillimeters(operation.mOffsetY);
-		//				}
-		//				if(operation.mOffsetYOrigin != OffsetTopBottomEnum.Absolute)
-		//				{
-		//					position += TranslateOffset(workpiece.Area, 0f,
-		//						GetMillimeters(operation.mStartOffsetY),
-		//						operation.mOffsetYOrigin);
-		//				}
-		//				else
-		//				{
-		//					transform.X = 0f;
-		//					transform.Y = position;
-		//					position = TransformFromAbsolute(transform).Y;
-		//				}
-		//				operation.mEndOffsetY = operation.mOffsetY = $"{position:0.###}mm";
-		//				break;
-		//		}
-		//		//	Update the location from the ending location.
-		//		location.X = GetMillimeters(operation.mEndOffsetX);
-		//		location.Y = GetMillimeters(operation.mEndOffsetY);
-		//		result = location;
-		//	}
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* Clone																																	*
@@ -645,6 +305,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Depth																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Depth">Depth</see>.
+		/// </summary>
 		private string mDepth = "";
 		/// <summary>
 		/// Get/Set the depth of the stroke to make.
@@ -664,6 +327,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndOffsetX																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndOffsetX">EndOffsetX</see>.
+		/// </summary>
 		private string mEndOffsetX = "";
 		/// <summary>
 		/// Get/Set the distance along the X axis into the material body at which
@@ -686,6 +352,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndOffsetXOrigin																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndOffsetXOrigin">EndOffsetXOrigin</see>.
+		/// </summary>
 		private OffsetLeftRightEnum mEndOffsetXOrigin =
 			OffsetLeftRightEnum.None;
 		/// <summary>
@@ -707,6 +376,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndOffsetY																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndOffsetY">EndOffsetY</see>.
+		/// </summary>
 		private string mEndOffsetY = "";
 		/// <summary>
 		/// Get/Set the distance along the Y axis into the material body at which
@@ -729,6 +401,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	EndOffsetYOrigin																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndOffsetYOrigin">EndOffsetYOrigin</see>.
+		/// </summary>
 		private OffsetTopBottomEnum mEndOffsetYOrigin = OffsetTopBottomEnum.None;
 		/// <summary>
 		/// Get/Set the origin of the offset for the ending Y position.
@@ -806,8 +481,10 @@ namespace ShopTools
 		/// Reference to the data table containing the rows to retrieve.
 		/// </param>
 		/// <param name="keyColumn">
+		/// Name of the key column in which to find the ID for the row.
 		/// </param>
 		/// <returns>
+		/// Array of data rows matching the specified pattern operation ID.
 		/// </returns>
 		public static DataRow[] GetRows(PatternOperationItem operation,
 			DataTable table, string keyColumn)
@@ -952,6 +629,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	HiddenVariables																												*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="HiddenVariables">HiddenVariables</see>.
+		/// </summary>
 		private List<string> mHiddenVariables = new List<string>();
 		/// <summary>
 		/// Get a reference to a list of variable names hidden from user input.
@@ -966,6 +646,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Kerf																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Kerf">Kerf</see>.
+		/// </summary>
 		private DirectionLeftRightEnum mKerf = DirectionLeftRightEnum.None;
 		/// <summary>
 		/// Get/Set the side to which the kerf will accumulate along the path of
@@ -984,6 +667,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Length																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Length">Length</see>.
+		/// </summary>
 		private string mLength = "";
 		/// <summary>
 		/// Get/Set the length of the operation.
@@ -999,6 +685,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OffsetX																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OffsetX">OffsetX</see>.
+		/// </summary>
 		private string mOffsetX = "";
 		/// <summary>
 		/// Get/Set the distance along the X axis into the material body.
@@ -1025,6 +714,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OffsetXOrigin																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OffsetXOrigin">OffsetXOrigin</see>.
+		/// </summary>
 		private OffsetLeftRightEnum mOffsetXOrigin =
 			OffsetLeftRightEnum.None;
 		/// <summary>
@@ -1043,6 +735,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OffsetY																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OffsetY">OffsetY</see>.
+		/// </summary>
 		private string mOffsetY = "";
 		/// <summary>
 		/// Get/Set the distance along the Y axis into the material body.
@@ -1069,6 +764,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OffsetYOrigin																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OffsetYOrigin">OffsetYOrigin</see>.
+		/// </summary>
 		private OffsetTopBottomEnum mOffsetYOrigin = OffsetTopBottomEnum.None;
 		/// <summary>
 		/// Get/Set the reference edge or corner from which to measure the Y
@@ -1086,6 +784,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OperationId																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OperationId">OperationId</see>.
+		/// </summary>
 		private string mOperationId = Guid.NewGuid().ToString("D").ToLower();
 		/// <summary>
 		/// Get/Set the globally unique ID of this pattern operation.
@@ -1101,6 +802,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OperationName																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OperationName">OperationName</see>.
+		/// </summary>
 		private string mOperationName = "";
 		/// <summary>
 		/// Get/Set the optional name to assign to the current operation in order
@@ -1632,6 +1336,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartOffsetX																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="StartOffsetX">StartOffsetX</see>.
+		/// </summary>
 		private string mStartOffsetX = "";
 		/// <summary>
 		/// Get/Set the distance along the X axis into the material body at which
@@ -1654,6 +1361,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartOffsetXOrigin																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="StartOffsetXOrigin">StartOffsetXOrigin</see>.
+		/// </summary>
 		private OffsetLeftRightEnum mStartOffsetXOrigin =
 			OffsetLeftRightEnum.None;
 		/// <summary>
@@ -1675,6 +1386,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartOffsetY																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="StartOffsetY">StartOffsetY</see>.
+		/// </summary>
 		private string mStartOffsetY = "";
 		/// <summary>
 		/// Get/Set the distance along the Y axis into the material body.
@@ -1696,6 +1410,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	StartOffsetYOrigin																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="StartOffsetYOrigin">StartOffsetYOrigin</see>.
+		/// </summary>
 		private OffsetTopBottomEnum mStartOffsetYOrigin = OffsetTopBottomEnum.None;
 		/// <summary>
 		/// Get/Set the origin of the offset for the starting Y position.
@@ -1716,6 +1434,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Tool																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Tool">Tool</see>.
+		/// </summary>
 		private string mTool = "";
 		/// <summary>
 		/// Get/Set the name of the selected tool. If no tool was specified, then
@@ -1732,6 +1453,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Width																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Width">Width</see>.
+		/// </summary>
 		private string mWidth = "";
 		/// <summary>
 		/// Get/Set the width of the operation.

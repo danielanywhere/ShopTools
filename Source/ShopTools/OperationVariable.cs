@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -177,6 +177,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	SharedVariables																												*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SharedVariables">SharedVariables</see>.
+		/// </summary>
 		private List<string> mSharedVariables = new List<string>();
 		/// <summary>
 		/// Get a reference to a list of variable names in this operation that are
@@ -302,6 +305,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	BaseName																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="BaseName">BaseName</see>.
+		/// </summary>
 		private string mBaseName = "";
 		/// <summary>
 		/// Get/Set the base property name of this item.
@@ -326,6 +332,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	DisplayName																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DisplayName">DisplayName</see>.
+		/// </summary>
 		private string mDisplayName = "";
 		/// <summary>
 		/// Get/Set the display name of this item.
@@ -350,6 +359,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OperationName																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="OperationName">OperationName</see>.
+		/// </summary>
 		private string mOperationName = "";
 		/// <summary>
 		/// Get/Set the distinct operation group name for this variable.
@@ -374,6 +386,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PatternOperations																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="PatternOperations">PatternOperations</see>.
+		/// </summary>
 		private List<PatternOperationItem> mPatternOperations =
 			new List<PatternOperationItem>();
 		/// <summary>
@@ -426,6 +442,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Value																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Value">Value</see>.
+		/// </summary>
 		private string mValue = "";
 		/// <summary>
 		/// Get/Set the value of this variable.
@@ -451,6 +470,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	WorkingValue																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="WorkingValue">WorkingValue</see>.
+		/// </summary>
 		private string mWorkingValue = "";
 		/// <summary>
 		/// Get/Set the working (in-edit) value of this item.

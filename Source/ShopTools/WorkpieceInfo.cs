@@ -101,6 +101,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltDepth																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="AltDepth">AltDepth</see>.
+		/// </summary>
 		private string mAltDepth = "";
 		/// <summary>
 		/// Get/Set the alternate user display value for the depth specified for
@@ -117,6 +120,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltLength																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="AltLength">AltDepth</see>.
+		/// </summary>
 		private string mAltLength = "";
 		/// <summary>
 		/// Get/Set the alternate display value for the user length specified for
@@ -133,6 +139,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltOffsetX																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="AltOffsetX">AltOffsetX</see>.
+		/// </summary>
 		private string mAltOffsetX = "";
 		/// <summary>
 		/// Get/Set the alternate display value of the user-specified X offset of
@@ -149,6 +158,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltOffsetY																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="AltOffsetY">AltOffsetY</see>.
+		/// </summary>
 		private string mAltOffsetY = "";
 		/// <summary>
 		/// Get/Set the alternate display value for the user-specified Y workpiece
@@ -165,6 +177,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltRouterLocationX																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="AltRouterLocationX">AltRouterLocationX</see>.
+		/// </summary>
 		private string mAltRouterLocationX = "";
 		/// <summary>
 		/// Get/Set the alternate display value of the user-specified absolute
@@ -181,6 +197,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltRouterLocationY																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="AltRouterLocationY">AltRouterLocationY</see>.
+		/// </summary>
 		private string mAltRouterLocationY = "";
 		/// <summary>
 		/// Get/Set the alternate display value of the user-specified absolute
@@ -197,6 +217,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AltWidth																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="AltWidth">AltWidth</see>.
+		/// </summary>
 		private string mAltWidth = "";
 		/// <summary>
 		/// Get/Set the alternate display value of the user width specified for
@@ -213,6 +237,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Area																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Area">Area</see>.
+		/// </summary>
 		private FArea mArea = new FArea();
 		/// <summary>
 		/// Get/Set a reference to the actual area occupied by the workpiece.
@@ -338,6 +365,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Cuts																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Cuts">Cuts</see>.
+		/// </summary>
 		private CutProfileCollection mCuts = new CutProfileCollection();
 		/// <summary>
 		/// Get a reference to the list of cuts on this job.
@@ -352,6 +382,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	RouterLocation																												*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="RouterLocation">RouterLocation</see>.
+		/// </summary>
 		private FPoint mRouterLocation = new FPoint();
 		/// <summary>
 		/// Get/Set the current calculated location of the router.
@@ -369,6 +402,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Thickness																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Thickness">Thickness</see>.
+		/// </summary>
 		private float mThickness = 0f;
 		/// <summary>
 		/// Get/Set the thickness of the workpiece, in system units.
@@ -384,6 +420,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserDepth																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserDepth">UserDepth</see>.
+		/// </summary>
 		private string mUserDepth = "";
 		/// <summary>
 		/// Get/Set the user depth specified for the workpiece.
@@ -399,6 +438,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserLength																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserLength">UserLength</see>.
+		/// </summary>
 		private string mUserLength = "";
 		/// <summary>
 		/// Get/Set the user length specified for the workpiece.
@@ -414,6 +456,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserOffsetX																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserOffsetX">UserOffsetX</see>.
+		/// </summary>
 		private string mUserOffsetX = "";
 		/// <summary>
 		/// Get/Set the user-specified X offset of the workpiece.
@@ -429,6 +474,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserOffsetXOrigin																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="UserOffsetXOrigin">UserOffsetXOrigin</see>.
+		/// </summary>
 		private OffsetLeftRightEnum mUserOffsetXOrigin = OffsetLeftRightEnum.None;
 		/// <summary>
 		/// Get/Set the user-specified X offset of the workpiece from the canvas.
@@ -445,6 +494,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserOffsetY																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="UserOffsetY">UserOffsetY</see>.
+		/// </summary>
 		private string mUserOffsetY = "";
 		/// <summary>
 		/// Get/Set the user-specified Y workpiece offset.
@@ -460,6 +513,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserOffsetYOrigin																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="UserOffsetYOrigin">UserOffsetYOrigin</see>.
+		/// </summary>
 		private OffsetTopBottomEnum mUserOffsetYOrigin = OffsetTopBottomEnum.None;
 		/// <summary>
 		/// Get/Set the user-specified Y workpiece offset.
@@ -476,6 +533,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserRouterLocationX																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="UserRouterLocationX">UserRouterLocationX</see>.
+		/// </summary>
 		private string mUserRouterLocationX = "";
 		/// <summary>
 		/// Get/Set the user-specified absolute starting X router location.
@@ -491,6 +552,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserRouterLocationY																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="UserRouterLocationY">UserRouterLocationY</see>.
+		/// </summary>
 		private string mUserRouterLocationY = "";
 		/// <summary>
 		/// Get/Set the user-specified absolute starting Y router location.
@@ -506,6 +571,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserWidth																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserWidth">UserWidth</see>.
+		/// </summary>
 		private string mUserWidth = "";
 		/// <summary>
 		/// Get/Set the user width specified for the workpiece.
@@ -521,6 +589,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	WorkspaceArea																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="WorkspaceArea">WorkspaceArea</see>.
+		/// </summary>
 		private FArea mWorkspaceArea = new FArea();
 		/// <summary>
 		/// Get/Set a reference to the current workspace area or canvas for this

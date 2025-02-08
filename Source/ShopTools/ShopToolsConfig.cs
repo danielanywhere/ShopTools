@@ -213,6 +213,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	OperationActionProperties																							*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="OperationActionProperties">OperationActionProperties</see>.
+		/// </summary>
 		private OperationActionPropertyCollection mOperationActionProperties =
 			new OperationActionPropertyCollection();
 		/// <summary>
@@ -228,6 +232,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PatternTemplates																											*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="PatternTemplates">PatternTemplates</see>.
+		/// </summary>
 		private PatternTemplateCollection mPatternTemplates =
 			new PatternTemplateCollection();
 		/// <summary>
@@ -244,6 +251,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Properties																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Properties">Properties</see>.
+		/// </summary>
 		private PropertyCollection mProperties = new PropertyCollection();
 		/// <summary>
 		/// Get a reference to the collection of settings properties on this
@@ -275,6 +285,10 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolTypeDefinitions																										*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for
+		/// <see cref="ToolTypeDefinitions">ToolTypeDefinitions</see>.
+		/// </summary>
 		private ToolTypeDefinitionCollection mToolTypeDefinitions =
 			new ToolTypeDefinitionCollection();
 		/// <summary>
@@ -420,6 +434,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	UserTools																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserTools">UserTools</see>.
+		/// </summary>
 		private UserToolCollection mUserTools = new UserToolCollection();
 		/// <summary>
 		/// Get a reference to the collection of user tools defined for this

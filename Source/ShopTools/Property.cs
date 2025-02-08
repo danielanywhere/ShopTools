@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -75,6 +75,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	AutoCreate																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="AutoCreate">AutoCreate</see>.
+		/// </summary>
 		private bool mAutoCreate = true;
 		/// <summary>
 		/// Get/Set a value indicating whether a property will automatically be
@@ -176,6 +179,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Name																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Name">Name</see>.
+		/// </summary>
 		private string mName = "";
 		/// <summary>
 		/// Get/Set the name of this item.
@@ -191,6 +197,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Value																																	*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Value">Value</see>.
+		/// </summary>
 		private string mValue = "";
 		/// <summary>
 		/// Get/Set the value of this item.

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -138,6 +138,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Properties																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Properties">Properties</see>.
+		/// </summary>
 		private PropertyCollection mProperties = new PropertyCollection();
 		/// <summary>
 		/// Get a reference to the collection of properties defining this tool.
@@ -152,6 +155,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolId																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ToolId">ToolId</see>.
+		/// </summary>
 		private string mToolId = Guid.NewGuid().ToString("D").ToLower();
 		/// <summary>
 		/// Get/Set the globally unique tool ID.
@@ -167,6 +173,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolName																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ToolName">ToolName</see>.
+		/// </summary>
 		private string mToolName = "";
 		/// <summary>
 		/// Get/Set the user's name for the tool.
@@ -182,6 +191,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ToolType																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ToolType">ToolType</see>.
+		/// </summary>
 		private string mToolType = "";
 		/// <summary>
 		/// Get/Set the name of the base tool definition upon which this tool is
