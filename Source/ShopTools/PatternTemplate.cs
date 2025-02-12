@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,7 +37,8 @@ namespace ShopTools
 	/// <summary>
 	/// Collection of PatternTemplateItem Items.
 	/// </summary>
-	public class PatternTemplateCollection : List<PatternTemplateItem>
+	public class PatternTemplateCollection :
+		ChangeObjectCollection<PatternTemplateItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -85,7 +87,7 @@ namespace ShopTools
 	/// An individual pattern template that describes one or more predefined
 	/// actions that can be applied to a piece of material.
 	/// </summary>
-	public class PatternTemplateItem
+	public class PatternTemplateItem : ChangeObjectItem
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -96,6 +98,32 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Public																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//*	_Constructor																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Create a new instance of the PatternTemplateItem Item.
+		/// </summary>
+		public PatternTemplateItem()
+		{
+			mOperations = new PatternOperationCollection()
+			{
+				PropertyName = "Operations"
+			};
+			mOperations.CollectionChanged += OnCollectionChanged;
+			mRemarks = new ChangeObjectCollection<string>()
+			{
+				PropertyName = "Remarks"
+			};
+			mRemarks.CollectionChanged += OnCollectionChanged;
+			mSharedVariables = new ChangeObjectCollection<string>()
+			{
+				PropertyName = "SharedVariables"
+			};
+			mSharedVariables.CollectionChanged += OnCollectionChanged;
+		}
+		//*-----------------------------------------------------------------------*
+
 		////*-----------------------------------------------------------------------*
 		////*	AvailableProperties																										*
 		////*-----------------------------------------------------------------------*
@@ -176,7 +204,16 @@ namespace ShopTools
 		public string DisplayFormat
 		{
 			get { return mDisplayFormat; }
-			set { mDisplayFormat = value; }
+			set
+			{
+				bool bChanged = (mDisplayFormat != value);
+
+				mDisplayFormat = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -454,7 +491,16 @@ namespace ShopTools
 		public string IconFilename
 		{
 			get { return mIconFilename; }
-			set { mIconFilename = value; }
+			set
+			{
+				bool bChanged = (mIconFilename != value);
+
+				mIconFilename = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -464,8 +510,7 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="Operations">Operations</see>.
 		/// </summary>
-		private PatternOperationCollection mOperations =
-			new PatternOperationCollection();
+		private PatternOperationCollection mOperations = null;
 		/// <summary>
 		/// Get a reference to the collection of operations defined for this
 		/// pattern.
@@ -493,7 +538,16 @@ namespace ShopTools
 		public TemplateOrientationEnum Orientation
 		{
 			get { return mOrientation; }
-			set { mOrientation = value; }
+			set
+			{
+				bool bChanged = (mOrientation != value);
+
+				mOrientation = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -512,7 +566,16 @@ namespace ShopTools
 		public string PatternLength
 		{
 			get { return mPatternLength; }
-			set { mPatternLength = value; }
+			set
+			{
+				bool bChanged = (mPatternLength != value);
+
+				mPatternLength = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -531,7 +594,16 @@ namespace ShopTools
 		public string PatternTemplateId
 		{
 			get { return mPatternTemplateId; }
-			set { mPatternTemplateId = value; }
+			set
+			{
+				bool bChanged = (mPatternTemplateId != value);
+
+				mPatternTemplateId = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -550,7 +622,16 @@ namespace ShopTools
 		public string PatternWidth
 		{
 			get { return mPatternWidth; }
-			set { mPatternWidth = value; }
+			set
+			{
+				bool bChanged = (mPatternWidth != value);
+
+				mPatternWidth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -560,7 +641,7 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="Remarks">Remarks</see>.
 		/// </summary>
-		private List<string> mRemarks = new List<string>();
+		private ChangeObjectCollection<string> mRemarks = null;
 		/// <summary>
 		/// Get a reference to the list of line continuation remarks used to
 		/// describe this template.
@@ -578,13 +659,13 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="SharedVariables">SharedVariables</see>.
 		/// </summary>
-		private List<string> mSharedVariables = new List<string>();
+		private ChangeObjectCollection<string> mSharedVariables = null;
 		/// <summary>
 		/// Get a reference to a list of variable names in this operation that are
 		/// shared for the entire pattern.
 		/// </summary>
 		[JsonProperty(Order = 9)]
-		public List<string> SharedVariables
+		public ChangeObjectCollection<string> SharedVariables
 		{
 			get { return mSharedVariables; }
 		}
@@ -780,7 +861,16 @@ namespace ShopTools
 		public string TemplateName
 		{
 			get { return mTemplateName; }
-			set { mTemplateName = value; }
+			set
+			{
+				bool bChanged = (mTemplateName != value);
+
+				mTemplateName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -802,7 +892,16 @@ namespace ShopTools
 		public bool ToolSequenceStrict
 		{
 			get { return mToolSequenceStrict; }
-			set { mToolSequenceStrict = value; }
+			set
+			{
+				bool bChanged = (mToolSequenceStrict != value);
+
+				mToolSequenceStrict = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 

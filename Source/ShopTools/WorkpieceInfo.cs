@@ -37,7 +37,8 @@ namespace ShopTools
 	/// <summary>
 	/// Collection of WorkpieceInfoItem Items.
 	/// </summary>
-	public class WorkpieceInfoCollection : List<WorkpieceInfoItem>
+	public class WorkpieceInfoCollection :
+		ChangeObjectCollection<WorkpieceInfoItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -87,17 +88,105 @@ namespace ShopTools
 	/// Information about a single workpiece, including the starting router
 	/// position and any cuts.
 	/// </summary>
-	public class WorkpieceInfoItem
+	public class WorkpieceInfoItem : ChangeObjectItem
 	{
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//* mArea_ValueChanged																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A value has changed on the Area property.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Float event arguments.
+		/// </param>
+		private void mArea_ValueChanged(object sender, FloatEventArgs e)
+		{
+			OnPropertyChanged("Area");
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mRouterLocation_CoordinateChanged																			*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A coordinate has changed on the router location.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Floating point event arguments.
+		/// </param>
+		private void mRouterLocation_CoordinateChanged(object sender,
+			FloatPointEventArgs e)
+		{
+			OnPropertyChanged("RouterLocation");
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mWorkspaceArea_ValueChanged																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A value has changed on the WorkspaceArea property.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Float event arguments.
+		/// </param>
+		private void mWorkspaceArea_ValueChanged(object sender, FloatEventArgs e)
+		{
+			OnPropertyChanged("WorkspaceArea");
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
 		//*************************************************************************
 		//*	Public																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//*	_Constructor																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Create a new instance of the WorkpieceInfoItem Item.
+		/// </summary>
+		public WorkpieceInfoItem()
+		{
+			mArea = new FArea();
+			mArea.BottomChanged += mArea_ValueChanged;
+			mArea.HeightChanged += mArea_ValueChanged;
+			mArea.LeftChanged += mArea_ValueChanged;
+			mArea.RightChanged += mArea_ValueChanged;
+			mArea.TopChanged += mArea_ValueChanged;
+			mArea.WidthChanged += mArea_ValueChanged;
+			mCuts = new CutProfileCollection()
+			{
+				PropertyName = "Cuts"
+			};
+			mCuts.CollectionChanged += OnCollectionChanged;
+			mRouterLocation = new FPoint();
+			mRouterLocation.CoordinateChanged += mRouterLocation_CoordinateChanged;
+			mWorkspaceArea = new FArea();
+			mWorkspaceArea.BottomChanged += mWorkspaceArea_ValueChanged;
+			mWorkspaceArea.BottomChanged += mArea_ValueChanged;
+			mWorkspaceArea.HeightChanged += mArea_ValueChanged;
+			mWorkspaceArea.LeftChanged += mArea_ValueChanged;
+			mWorkspaceArea.RightChanged += mArea_ValueChanged;
+			mWorkspaceArea.TopChanged += mArea_ValueChanged;
+			mWorkspaceArea.WidthChanged += mArea_ValueChanged;
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*-----------------------------------------------------------------------*
 		//*	AltDepth																															*
 		//*-----------------------------------------------------------------------*
@@ -113,7 +202,16 @@ namespace ShopTools
 		public string AltDepth
 		{
 			get { return mAltDepth; }
-			set { mAltDepth = value; }
+			set
+			{
+				bool bChanged = (mAltDepth != value);
+
+				mAltDepth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -132,7 +230,16 @@ namespace ShopTools
 		public string AltLength
 		{
 			get { return mAltLength; }
-			set { mAltLength = value; }
+			set
+			{
+				bool bChanged = (mAltLength != value);
+
+				mAltLength = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -151,7 +258,16 @@ namespace ShopTools
 		public string AltOffsetX
 		{
 			get { return mAltOffsetX; }
-			set { mAltOffsetX = value; }
+			set
+			{
+				bool bChanged = (mAltOffsetX != value);
+
+				mAltOffsetX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -170,7 +286,16 @@ namespace ShopTools
 		public string AltOffsetY
 		{
 			get { return mAltOffsetY; }
-			set { mAltOffsetY = value; }
+			set
+			{
+				bool bChanged = (mAltOffsetY != value);
+
+				mAltOffsetY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -190,7 +315,16 @@ namespace ShopTools
 		public string AltRouterLocationX
 		{
 			get { return mAltRouterLocationX; }
-			set { mAltRouterLocationX = value; }
+			set
+			{
+				bool bChanged = (mAltRouterLocationX != value);
+
+				mAltRouterLocationX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -210,7 +344,16 @@ namespace ShopTools
 		public string AltRouterLocationY
 		{
 			get { return mAltRouterLocationY; }
-			set { mAltRouterLocationY = value; }
+			set
+			{
+				bool bChanged = (mAltRouterLocationY != value);
+
+				mAltRouterLocationY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -230,7 +373,16 @@ namespace ShopTools
 		public string AltWidth
 		{
 			get { return mAltWidth; }
-			set { mAltWidth = value; }
+			set
+			{
+				bool bChanged = (mAltWidth != value);
+
+				mAltWidth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -240,7 +392,7 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="Area">Area</see>.
 		/// </summary>
-		private FArea mArea = new FArea();
+		private FArea mArea = null;
 		/// <summary>
 		/// Get/Set a reference to the actual area occupied by the workpiece.
 		/// </summary>
@@ -248,7 +400,38 @@ namespace ShopTools
 		public FArea Area
 		{
 			get { return mArea; }
-			set { mArea = value; }
+			set
+			{
+				bool bChanged = (mArea != value);
+
+				//	Register events.
+				if(bChanged)
+				{
+					if(mArea != null)
+					{
+						mArea.BottomChanged -= mArea_ValueChanged;
+						mArea.HeightChanged -= mArea_ValueChanged;
+						mArea.LeftChanged -= mArea_ValueChanged;
+						mArea.RightChanged -= mArea_ValueChanged;
+						mArea.TopChanged -= mArea_ValueChanged;
+						mArea.WidthChanged -= mArea_ValueChanged;
+					}
+					if(value != null)
+					{
+						value.BottomChanged += mArea_ValueChanged;
+						value.HeightChanged += mArea_ValueChanged;
+						value.LeftChanged += mArea_ValueChanged;
+						value.RightChanged += mArea_ValueChanged;
+						value.TopChanged += mArea_ValueChanged;
+						value.WidthChanged += mArea_ValueChanged;
+					}
+				}
+				mArea = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -368,7 +551,7 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="Cuts">Cuts</see>.
 		/// </summary>
-		private CutProfileCollection mCuts = new CutProfileCollection();
+		private CutProfileCollection mCuts = null;
 		/// <summary>
 		/// Get a reference to the list of cuts on this job.
 		/// </summary>
@@ -395,7 +578,29 @@ namespace ShopTools
 		public FPoint RouterLocation
 		{
 			get { return mRouterLocation; }
-			set { mRouterLocation = value; }
+			set
+			{
+				bool bChanged = (mRouterLocation != value);
+
+				//	Register events.
+				if(bChanged)
+				{
+					if(mRouterLocation != null)
+					{
+						mRouterLocation.CoordinateChanged -=
+							mRouterLocation_CoordinateChanged;
+					}
+					if(value != null)
+					{
+						value.CoordinateChanged += mRouterLocation_CoordinateChanged;
+					}
+				}
+				mRouterLocation = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -413,7 +618,16 @@ namespace ShopTools
 		public float Thickness
 		{
 			get { return mThickness; }
-			set { mThickness = value; }
+			set
+			{
+				bool bChanged = (mThickness != value);
+
+				mThickness = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -431,7 +645,16 @@ namespace ShopTools
 		public string UserDepth
 		{
 			get { return mUserDepth; }
-			set { mUserDepth = value; }
+			set
+			{
+				bool bChanged = (mUserDepth != value);
+
+				mUserDepth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -449,7 +672,16 @@ namespace ShopTools
 		public string UserLength
 		{
 			get { return mUserLength; }
-			set { mUserLength = value; }
+			set
+			{
+				bool bChanged = (mUserLength != value);
+
+				mUserLength = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -467,7 +699,16 @@ namespace ShopTools
 		public string UserOffsetX
 		{
 			get { return mUserOffsetX; }
-			set { mUserOffsetX = value; }
+			set
+			{
+				bool bChanged = (mUserOffsetX != value);
+
+				mUserOffsetX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -487,7 +728,16 @@ namespace ShopTools
 		public OffsetLeftRightEnum UserOffsetXOrigin
 		{
 			get { return mUserOffsetXOrigin; }
-			set { mUserOffsetXOrigin = value; }
+			set
+			{
+				bool bChanged = (mUserOffsetXOrigin != value);
+
+				mUserOffsetXOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -506,7 +756,16 @@ namespace ShopTools
 		public string UserOffsetY
 		{
 			get { return mUserOffsetY; }
-			set { mUserOffsetY = value; }
+			set
+			{
+				bool bChanged = (mUserOffsetY != value);
+
+				mUserOffsetY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -526,7 +785,16 @@ namespace ShopTools
 		public OffsetTopBottomEnum UserOffsetYOrigin
 		{
 			get { return mUserOffsetYOrigin; }
-			set { mUserOffsetYOrigin = value; }
+			set
+			{
+				bool bChanged = (mUserOffsetYOrigin != value);
+
+				mUserOffsetYOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -545,7 +813,16 @@ namespace ShopTools
 		public string UserRouterLocationX
 		{
 			get { return mUserRouterLocationX; }
-			set { mUserRouterLocationX = value; }
+			set
+			{
+				bool bChanged = (mUserRouterLocationX != value);
+
+				mUserRouterLocationX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -564,7 +841,16 @@ namespace ShopTools
 		public string UserRouterLocationY
 		{
 			get { return mUserRouterLocationY; }
-			set { mUserRouterLocationY = value; }
+			set
+			{
+				bool bChanged = (mUserRouterLocationY != value);
+
+				mUserRouterLocationY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -582,7 +868,16 @@ namespace ShopTools
 		public string UserWidth
 		{
 			get { return mUserWidth; }
-			set { mUserWidth = value; }
+			set
+			{
+				bool bChanged = (mUserWidth != value);
+
+				mUserWidth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -592,7 +887,7 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="WorkspaceArea">WorkspaceArea</see>.
 		/// </summary>
-		private FArea mWorkspaceArea = new FArea();
+		private FArea mWorkspaceArea = null;
 		/// <summary>
 		/// Get/Set a reference to the current workspace area or canvas for this
 		/// session.
@@ -601,7 +896,40 @@ namespace ShopTools
 		public FArea WorkspaceArea
 		{
 			get { return mWorkspaceArea; }
-			set { mWorkspaceArea = value; }
+			set
+			{
+				bool bChanged = (mWorkspaceArea != value);
+
+				//	Register events.
+				if(bChanged)
+				{
+					if(mWorkspaceArea != null)
+					{
+						mWorkspaceArea.BottomChanged -= mWorkspaceArea_ValueChanged;
+						mWorkspaceArea.BottomChanged -= mArea_ValueChanged;
+						mWorkspaceArea.HeightChanged -= mArea_ValueChanged;
+						mWorkspaceArea.LeftChanged -= mArea_ValueChanged;
+						mWorkspaceArea.RightChanged -= mArea_ValueChanged;
+						mWorkspaceArea.TopChanged -= mArea_ValueChanged;
+						mWorkspaceArea.WidthChanged -= mArea_ValueChanged;
+					}
+					if(value != null)
+					{
+						value.BottomChanged += mWorkspaceArea_ValueChanged;
+						value.BottomChanged += mArea_ValueChanged;
+						value.HeightChanged += mArea_ValueChanged;
+						value.LeftChanged += mArea_ValueChanged;
+						value.RightChanged += mArea_ValueChanged;
+						value.TopChanged += mArea_ValueChanged;
+						value.WidthChanged += mArea_ValueChanged;
+					}
+				}
+				mWorkspaceArea = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
