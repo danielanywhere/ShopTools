@@ -19,12 +19,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json.Nodes;
 using System.Windows.Forms;
 
@@ -50,6 +52,10 @@ namespace ShopTools
 		//private bool mPaintEnabled = true;
 		//private Timer mPaintTimer = null;
 		/// <summary>
+		/// The default title bar text on the form.
+		/// </summary>
+		private string mBaseFormText = "";
+		/// <summary>
 		/// The first button row Y offset beneath the cut-list, which will be
 		/// adjustable in height.
 		/// </summary>
@@ -64,6 +70,10 @@ namespace ShopTools
 		/// adjustable in height.
 		/// </summary>
 		private int mCutButtonRowY3Offset = 0;
+		/// <summary>
+		/// A value indicating whether values in the current cut-list have changed.
+		/// </summary>
+		private bool mCutListChanged = false;
 		/// <summary>
 		/// Filename of the currently loaded cut-list file.
 		/// </summary>
@@ -672,8 +682,12 @@ namespace ShopTools
 				{
 					SessionWorkpieceInfo = new WorkpieceInfoItem();
 				}
+				SessionWorkpieceInfo.PropertyChanged +=
+					sessionWorkpieceInfo_PropertyChanged;
 				WorkpieceInfoItem.ConfigureFromUserValues(SessionWorkpieceInfo);
 				UpdateWorkpieceUI();
+				mCutListChanged = false;
+				UpdateForm();
 
 				this.Refresh();
 			}
@@ -1042,6 +1056,30 @@ namespace ShopTools
 					Formatting.Indented);
 				File.WriteAllText(filename, content);
 			}
+			mCutListChanged = false;
+			UpdateForm();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* sessionWorkpieceInfo_PropertyChanged																	*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The value of property has changed on the current session workpiece
+		/// information block or its members.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Property change event arguments.
+		/// </param>
+		private void sessionWorkpieceInfo_PropertyChanged(object sender,
+			PropertyChangeEventArgs e)
+		{
+			mCutListChanged = true;
+			statMessage.Text = "File Changed...";
+			UpdateForm();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1393,6 +1431,31 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* UpdateForm																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Update the general parts of the form affected by status.
+		/// </summary>
+		private void UpdateForm()
+		{
+			StringBuilder builder = new StringBuilder();
+
+			//	Title bar.
+			builder.Append(mBaseFormText);
+			if(mCutListFilename?.Length > 0)
+			{
+				builder.Append(" - ");
+				builder.Append(Path.GetFileName(mCutListFilename));
+				if(mCutListChanged)
+				{
+					builder.Append(" *");
+				}
+			}
+			this.Text = builder.ToString();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* UpdateWorkpiece																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1603,6 +1666,38 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* OnClosing																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Raises the Closing event when the form is closing.
+		/// </summary>
+		/// <param name="e">
+		/// Cancel event arguments.
+		/// </param>
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			DialogResult result = DialogResult.Continue;
+
+			if(mCutListFilename?.Length > 0 && mCutListChanged)
+			{
+				result = MessageBox.Show("Do you wish to save your changes?", "Exit",
+					MessageBoxButtons.YesNoCancel);
+				switch(result)
+				{
+					case DialogResult.Yes:
+						SaveCutList(mCutListFilename);
+						break;
+					case DialogResult.Cancel:
+						e.Cancel = true;
+						statMessage.Text = "Exit cancelled...";
+						break;
+				}
+			}
+			base.OnClosing(e);
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* OnResize																															*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1630,6 +1725,9 @@ namespace ShopTools
 		public frmMain()
 		{
 			InitializeComponent();
+
+			mBaseFormText = this.Text;
+
 			InitializeApplication();
 
 #if InternalTest

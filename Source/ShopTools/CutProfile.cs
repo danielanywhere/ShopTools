@@ -34,7 +34,7 @@ namespace ShopTools
 	/// <summary>
 	/// Collection of CutProfileItem Items.
 	/// </summary>
-	public class CutProfileCollection : List<CutProfileItem>
+	public class CutProfileCollection : ChangeObjectCollection<CutProfileItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -87,6 +87,44 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//* mEndLocation_CoordinateChanged																				*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A coordinate has changed on the End Location.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Floating point event arguments.
+		/// </param>
+		private void mEndLocation_CoordinateChanged(object sender,
+			FloatPointEventArgs e)
+		{
+			OnPropertyChanged("EndLocation");
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mStartLocation_CoordinateChanged																			*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// A coordinate has changed on the Start Location.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Floating point event arguments.
+		/// </param>
+		private void mStartLocation_CoordinateChanged(object sender,
+			FloatPointEventArgs e)
+		{
+			OnPropertyChanged("StartLocation");
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
@@ -99,8 +137,12 @@ namespace ShopTools
 		/// <summary>
 		/// Create a new instance of the CutProfileItem Item.
 		/// </summary>
-		public CutProfileItem()
+		public CutProfileItem() : base()
 		{
+			mEndLocation = new FPoint();
+			mEndLocation.CoordinateChanged += mEndLocation_CoordinateChanged;
+			mStartLocation = new FPoint();
+			mStartLocation.CoordinateChanged += mStartLocation_CoordinateChanged;
 		}
 		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
 		/// <summary>
@@ -110,7 +152,7 @@ namespace ShopTools
 		/// Reference to a pattern template item from which this item is being
 		/// created.
 		/// </param>
-		public CutProfileItem(PatternTemplateItem pattern)
+		public CutProfileItem(PatternTemplateItem pattern) : this()
 		{
 			if(pattern != null)
 			{
@@ -198,7 +240,7 @@ namespace ShopTools
 		/// <summary>
 		/// Internal EndLocation member <see cref="EndLocation"/>
 		/// </summary>
-		private FPoint mEndLocation = new FPoint();
+		private FPoint mEndLocation = null;
 		/// <summary>
 		/// Get/Set a reference to the end location of the router for this cut.
 		/// </summary>
@@ -208,7 +250,28 @@ namespace ShopTools
 		public FPoint EndLocation
 		{
 			get { return mEndLocation; }
-			set { mEndLocation = value; }
+			set
+			{
+				bool bChanged = (mEndLocation != value);
+
+				//	Register events.
+				if(bChanged)
+				{
+					if(mEndLocation != null)
+					{
+						mEndLocation.CoordinateChanged -= mEndLocation_CoordinateChanged;
+					}
+					if(value != null)
+					{
+						value.CoordinateChanged += mEndLocation_CoordinateChanged;
+					}
+				}
+				mEndLocation = value;
+				if (bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -228,7 +291,29 @@ namespace ShopTools
 		public FPoint StartLocation
 		{
 			get { return mStartLocation; }
-			set { mStartLocation = value; }
+			set
+			{
+				bool bChanged = (mStartLocation != value);
+
+				//	Register events.
+				if(bChanged)
+				{
+					if(mStartLocation != null)
+					{
+						mStartLocation.CoordinateChanged -=
+							mStartLocation_CoordinateChanged;
+					}
+					if(value != null)
+					{
+						value.CoordinateChanged += mStartLocation_CoordinateChanged;
+					}
+				}
+				mStartLocation = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 

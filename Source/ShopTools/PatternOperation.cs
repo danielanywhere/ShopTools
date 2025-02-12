@@ -40,7 +40,8 @@ namespace ShopTools
 	/// <summary>
 	/// Collection of PatternOperationItem Items.
 	/// </summary>
-	public class PatternOperationCollection : List<PatternOperationItem>
+	public class PatternOperationCollection :
+		ChangeObjectCollection<PatternOperationItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -89,7 +90,7 @@ namespace ShopTools
 	/// <summary>
 	/// Information about an individual operation definition on a pattern.
 	/// </summary>
-	public class PatternOperationItem
+	public class PatternOperationItem : ChangeObjectItem
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -215,6 +216,22 @@ namespace ShopTools
 		//*	Public																																*
 		//*************************************************************************
 		//*-----------------------------------------------------------------------*
+		//*	_Constructor																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Create a new instance of the PatternOperationItem Item.
+		/// </summary>
+		public PatternOperationItem()
+		{
+			mHiddenVariables = new ChangeObjectCollection<string>()
+			{
+				PropertyName = "HiddenVariables"
+			};
+			mHiddenVariables.CollectionChanged += OnCollectionChanged;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	Action																																*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -229,7 +246,16 @@ namespace ShopTools
 		public OperationActionEnum Action
 		{
 			get { return mAction; }
-			set { mAction = value; }
+			set
+			{
+				bool bChanged = (mAction != value);
+
+				mAction = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -247,7 +273,16 @@ namespace ShopTools
 		public string Angle
 		{
 			get { return mAngle; }
-			set { mAngle = value; }
+			set
+			{
+				bool bChanged = (mAngle != value);
+
+				mAngle = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -320,7 +355,16 @@ namespace ShopTools
 		public string Depth
 		{
 			get { return mDepth; }
-			set { mDepth = value; }
+			set
+			{
+				bool bChanged = (mDepth != value);
+
+				mDepth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -345,7 +389,16 @@ namespace ShopTools
 		public string EndOffsetX
 		{
 			get { return mEndOffsetX; }
-			set { mEndOffsetX = value; }
+			set
+			{
+				bool bChanged = (mEndOffsetX != value);
+
+				mEndOffsetX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -369,7 +422,16 @@ namespace ShopTools
 		public OffsetLeftRightEnum EndOffsetXOrigin
 		{
 			get { return mEndOffsetXOrigin; }
-			set { mEndOffsetXOrigin = value; }
+			set
+			{
+				bool bChanged = (mEndOffsetXOrigin != value);
+
+				mEndOffsetXOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -394,7 +456,16 @@ namespace ShopTools
 		public string EndOffsetY
 		{
 			get { return mEndOffsetY; }
-			set { mEndOffsetY = value; }
+			set
+			{
+				bool bChanged = (mEndOffsetY != value);
+
+				mEndOffsetY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -417,7 +488,16 @@ namespace ShopTools
 		public OffsetTopBottomEnum EndOffsetYOrigin
 		{
 			get { return mEndOffsetYOrigin; }
-			set { mEndOffsetYOrigin = value; }
+			set
+			{
+				bool bChanged = (mEndOffsetYOrigin != value);
+
+				mEndOffsetYOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -626,18 +706,19 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//	TODO: Test serialization and deserialization of PatternOperationItem.HiddenVariables.
 		//*-----------------------------------------------------------------------*
 		//*	HiddenVariables																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
 		/// Private member for <see cref="HiddenVariables">HiddenVariables</see>.
 		/// </summary>
-		private List<string> mHiddenVariables = new List<string>();
+		private ChangeObjectCollection<string> mHiddenVariables = null;
 		/// <summary>
 		/// Get a reference to a list of variable names hidden from user input.
 		/// </summary>
 		[JsonProperty(Order = 21)]
-		public List<string> HiddenVariables
+		public ChangeObjectCollection<string> HiddenVariables
 		{
 			get { return mHiddenVariables; }
 		}
@@ -660,7 +741,16 @@ namespace ShopTools
 		public DirectionLeftRightEnum Kerf
 		{
 			get { return mKerf; }
-			set { mKerf = value; }
+			set
+			{
+				bool bChanged = (mKerf != value);
+
+				mKerf = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -678,7 +768,16 @@ namespace ShopTools
 		public string Length
 		{
 			get { return mLength; }
-			set { mLength = value; }
+			set
+			{
+				bool bChanged = (mLength != value);
+
+				mLength = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -707,7 +806,16 @@ namespace ShopTools
 		public string OffsetX
 		{
 			get { return mOffsetX; }
-			set { mOffsetX = value; }
+			set
+			{
+				bool bChanged = (mOffsetX != value);
+
+				mOffsetX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -728,7 +836,16 @@ namespace ShopTools
 		public OffsetLeftRightEnum OffsetXOrigin
 		{
 			get { return mOffsetXOrigin; }
-			set { mOffsetXOrigin = value; }
+			set
+			{
+				bool bChanged = (mOffsetXOrigin != value);
+
+				mOffsetXOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -757,7 +874,16 @@ namespace ShopTools
 		public string OffsetY
 		{
 			get { return mOffsetY; }
-			set { mOffsetY = value; }
+			set
+			{
+				bool bChanged = (mOffsetY != value);
+
+				mOffsetY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -777,7 +903,16 @@ namespace ShopTools
 		public OffsetTopBottomEnum OffsetYOrigin
 		{
 			get { return mOffsetYOrigin; }
-			set { mOffsetYOrigin = value; }
+			set
+			{
+				bool bChanged = (mOffsetYOrigin != value);
+
+				mOffsetYOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -795,7 +930,16 @@ namespace ShopTools
 		public string OperationId
 		{
 			get { return mOperationId; }
-			set { mOperationId = value; }
+			set
+			{
+				bool bChanged = (mOperationId != value);
+
+				mOperationId = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -818,7 +962,16 @@ namespace ShopTools
 		public string OperationName
 		{
 			get { return mOperationName; }
-			set { mOperationName = value; }
+			set
+			{
+				bool bChanged = (mOperationName != value);
+
+				mOperationName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1354,7 +1507,16 @@ namespace ShopTools
 		public string StartOffsetX
 		{
 			get { return mStartOffsetX; }
-			set { mStartOffsetX = value; }
+			set
+			{
+				bool bChanged = (mStartOffsetX != value);
+
+				mStartOffsetX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1379,7 +1541,16 @@ namespace ShopTools
 		public OffsetLeftRightEnum StartOffsetXOrigin
 		{
 			get { return mStartOffsetXOrigin; }
-			set { mStartOffsetXOrigin = value; }
+			set
+			{
+				bool bChanged = (mStartOffsetXOrigin != value);
+
+				mStartOffsetXOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1403,7 +1574,16 @@ namespace ShopTools
 		public string StartOffsetY
 		{
 			get { return mStartOffsetY; }
-			set { mStartOffsetY = value; }
+			set
+			{
+				bool bChanged = (mStartOffsetY != value);
+
+				mStartOffsetY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1427,7 +1607,16 @@ namespace ShopTools
 		public OffsetTopBottomEnum StartOffsetYOrigin
 		{
 			get { return mStartOffsetYOrigin; }
-			set { mStartOffsetYOrigin = value; }
+			set
+			{
+				bool bChanged = (mStartOffsetYOrigin != value);
+
+				mStartOffsetYOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1446,7 +1635,16 @@ namespace ShopTools
 		public string Tool
 		{
 			get { return mTool; }
-			set { mTool = value; }
+			set
+			{
+				bool bChanged = (mTool != value);
+
+				mTool = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1464,7 +1662,16 @@ namespace ShopTools
 		public string Width
 		{
 			get { return mWidth; }
-			set { mWidth = value; }
+			set
+			{
+				bool bChanged = (mWidth != value);
+
+				mWidth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
