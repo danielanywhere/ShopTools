@@ -687,6 +687,7 @@ namespace ShopTools
 				WorkpieceInfoItem.ConfigureFromUserValues(SessionWorkpieceInfo);
 				UpdateWorkpieceUI();
 				mCutListChanged = false;
+				statMessage.Text = "File opened...";
 				UpdateForm();
 
 				this.Refresh();
@@ -1055,6 +1056,11 @@ namespace ShopTools
 				content = JsonConvert.SerializeObject(SessionWorkpieceInfo,
 					Formatting.Indented);
 				File.WriteAllText(filename, content);
+				statMessage.Text = "File saved...";
+			}
+			else
+			{
+				statMessage.Text = "Ready...";
 			}
 			mCutListChanged = false;
 			UpdateForm();
