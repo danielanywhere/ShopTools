@@ -387,10 +387,11 @@ namespace ShopTools
 			{
 				lvItem = null;
 				if(templateItem.IconFilename?.Length > 0 &&
-					File.Exists(templateItem.IconFilename))
+					File.Exists(Path.Combine(UserDataPath, templateItem.IconFilename)))
 				{
 					filenameOnly = Path.GetFileName(templateItem.IconFilename);
-					icon = (Bitmap)Bitmap.FromFile(templateItem.IconFilename);
+					icon = (Bitmap)Bitmap.FromFile(
+						Path.Combine(UserDataPath, templateItem.IconFilename));
 					ilPatterns.Images.Add(filenameOnly, icon);
 					//	Draw the small version of the image.
 					icon = ResizeImage(icon, 24, 24);
