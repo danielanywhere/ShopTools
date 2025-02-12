@@ -20,13 +20,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\Data\OperationActionProperties.json" Link="OperationActionProperties.json">
+    <Content Include="..\..\Data\OperationActionProperties.json" Link="Configuration\OperationActionProperties.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Data\ShopToolsConfig.json" Link="ShopToolsConfig.json">
+    <Content Include="..\..\Data\ShopToolsConfig.json" Link="Configuration\ShopToolsConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Data\ToolTypes.json" Link="ToolTypes.json">
+    <Content Include="..\..\Data\ToolTypes.json" Link="Configuration\ToolTypes.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Images\CutLineIcon.png" Link="Configuration\CutLineIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Images\CutTwoLineIcon.png" Link="Configuration\CutTwoLineIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Images\DrillHoleIcon.png" Link="Configuration\DrillHoleIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Images\EuroHingeCupIcon01.png" Link="Configuration\EuroHingeCupIcon01.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Images\MoveWithoutCuttingIcon.png" Link="Configuration\MoveWithoutCuttingIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -59,6 +74,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ResourceMain.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\" />
   </ItemGroup>
 
 </Project>

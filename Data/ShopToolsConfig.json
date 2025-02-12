@@ -121,7 +121,7 @@
 		{
 			"PatternTemplateId": "ed4b0b5e-3b3e-4a28-97a9-b34b7f026f09",
 			"TemplateName": "Move Bit To XY",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\MoveWithoutCuttingIcon.png",
+			"IconFilename": "MoveWithoutCuttingIcon.png",
 			"DisplayFormat": "{TemplateName} - {OffsetXOrigin:Abbreviation}{OffsetX:+-}, {OffsetYOrigin:Abbreviation}{OffsetY:+-}",
 			"Operations": [
 				{
@@ -132,7 +132,7 @@
 		{
 			"PatternTemplateId": "974479a2-4b3b-4a19-9354-a59b99f82c50",
 			"TemplateName": "Move Bit Angle / Length",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\MoveWithoutCuttingIcon.png",
+			"IconFilename": "MoveWithoutCuttingIcon.png",
 			"DisplayFormat": "{TemplateName} - {Angle}, {Length}",
 			"Operations": [
 				{
@@ -143,7 +143,7 @@
 		{
 			"PatternTemplateId": "26342ee6-786a-4c47-bdbf-01f9afeb290f",
 			"TemplateName": "Single Cut XY",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\CutLineIcon.png",
+			"IconFilename": "CutLineIcon.png",
 			"DisplayFormat": "{TemplateName} - {EndOffsetXOrigin:Abbreviation}{EndOffsetX:+-}, {EndOffsetYOrigin:Abbreviation}{EndOffsetY:+-}",
 			"Operations": [
 				{
@@ -154,7 +154,7 @@
 		{
 			"PatternTemplateId": "8c1c4f33-0230-4c53-b7bc-7e256202973e",
 			"TemplateName": "Single Cut Angle / Length",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\CutLineIcon.png",
+			"IconFilename": "CutLineIcon.png",
 			"DisplayFormat": "{TemplateName} - {Angle}, {Length}",
 			"Operations": [
 				{
@@ -165,7 +165,7 @@
 		{
 			"PatternTemplateId": "53bff6fa-594a-4085-bdb9-d9be379887d9",
 			"TemplateName": "2-Cut XY",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\CutTwoLineIcon.png",
+			"IconFilename": "CutTwoLineIcon.png",
 			"DisplayFormat": "{TemplateName} - {SecondCutEndOffsetXOrigin:Abbreviation}{SecondCutEndOffsetX:+-}, {SecondCutEndOffsetYOrigin:Abbreviation}{SecondCutEndOffsetY:+-}",
 			"SharedVariables": [
 				"Depth", "Kerf", "Tool"
@@ -190,7 +190,7 @@
 		{
 			"PatternTemplateId": "2b5fe17f-90cc-4f5f-b51f-95e161208fd4",
 			"TemplateName": "Drill",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\DrillHoleIcon.png",
+			"IconFilename": "DrillHoleIcon.png",
 			"DisplayFormat": "{TemplateName} - {OffsetXOrigin:Abbreviation}{OffsetX:+-}, {OffsetYOrigin:Abbreviation}{OffsetY:+-}",
 			"Operations": [
 				{
@@ -201,7 +201,7 @@
 		{
 			"PatternTemplateId": "e7a75ade-21c9-445a-adff-10a5a39fe182",
 			"TemplateName": "Hinge Cup Template",
-			"IconFilename": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images\\EuroHingeCupIcon01.png",
+			"IconFilename": "EuroHingeCupIcon01.png",
 			"Remarks": [
 				"The hinge cup template cuts patterns for a ",
 				"screw-mounted concealed euro hinge.",

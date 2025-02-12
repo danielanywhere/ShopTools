@@ -2049,6 +2049,7 @@ namespace ShopTools
 		/// </summary>
 		public static void InitializeApplication()
 		{
+			UserDataInitialize();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -2130,8 +2131,10 @@ namespace ShopTools
 			{
 				//	The configuration filename has not yet been set. Use the app
 				//	directory.
-				mConfigurationFilename = Path.Combine(
-					AppDomain.CurrentDomain.BaseDirectory, "ShopToolsConfig.json");
+				//mConfigurationFilename = Path.Combine(
+				//	AppDomain.CurrentDomain.BaseDirectory, "ShopToolsConfig.json");
+				mConfigurationFilename =
+					Path.Combine(mUserDataPath, "ShopToolsConfig.json");
 			}
 			if(Path.Exists(mConfigurationFilename))
 			{
@@ -2154,7 +2157,7 @@ namespace ShopTools
 			}
 			//	Tool type definitions.
 			filename =
-				Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ToolTypes.json");
+				Path.Combine(mUserDataPath, "ToolTypes.json");
 			if(Path.Exists(filename))
 			{
 				content = File.ReadAllText(filename);
@@ -2174,7 +2177,7 @@ namespace ShopTools
 			}
 			//	Operation action properties.
 			filename =
-				Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+				Path.Combine(mUserDataPath,
 				"OperationActionProperties.json");
 			if(Path.Exists(filename))
 			{
@@ -3444,6 +3447,82 @@ namespace ShopTools
 		//	}
 		//	return result;
 		//}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* UserDataInitialize																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Initialize data in the user data folder.
+		/// </summary>
+		public static void UserDataInitialize()
+		{
+			string appDataFolder = Path.GetDirectoryName(
+				Assembly.GetExecutingAssembly().Location);
+			bool bCopyAll = false;
+			bool bDestExists = false;
+			bool bSourceNewer = false;
+			FileInfo destFile = null;
+			DirectoryInfo directory = null;
+			FileInfo[] files = null;
+
+			mUserDataPath =
+				Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+					"ShopTools");
+			if(!Path.Exists(mUserDataPath))
+			{
+				bCopyAll = true;
+				Directory.CreateDirectory(mUserDataPath);
+			}
+			if(Path.Exists(mUserDataPath))
+			{
+				directory =
+					new DirectoryInfo(Path.Combine(appDataFolder, "Configuration"));
+				files = directory.GetFiles();
+				foreach(FileInfo fileItem in files)
+				{
+					bSourceNewer = false;
+					destFile = new FileInfo(Path.Combine(mUserDataPath, fileItem.Name));
+					bDestExists = destFile.Exists;
+					if(!bDestExists)
+					{
+						bSourceNewer = true;
+					}
+					else
+					{
+						//	Destination file exists.
+						if(fileItem.LastWriteTimeUtc.CompareTo(
+							destFile.LastWriteTimeUtc) > 0)
+						{
+							//	Source is newer.
+							bSourceNewer = true;
+						}
+					}
+					if(bCopyAll || bSourceNewer)
+					{
+						fileItem.CopyTo(Path.Combine(mUserDataPath, fileItem.Name), true);
+					}
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	UserDataPath																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="UserDataPath">UserDataPath</see>.
+		/// </summary>
+		private static string mUserDataPath = "";
+		/// <summary>
+		/// Get/Set the user's configuration data path.
+		/// </summary>
+		public static string UserDataPath
+		{
+			get { return mUserDataPath; }
+			set { mUserDataPath = value; }
+		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
