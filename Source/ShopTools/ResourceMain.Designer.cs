@@ -97,7 +97,7 @@ namespace ShopTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (?i:(?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+))|(?&lt;symbol&gt;\*|(?&lt;!\d)/(?!\d)|\+|\-|\^|\%)|(?&lt;paren&gt;\(|\))|(?&lt;numeric&gt;(-{0,1}(([0-9]+\.[0-9]+)|[0-9]+|\.[0-9]+)))|(?&lt;unit&gt;[&apos;\&quot;]|[a-z]+)).
+        ///   Looks up a localized string similar to (?i:(?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+))|(?&lt;symbol&gt;\*|/|\+|\-|\^|\%)|(?&lt;paren&gt;\(|\))|(?&lt;numeric&gt;(-{0,1}(([0-9]+\.[0-9]+)|[0-9]+|\.[0-9]+)))|(?&lt;unit&gt;[&apos;\&quot;]|[a-z]+)).
         /// </summary>
         internal static string rxMeasurementExpression {
             get {
