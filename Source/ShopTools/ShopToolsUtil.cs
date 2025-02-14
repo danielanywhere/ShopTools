@@ -35,7 +35,6 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 
 using Geometry;
-using System.CodeDom;
 
 namespace ShopTools
 {
@@ -1071,28 +1070,41 @@ namespace ShopTools
 		/// The value, optionally including a specific measurement unit.
 		/// </param>
 		/// <param name="defaultUnit">
-		/// The default measurement unit to apply, if no unit was provided.
+		/// The optional default measurement unit to apply, if no unit was provided.
+		/// If this value is blank, the default base unit is used from the
+		/// currently loaded configuration profile.
 		/// </param>
 		/// <returns>
 		/// The caller's measurement value and unit.
 		/// </returns>
-		public static string GetMeasurementString(string value, string defaultUnit)
+		public static string GetMeasurementString(string value,
+			string defaultUnit = "")
 		{
 			StringBuilder builder = new StringBuilder();
-			MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
+			string unit = "";
 
-			if(value?.Length > 0 && defaultUnit?.Length > 0)
+			if(value?.Length > 0)
 			{
-				measurements =
-					MeasurementCollection.GetMeasurements(value, defaultUnit);
+				if(defaultUnit?.Length > 0)
+				{
+					unit = defaultUnit;
+				}
+				else
+				{
+					unit = BaseUnit(mConfigProfile.DisplayUnits);
+				}
+				builder.Append(
+					MeasurementProcessor.SumInches(value, unit).ToString("0.###"));
+				//measurements = MeasurementProcessor.GetMeasurements(value, unit);
 				switch(defaultUnit)
 				{
 					case "in":
-						builder.Append(measurements.SumInches().ToString("0.###"));
+						//builder.Append(measurements.SumInches().ToString("0.###"));
 						builder.Append("in");
 						break;
 					case "mm":
-						builder.Append(measurements.SumMillimeters().ToString("0.###"));
+						//builder.Append(measurements.SumMillimeters().ToString("0.###"));
 						builder.Append("mm");
 						break;
 				}
@@ -1125,7 +1137,7 @@ namespace ShopTools
 		//	string finalUnit)
 		//{
 		//	StringBuilder builder = new StringBuilder();
-		//	MeasurementCollection measurements = null;
+		//	MeasurementProcessor measurements = null;
 		//	double number = 0d;
 
 		//	if(value?.Length > 0 && defaultUnit?.Length > 0)
@@ -1167,7 +1179,7 @@ namespace ShopTools
 		public static float GetMillimeters(string value)
 		{
 			//	TODO: Variable and expression handling on Util.GetMillimeters.
-			return MeasurementCollection.SumMillimeters(value,
+			return MeasurementProcessor.SumMillimeters(value,
 				BaseUnit(mConfigProfile.DisplayUnits));
 		}
 		//*-----------------------------------------------------------------------*
@@ -1248,11 +1260,11 @@ namespace ShopTools
 		//	FPoint relativeSystemOffset, float scale = 1f)
 		//{
 		//	float height =
-		//		MeasurementCollection.SumMillimeters(mConfigProfile.YDimension,
+		//		MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
 		//			BaseUnit(mConfigProfile.DisplayUnits));
 		//	FPoint result = new FPoint();
 		//	float width =
-		//		MeasurementCollection.SumMillimeters(mConfigProfile.XDimension,
+		//		MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
 		//			BaseUnit(mConfigProfile.DisplayUnits));
 		//	float x = 0f;
 		//	float y = 0f;
@@ -1679,8 +1691,8 @@ namespace ShopTools
 			string unit = BaseUnit(mConfigProfile.DisplayUnits);
 
 			SizeF result = new SizeF(
-				MeasurementCollection.SumMillimeters(mConfigProfile.XDimension, unit),
-				MeasurementCollection.SumMillimeters(mConfigProfile.YDimension, unit));
+				MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension, unit),
+				MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension, unit));
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
@@ -1944,18 +1956,22 @@ namespace ShopTools
 		public static float GetWorkspaceRatio()
 		{
 			float height = 0f;
-			MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			float result = 0f;
 			float width = 0f;
 
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfigProfile.XDimension,
-					BaseUnit(mConfigProfile.DisplayUnits));
-			width = measurements.SumMillimeters();
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfigProfile.YDimension,
-					BaseUnit(mConfigProfile.DisplayUnits));
-			height = measurements.SumMillimeters();
+			width = MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
+				BaseUnit(mConfigProfile.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfigProfile.XDimension,
+			//		BaseUnit(mConfigProfile.DisplayUnits));
+			//width = measurements.SumMillimeters();
+			height = MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
+				BaseUnit(mConfigProfile.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfigProfile.YDimension,
+			//		BaseUnit(mConfigProfile.DisplayUnits));
+			//height = measurements.SumMillimeters();
 
 			if(height != 0f)
 			{
@@ -2070,9 +2086,9 @@ namespace ShopTools
 			bool result = false;
 			float width = 0f;
 
-			width = MeasurementCollection.SumMillimeters(mConfigProfile.XDimension,
+			width = MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
 				BaseUnit(mConfigProfile.DisplayUnits));
-			height = MeasurementCollection.SumMillimeters(mConfigProfile.YDimension,
+			height = MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
 				BaseUnit(mConfigProfile.DisplayUnits));
 
 			result = (width >= height &&
@@ -3238,11 +3254,11 @@ namespace ShopTools
 		//	OffsetLeftRightEnum offsetXType, OffsetTopBottomEnum offsetYType)
 		//{
 		//	float height =
-		//		MeasurementCollection.SumMillimeters(mConfigProfile.YDimension,
+		//		MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
 		//			BaseUnit(mConfigProfile.DisplayUnits));
 		//	FPoint result = new FPoint();
 		//	float width =
-		//		MeasurementCollection.SumMillimeters(mConfigProfile.XDimension,
+		//		MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
 		//			BaseUnit(mConfigProfile.DisplayUnits));
 		//	float x = 0f;
 		//	float y = 0f;

@@ -615,7 +615,7 @@ namespace ShopTools
 		/// </param>
 		private void txtZDimension_TextChanged(object sender, EventArgs e)
 		{
-			//MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			string text = "";
 
 			if(!mControlBusy)
@@ -653,7 +653,7 @@ namespace ShopTools
 		/// </param>
 		private void txtYDimension_TextChanged(object sender, EventArgs e)
 		{
-			//MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			string text = "";
 
 			if(!mControlBusy)
@@ -692,7 +692,7 @@ namespace ShopTools
 		/// </param>
 		private void txtXDimension_TextChanged(object sender, EventArgs e)
 		{
-			//MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			string text = "";
 
 			if(!mControlBusy)
@@ -732,20 +732,26 @@ namespace ShopTools
 			float height = (float)pnlCanvasArea.Height;
 			float maxHeight = 194f;
 			float maxWidth = 345f;
-			MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			float ratio = 0f;
 			float systemHeight = 0f;
 			float systemWidth = 0f;
 			float width = (float)pnlCanvasArea.Width;
 
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfiguration.XDimension,
-					BaseUnit(mConfiguration.DisplayUnits));
-			systemWidth = measurements.SumMillimeters();
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfiguration.YDimension,
-					BaseUnit(mConfiguration.DisplayUnits));
-			systemHeight = measurements.SumMillimeters();
+			systemWidth = MeasurementProcessor.SumMillimeters(
+				mConfiguration.XDimension,
+				BaseUnit(mConfiguration.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfiguration.XDimension,
+			//		BaseUnit(mConfiguration.DisplayUnits));
+			//systemWidth = measurements.SumMillimeters();
+			systemHeight = MeasurementProcessor.SumMillimeters(
+				mConfiguration.YDimension,
+				BaseUnit(mConfiguration.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfiguration.YDimension,
+			//		BaseUnit(mConfiguration.DisplayUnits));
+			//systemHeight = measurements.SumMillimeters();
 
 			if(systemHeight != 0f)
 			{
@@ -788,24 +794,33 @@ namespace ShopTools
 		private void UpdateSummary()
 		{
 			StringBuilder builder = new StringBuilder();
-			MeasurementCollection measurements = null;
+			//MeasurementProcessor measurements = null;
 			float systemDepth = 0f;
 			float systemHeight = 0f;
 			float systemWidth = 0f;
 			string text = "";
 
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfiguration.XDimension,
-					BaseUnit(mConfiguration.DisplayUnits));
-			systemWidth = measurements.SumMillimeters();
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfiguration.YDimension,
-					BaseUnit(mConfiguration.DisplayUnits));
-			systemHeight = measurements.SumMillimeters();
-			measurements =
-				MeasurementCollection.GetMeasurements(mConfiguration.Depth,
-					BaseUnit(mConfiguration.DisplayUnits));
-			systemDepth = measurements.SumMillimeters();
+			systemWidth = MeasurementProcessor.SumMillimeters(
+				mConfiguration.XDimension,
+				BaseUnit(mConfiguration.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfiguration.XDimension,
+			//		BaseUnit(mConfiguration.DisplayUnits));
+			//systemWidth = measurements.SumMillimeters();
+			systemHeight = MeasurementProcessor.SumMillimeters(
+				mConfiguration.YDimension,
+				BaseUnit(mConfiguration.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfiguration.YDimension,
+			//		BaseUnit(mConfiguration.DisplayUnits));
+			//systemHeight = measurements.SumMillimeters();
+			systemDepth = MeasurementProcessor.SumMillimeters(
+				mConfiguration.Depth,
+				BaseUnit(mConfiguration.DisplayUnits));
+			//measurements =
+			//	MeasurementProcessor.GetMeasurements(mConfiguration.Depth,
+			//		BaseUnit(mConfiguration.DisplayUnits));
+			//systemDepth = measurements.SumMillimeters();
 
 			//	Display units.
 			builder.Append("Display: ");

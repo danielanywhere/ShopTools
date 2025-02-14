@@ -550,8 +550,7 @@ namespace ShopTools
 							}
 							break;
 						case "MeasurementString":
-							measurement = GetMeasurementString(textBox.Text,
-								BaseUnit(ConfigProfile.DisplayUnits));
+							measurement = GetMeasurementString(textBox.Text);
 							text = GetAltValue(measurement, textBox.Text, false);
 							if(text.Length == 0)
 							{

@@ -1192,6 +1192,29 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* TestMeasurementUnits																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Test the current method for handling measurement conversion.
+		/// </summary>
+		private static void TestMeasurementUnits()
+		{
+			string expression = "";
+			float number = 0f;
+
+			expression = "((1in + 12mm + 1 5/16) / 52) * 0.01mm";
+			Trace.WriteLine($"Solve: {expression}");
+			number = MeasurementProcessor.SumInches(expression, "in");
+			Trace.WriteLine($" Answer: {number:0.###}in");
+			expression = "14in - 12mm + 1 5/16\" * 0.01mm";
+			Trace.WriteLine($"Solve: {expression}");
+			number = MeasurementProcessor.SumMillimeters(
+				expression, "mm");
+			Trace.WriteLine($" Answer: {number:0.###}mm");
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* TestTransferValues																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1738,6 +1761,7 @@ namespace ShopTools
 			InitializeApplication();
 
 #if InternalTest
+			TestMeasurementUnits();
 			TestAbsoluteTransformation();
 			TestTransferValues();
 #endif

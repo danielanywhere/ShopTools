@@ -490,26 +490,22 @@ namespace ShopTools
 				//	Full Workspace.
 				workpiece.mWorkspaceArea = workspaceArea;
 				//	Length.
-				measurement = GetMeasurementString(workpiece.mUserLength,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserLength);
 				workpiece.mAltLength =
 					GetAltValue(measurement, workpiece.mUserLength);
 				workpieceWidth = GetMillimeters(workpiece.mUserLength);
 				//	Height.
-				measurement = GetMeasurementString(workpiece.mUserWidth,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserWidth);
 				workpiece.mAltWidth =
 					GetAltValue(measurement, workpiece.mUserWidth);
 				workpieceHeight = GetMillimeters(workpiece.mUserWidth);
 				//	Depth.
-				measurement = GetMeasurementString(workpiece.mUserDepth,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserDepth);
 				workpiece.mAltDepth =
 					GetAltValue(measurement, workpiece.mUserDepth);
 				workpiece.mThickness = GetMillimeters(workpiece.mUserDepth);
 				//	X.
-				measurement = GetMeasurementString(workpiece.mUserOffsetX,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserOffsetX);
 				workpiece.mAltOffsetX =
 					GetAltValue(measurement, workpiece.mUserOffsetX);
 				workpieceX = GetMillimeters(workpiece.mUserOffsetX);
@@ -518,8 +514,7 @@ namespace ShopTools
 					workpiece.mUserOffsetXOrigin);
 				workpiece.mArea.Right = workpiece.mArea.Left + workpieceWidth;
 				//	Y.
-				measurement = GetMeasurementString(workpiece.mUserOffsetY,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserOffsetY);
 				workpiece.mAltOffsetY =
 					GetAltValue(measurement, workpiece.mUserOffsetY);
 				workpieceY = GetMillimeters(workpiece.mUserOffsetY);
@@ -528,15 +523,13 @@ namespace ShopTools
 					workpiece.mUserOffsetYOrigin);
 				workpiece.mArea.Bottom = workpiece.mArea.Top + workpieceHeight;
 				//	Router Location X.
-				measurement = GetMeasurementString(workpiece.mUserRouterLocationX,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserRouterLocationX);
 				workpiece.mAltRouterLocationX =
 					GetAltValue(measurement, workpiece.mUserRouterLocationX);
 				workpiece.mRouterLocation.X =
 					GetMillimeters(workpiece.mUserRouterLocationX);
 				//	Router Location Y.
-				measurement = GetMeasurementString(workpiece.mUserRouterLocationY,
-					BaseUnit(ConfigProfile.DisplayUnits));
+				measurement = GetMeasurementString(workpiece.mUserRouterLocationY);
 				workpiece.mAltRouterLocationY =
 					GetAltValue(measurement, workpiece.mUserRouterLocationY);
 				workpiece.mRouterLocation.Y =

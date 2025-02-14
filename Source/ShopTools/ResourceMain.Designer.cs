@@ -70,6 +70,15 @@ namespace ShopTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+)).
+        /// </summary>
+        internal static string rxFraction {
+            get {
+                return ResourceManager.GetString("rxFraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (?&lt;fractional&gt;(((?&lt;number&gt;-{0,1}[0-9]+\s+){0,1}(?&lt;fraction&gt;(?&lt;numerator&gt;[0-9]+)\s*/\s*(?&lt;denominator&gt;[0-9]+)))|(?&lt;number&gt;-{0,1}[0-9]+(\.{0,1}[0-9]+){0,1}))).
         /// </summary>
         internal static string rxFractional {
@@ -84,6 +93,15 @@ namespace ShopTools {
         internal static string rxInterpolatedVariableAndFormat {
             get {
                 return ResourceManager.GetString("rxInterpolatedVariableAndFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (?i:(?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+))|(?&lt;symbol&gt;\*|(?&lt;!\d)/(?!\d)|\+|\-|\^|\%)|(?&lt;paren&gt;\(|\))|(?&lt;numeric&gt;(-{0,1}(([0-9]+\.[0-9]+)|[0-9]+|\.[0-9]+)))|(?&lt;unit&gt;[&apos;\&quot;]|[a-z]+)).
+        /// </summary>
+        internal static string rxMeasurementExpression {
+            get {
+                return ResourceManager.GetString("rxMeasurementExpression", resourceCulture);
             }
         }
         
