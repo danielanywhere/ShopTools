@@ -90,3 +90,10 @@ So, what’s stopping you? Your CNC is ready to go to work. **Why not let
 it?**
 
 Download ShopTools today and make your shop run smoother than ever.
+
+<p>&nbsp;</p>
+
+## Developing With ShopTools
+
+You can see the full SDK documentation for ShopTools here on the GitHub
+site at <https://danielanywhere.github.io/ShopTools>.
