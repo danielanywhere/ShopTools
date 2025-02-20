@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -32,9 +33,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using Newtonsoft.Json;
-
 using Geometry;
+using Newtonsoft.Json;
 
 namespace ShopTools
 {
@@ -49,6 +49,84 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		/// <summary>
+		/// Color used for the non-selected area fill.
+		/// </summary>
+		private const string mColorFill = "#3fff0000";
+		/// <summary>
+		/// Color used for the selected area fill.
+		/// </summary>
+		private const string mColorFillSelected = "#3f0900ff";
+		/// <summary>
+		/// Color used for the non-selected draw pen.
+		/// </summary>
+		private const string mColorDrawPen = "#ffff0000";
+		/// <summary>
+		/// Color used for the selected draw pen.
+		/// </summary>
+		private const string mColorDrawPenSelected = "#ff0000ff";
+		/// <summary>
+		/// Color used for the non-selected move pen.
+		/// </summary>
+		private const string mColorMovePen = "#ffffffff";
+		/// <summary>
+		/// Color used for the selected move pen.
+		/// </summary>
+		private const string mColorMovePenSelected = "#ff0000ff";
+		/// <summary>
+		/// Color used for router background brush.
+		/// </summary>
+		private const string mColorRouterBackgroundBrush = "#7fffffff";
+		/// <summary>
+		/// Color used for router end position pen.
+		/// </summary>
+		private const string mColorRouterEndPen = "#f0ff0000";
+		/// <summary>
+		/// Color used for selected router end position pen.
+		/// </summary>
+		private const string mColorRouterEndPenSelected = "";
+		/// <summary>
+		/// Color used for router start position pen.
+		/// </summary>
+		private const string mColorRouterStartPen = "#f0007f00";
+		/// <summary>
+		/// Color used for selected router start position pen.
+		/// </summary>
+		private const string mColorRouterStartPenSelected = "";
+		/// <summary>
+		/// Color used for the working screen background.
+		/// </summary>
+		private const string mColorScreenBackground = "#113366";
+		/// <summary>
+		/// Color used for the drill target area fill.
+		/// </summary>
+		private const string mColorTargetBackgroundBrush = "#3fffffff";
+		/// <summary>
+		/// Color used for the non-selected drill target pen.
+		/// </summary>
+		private const string mColorTargetPen = "#fffffff0";
+		/// <summary>
+		/// Color used for the selected drill target pen.
+		/// </summary>
+		private const string mColorTargetPenSelected = "#f00000ff";
+		/// <summary>
+		/// Color used for workpiece border pen.
+		/// </summary>
+		private const string mColorWorkpieceBorderPen = "#6e6d11";
+		/// <summary>
+		/// Color used for workpiece brush.
+		/// </summary>
+		private const string mColorWorkpieceBrush = "#333333";
+		/// <summary>
+		/// Color used for workspace background.
+		/// </summary>
+		private const string mColorWorkspaceBackground = "#603e1f";
+		/// <summary>
+		/// Color used for workspace border pen.
+		/// </summary>
+		private const string mColorWorkspaceBorderPen = "#000000";
+
+
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
@@ -77,6 +155,526 @@ namespace ShopTools
 				result = "in";
 			}
 			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* CalculateLayout																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Calculate the start and end locations of the tool and display for each
+		/// of the operations in the caller's operations collection, returning the
+		/// final location of the toolpath.
+		/// </summary>
+		/// <returns>
+		/// Reference to the last known tool location.
+		/// </returns>
+		/// <remarks>
+		/// <para>
+		/// This overload updates the layout patterns for all of the operations of
+		/// all of the patterns in the session workpiece.
+		/// </para>
+		/// <para>
+		/// The SessionWorkpieceInfo / Cuts / Pattern / Operations / Operation /
+		/// LayoutElements collection will contain additional transitions not
+		/// specified in the source collection so the tool head is moved properly
+		/// to an from each operational site.
+		/// </para>
+		/// </remarks>
+		public static FPoint CalculateLayout()
+		{
+			FPoint location =
+				TransformFromAbsolute(mSessionWorkpieceInfo.RouterLocation);
+			foreach(CutProfileItem profileItem in mSessionWorkpieceInfo.Cuts)
+			{
+				profileItem.StartLocation = TransformToAbsolute(location);
+				location =
+					CalculateLayout(profileItem, mSessionWorkpieceInfo, location);
+				profileItem.EndLocation = TransformToAbsolute(location);
+			}
+			return location;
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+	/// <summary>
+		/// Calculate the start and end locations of the tool and display for each
+		/// of the operations in the caller's operations collection, returning a
+		/// collection of locations, each referenced to its associated operation.
+		/// </summary>
+		/// <param name="pattern">
+		/// Reference to the cut pattern to inspect.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the active workpiece used for relative offsets.
+		/// </param>
+		/// <param name="startLocation">
+		/// Reference to the starting location of the pattern, in drawing space.
+		/// </param>
+		/// <returns>
+		/// Reference to the last known tool location.
+		/// </returns>
+		/// <remarks>
+		/// The pattern / Operations / Operation / LayoutElements collection will
+		/// contain additional transitions not specified in the source collection
+		/// so the tool head is moved properly to an from each operational site.
+		/// </remarks>
+		public static FPoint CalculateLayout(CutProfileItem pattern,
+			WorkpieceInfoItem workpiece, FPoint startLocation)
+		{
+			float angle = 0f;
+			float diameter = 0f;
+			FPoint diameterXY = null;
+			float endAngle = 0f;
+			FPoint endOffset = null;
+			float length = 0f;
+			FPoint location = null;
+			FPoint offset = null;
+			float radius = 0f;
+			FPoint radiusXY = null;
+			float startAngle = 0f;
+			FPoint startOffset = null;
+			float width = 0f;
+
+			if(pattern != null)
+			{
+				if(startLocation != null)
+				{
+					location = new FPoint(startLocation);
+				}
+				//	Pattern start.
+				foreach(PatternOperationItem operationItem in pattern.Operations)
+				{
+					operationItem.LayoutElements.Clear();
+					//	Start of Operation.
+					switch(operationItem.Action)
+					{
+						case OperationActionEnum.DrawArcCenterOffsetXY:
+							//	Offset - Center coordinate.
+							//	StartOffset - Starting Point.
+							//	EndOffset - Ending Point.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, offset);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							location = OperationLayoutCollection.AddArcCenterOffsetXY(
+								operationItem, offset, startOffset, endOffset, location);
+							break;
+						case OperationActionEnum.DrawArcCenterOffsetXYAngle:
+							//	Offset - Center coordinate.
+							//	StartOffset - Starting Point.
+							//	Angle - Sweep angle.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, offset);
+							angle = GetAngle(operationItem.Angle);
+							location = OperationLayoutCollection.AddArcCenterOffsetXYAngle(
+								operationItem, offset, startOffset, angle, location);
+							break;
+						case OperationActionEnum.DrawArcCenterRadiusStartEndAngle:
+							//	Offset - Center coordinate.
+							//	Radius - Circle radius from center.
+							//	StartAngle - Starting angle.
+							//	EndAngle - Ending angle.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radius = GetMillimeters(operationItem.Radius);
+							startAngle = GetAngle(operationItem.StartAngle);
+							endAngle = GetAngle(operationItem.EndAngle);
+							location = OperationLayoutCollection.
+								AddArcCenterRadiusStartEndAngle(operationItem,
+								offset, radius, startAngle, endAngle, location);
+							break;
+						case OperationActionEnum.DrawCircleCenterDiameter:
+							//	Offset - Center coordinate.
+							//	Diameter - Circle diameter.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameter = GetMillimeters(operationItem.Diameter);
+							radius = diameter / 2f;
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radius, radius, location, false);
+							break;
+						case OperationActionEnum.DrawCircleCenterRadius:
+							//	Offset - Center coordinate.
+							//	Radius - Circle radius.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radius = GetMillimeters(operationItem.Radius);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radius, radius, location, false);
+							break;
+						case OperationActionEnum.DrawCircleDiameter:
+							//	Offset - Top left XY coordinate.
+							//	Diameter - Circle diameter.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameter = GetMillimeters(operationItem.Diameter);
+							radius = diameter / 2f;
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radius, radius, location, false);
+							break;
+						case OperationActionEnum.DrawCircleRadius:
+							//	Offset - Top left XY coordinate.
+							//	Radius - Circle radius.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radius = GetMillimeters(operationItem.Radius);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radius, radius, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseCenterDiameterXY:
+							//	Offset - Center coordinate.
+							//	DiameterX - Diameter on X-axis.
+							//	DiameterY - Diameter on Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameterXY = PatternOperationItem.GetDiameterXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseCenterRadiusXY:
+							//	Offset - Center coordinate.
+							//	RadiusX - Radius on X-axis.
+							//	RadiusY - Radius on Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radiusXY = PatternOperationItem.GetRadiusXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseDiameterXY:
+							//	Offset - Top left XY coordinate.
+							//	DiameterX - Diameter on the X-axis.
+							//	DiameterY - Diameter on the Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameterXY = PatternOperationItem.GetDiameterXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseLengthWidth:
+							//	Offset - Top left XY coordinate.
+							//	Length - Diameter on the length axis.
+							//	Width - Diameter on the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.GetLengthWidthXYParameter(
+								length, width);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseRadiusXY:
+							//	Offset - Top left XY coordinate.
+							//	RadiusX - Radius on the X-axis.
+							//	RadiusY - Radius on the Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radiusXY = PatternOperationItem.GetRadiusXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location, false);
+							break;
+						case OperationActionEnum.DrawEllipseXY:
+							//	StartOffset - Top left XY coordinate.
+							//	EndOffset - Bottom right XY coordinate.
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, location);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							radiusXY = new FPoint()
+							{
+								X = (endOffset.X - startOffset.X) / 2f,
+								Y = (endOffset.Y - startOffset.Y) / 2f
+							};
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location,
+								false);
+							break;
+						case OperationActionEnum.DrawLineAngleLength:
+							//	Offset - The starting offset of the line.
+							//	Angle - The angle of the line.
+							//	Length - The length of the line.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							angle = GetAngle(operationItem.Angle);
+							length = GetMillimeters(operationItem.Length);
+							endOffset = Trig.GetDestPoint(offset, angle, length);
+							location = OperationLayoutCollection.AddLine(operationItem,
+								offset, endOffset, location);
+							break;
+						case OperationActionEnum.DrawLineLengthWidth:
+							//	Offset - The starting offset of the line.
+							//	Length - The length of the line, in terms of the length
+							//	axis base.
+							//	Width - The width of the line, in terms of the width
+							//	axis base.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							endOffset = PatternOperationItem.
+								GetLengthWidthXYParameter(length, width);
+							//	Convert distance to end coordinate.
+							endOffset.X += offset.X;
+							endOffset.Y += offset.Y;
+							location = OperationLayoutCollection.AddLine(operationItem,
+								offset, endOffset, location);
+							break;
+						case OperationActionEnum.DrawLineXY:
+							//	StartOffset - The starting coordinate of the line.
+							//	EndOffset - The ending coordinate of the line.
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, location);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							location = OperationLayoutCollection.AddLine(operationItem,
+								startOffset, endOffset, location);
+							break;
+						case OperationActionEnum.DrawRectangleCenterLengthWidth:
+							//	Offset - The center coordinate.
+							//	Length - The distance along the length axis.
+							//	Width - The distance along the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.
+								GetLengthWidthXYParameter(length, width);
+							location = OperationLayoutCollection.AddRectangleCenterXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								false);
+							break;
+						case OperationActionEnum.DrawRectangleLengthWidth:
+							//	Offset - The coordinate of the upper left corner.
+							//	Length - The distance along the length axis.
+							//	Width - The distance along the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.
+								GetLengthWidthXYParameter(length, width);
+							location = OperationLayoutCollection.AddRectangleCornerXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								false);
+							break;
+						case OperationActionEnum.DrawRectangleXY:
+							//	StartOffset = The starting coordinate.
+							//	EndOffset - The ending coordinate.
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, location);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							diameterXY = new FPoint(endOffset.X - startOffset.X,
+								endOffset.Y - startOffset.Y);
+							location = OperationLayoutCollection.AddRectangleCornerXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								false);
+							break;
+						case OperationActionEnum.FillCircleCenterDiameter:
+							//	Offset - Center coordinate.
+							//	Diameter - Circle diameter.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameter = GetMillimeters(operationItem.Diameter);
+							radius = diameter / 2f;
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radius, radius, location, true);
+							break;
+						case OperationActionEnum.FillCircleCenterRadius:
+							//	Offset - Center coordinate.
+							//	Radius - Circle radius.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radius = GetMillimeters(operationItem.Radius);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radius, radius, location, true);
+							break;
+						case OperationActionEnum.FillCircleDiameter:
+							//	Offset - Top left XY coordinate.
+							//	Diameter - Circle diameter.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameter = GetMillimeters(operationItem.Diameter);
+							radius = diameter / 2f;
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radius, radius, location, true);
+							break;
+						case OperationActionEnum.FillCircleRadius:
+							//	Offset - Top left XY coordinate.
+							//	Radius - Circle radius.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radius = GetMillimeters(operationItem.Radius);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radius, radius, location, true);
+							break;
+						case OperationActionEnum.FillEllipseCenterDiameterXY:
+							//	Offset - Center coordinate.
+							//	DiameterX - Diameter on X-axis.
+							//	DiameterY - Diameter on Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameterXY = PatternOperationItem.GetDiameterXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, true);
+							break;
+						case OperationActionEnum.FillEllipseCenterRadiusXY:
+							//	Offset - Center coordinate.
+							//	RadiusX - Radius on X-axis.
+							//	RadiusY - Radius on Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radiusXY = PatternOperationItem.GetRadiusXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCenterRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location, true);
+							break;
+						case OperationActionEnum.FillEllipseDiameterXY:
+							//	Offset - Top left XY coordinate.
+							//	DiameterX - Diameter on the X-axis.
+							//	DiameterY - Diameter on the Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							diameterXY = PatternOperationItem.GetDiameterXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, true);
+							break;
+						case OperationActionEnum.FillEllipseLengthWidth:
+							//	Offset - Top left XY coordinate.
+							//	Length - Diameter on the length axis.
+							//	Width - Diameter on the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.GetLengthWidthXYParameter(
+								length, width);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset,
+								diameterXY.X / 2f, diameterXY.Y / 2f, location, true);
+							break;
+						case OperationActionEnum.FillEllipseRadiusXY:
+							//	Offset - Top left XY coordinate.
+							//	RadiusX - Radius on the X-axis.
+							//	RadiusY - Radius on the Y-axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							radiusXY = PatternOperationItem.GetRadiusXYParameter(
+								operationItem, workpiece);
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location, true);
+							break;
+						case OperationActionEnum.FillEllipseXY:
+							//	StartOffset - Top left XY coordinate.
+							//	EndOffset - Bottom right XY coordinate.
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, location);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							radiusXY = new FPoint()
+							{
+								X = (endOffset.X - startOffset.X) / 2f,
+								Y = (endOffset.Y - startOffset.Y) / 2f
+							};
+							location = OperationLayoutCollection.AddEllipseCornerRadius(
+								operationItem, offset, radiusXY.X, radiusXY.Y, location,
+								true);
+							break;
+						case OperationActionEnum.FillRectangleCenterLengthWidth:
+							//	Offset - The center coordinate.
+							//	Length - The distance along the length axis.
+							//	Width - The distance along the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.
+								GetLengthWidthXYParameter(length, width);
+							location = OperationLayoutCollection.AddRectangleCenterXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								false);
+							break;
+						case OperationActionEnum.FillRectangleLengthWidth:
+							//	Offset - The coordinate of the upper left corner.
+							//	Length - The distance along the length axis.
+							//	Width - The distance along the width axis.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							length = GetMillimeters(operationItem.Length);
+							width = GetMillimeters(operationItem.Width);
+							diameterXY = PatternOperationItem.
+								GetLengthWidthXYParameter(length, width);
+							location = OperationLayoutCollection.AddRectangleCornerXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								true);
+							break;
+						case OperationActionEnum.FillRectangleXY:
+							//	StartOffset - The starting coordinate.
+							//	EndOffset - The ending coordinate.
+							startOffset = PatternOperationItem.GetStartOffsetParameter(
+								operationItem, workpiece, location);
+							endOffset = PatternOperationItem.GetEndOffsetParameter(
+								operationItem, workpiece, startOffset);
+							diameterXY = new FPoint(endOffset.X - startOffset.X,
+								endOffset.Y - startOffset.Y);
+							location = OperationLayoutCollection.AddRectangleCornerXY(
+								operationItem, offset, diameterXY.X, diameterXY.Y, location,
+								true);
+							break;
+						case OperationActionEnum.MoveAngleLength:
+							//	Offset - Starting coordinate.
+							//	Angle - The angle at which to move.
+							//	Length - The distance to move.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							angle = GetAngle(operationItem.Angle);
+							length = GetMillimeters(operationItem.Length);
+							endOffset = Trig.GetDestPoint(offset, angle, length);
+							//	This version doesn't include automatically articulated
+							//	moves.
+							//location = OperationLayoutCollection.AddMove(
+							//	operationItem, offset, location);
+							location = OperationLayoutCollection.AddMove(
+								operationItem, endOffset, location);
+							break;
+						case OperationActionEnum.MoveXY:
+							//	Offset - The coordinate to which a transit will occur.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							location = OperationLayoutCollection.AddMove(
+								operationItem, offset, location);
+							break;
+						case OperationActionEnum.PointXY:
+							//	Offset - The coordinate at which the drill will be made.
+							offset = PatternOperationItem.GetOffsetParameter(
+								operationItem, workpiece, location);
+							location = OperationLayoutCollection.AddPoint(
+								operationItem, offset, location);
+							break;
+					}
+					//	End of Operation.
+				}
+			}
+			if(location == null)
+			{
+				location = new FPoint();
+			}
+			return location;
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -239,6 +837,251 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* Dot																																		*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the dot product of two points.
+		/// </summary>
+		/// <param name="value1">
+		/// Reference to the first point to compare.
+		/// </param>
+		/// <param name="value2">
+		/// Reference to the second point to compare.
+		/// </param>
+		/// <returns>
+		/// The dot product of the two input points.
+		/// </returns>
+		public static float Dot(FPoint value1, FPoint value2)
+		{
+			float result = 0f;
+
+			if(value1 != null && value2 != null)
+			{
+				result = value1.X * value2.X + value1.Y * value2.Y;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawEllipseCenterDiameter																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw an ellipse using a center coordinate with X and Y diameters.
+		/// </summary>
+		/// <param name="centerOffset">
+		/// Reference to the coordinate at the center of the circle.
+		/// </param>
+		/// <param name="diameterX">
+		/// The X diameter of the ellipse.
+		/// </param>
+		/// <param name="diameterY">
+		/// The Y diameter of the ellipse.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawEllipseCenterDiameter(FPoint centerOffset,
+			float diameterX, float diameterY, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int iDiameterX = 0;
+			int iDiameterY = 0;
+			int x = 0;
+			int y = 0;
+
+			if(centerOffset != null && graphics != null && pen != null)
+			{
+				if(diameterX != 0f)
+				{
+					iDiameterX = (int)(diameterX * scale);
+				}
+				if(diameterY != 0f)
+				{
+					iDiameterY = (int)(diameterY * scale);
+				}
+				x =
+					(int)((centerOffset.X - (diameterX / 2f)) * scale) + workspaceArea.X;
+				y =
+					(int)((centerOffset.Y - (diameterY / 2f)) * scale) + workspaceArea.Y;
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawEllipseCenterRadius																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw an ellipse using a center coordinate with X and Y diameters.
+		/// </summary>
+		/// <param name="centerOffset">
+		/// Reference to the coordinate at the center of the circle.
+		/// </param>
+		/// <param name="radiusX">
+		/// The X radius of the circle.
+		/// </param>
+		/// <param name="radiusY">
+		/// The Y radius of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawEllipseCenterRadius(FPoint centerOffset,
+			float radiusX, float radiusY, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int iRadiusX2 = 0;
+			int iRadiusY2 = 0;
+			int x = 0;
+			int y = 0;
+
+			if(centerOffset != null && graphics != null && pen != null)
+			{
+				if(radiusX != 0f)
+				{
+					iRadiusX2 = (int)(radiusX * 2f * scale);
+				}
+				if(radiusY != 0f)
+				{
+					iRadiusY2 = (int)(radiusY * 2f * scale);
+				}
+				x = (int)((centerOffset.X - radiusX) * scale) + workspaceArea.X;
+				y = (int)((centerOffset.Y - radiusY) * scale) + workspaceArea.Y;
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawEllipseDiameter																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw an ellipse using the upper left coordinate with X and Y diameters.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="diameterX">
+		/// The X diameter of the circle.
+		/// </param>
+		/// <param name="diameterY">
+		/// The Y diameter of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawEllipseDiameter(FPoint start,
+			float diameterX, float diameterY, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int iDiameterX = 0;
+			int iDiameterY = 0;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null && pen != null)
+			{
+				if(diameterX != 0f)
+				{
+					iDiameterX = (int)(diameterX * scale);
+				}
+				if(diameterY != 0f)
+				{
+					iDiameterY = (int)(diameterY * scale);
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawEllipseRadius																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw an ellipse using the upper left coordinate with X and Y radii.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at the upper left corner of the circle.
+		/// </param>
+		/// <param name="radiusX">
+		/// The X radius of the circle.
+		/// </param>
+		/// <param name="radiusY">
+		/// The Y radius of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawEllipseRadius(FPoint start,
+			float radiusX, float radiusY, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int iRadiusX2 = 0;
+			int iRadiusY2 = 0;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null && pen != null)
+			{
+				if(radiusX != 0f)
+				{
+					iRadiusX2 = (int)(radiusX * 2f * scale);
+				}
+				if(radiusY != 0f)
+				{
+					iRadiusY2 = (int)(radiusY * 2f * scale);
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* DrawHole																															*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -267,7 +1110,7 @@ namespace ShopTools
 		{
 			Rectangle targetArea = new Rectangle(0, 0, 12, 12);
 			Brush targetBackgroundBrush =
-				new SolidBrush(ColorTranslator.FromHtml("#3fffffff"));
+				new SolidBrush(ColorTranslator.FromHtml(mColorTargetBackgroundBrush));
 			Pen targetBorderPen = null;
 			int x1 = 0;
 			int x2 = 0;
@@ -279,12 +1122,12 @@ namespace ShopTools
 				if(selected)
 				{
 					targetBorderPen =
-						new Pen(ColorTranslator.FromHtml("#f00000ff"), 1f);
+						new Pen(ColorTranslator.FromHtml(mColorTargetPenSelected), 1f);
 				}
 				else
 				{
 					targetBorderPen =
-						new Pen(ColorTranslator.FromHtml("#fffffff0"), 1f);
+						new Pen(ColorTranslator.FromHtml(mColorTargetPen), 1f);
 				}
 				targetArea.X =
 					workspaceArea.Left +
@@ -307,57 +1150,6 @@ namespace ShopTools
 			}
 		}
 		//*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* DrawLine																															*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Draw a line using floating point coordinates, scaling, and translation.
-		///// </summary>
-		///// <param name="graphics">
-		///// Reference to the graphics device to which the line will be painted.
-		///// </param>
-		///// <param name="pen">
-		///// Reference to the pen used to draw the line.
-		///// </param>
-		///// <param name="startX">
-		///// Raw starting X position.
-		///// </param>
-		///// <param name="startY">
-		///// Raw starting Y position.
-		///// </param>
-		///// <param name="endX">
-		///// Raw ending X position.
-		///// </param>
-		///// <param name="endY">
-		///// Raw ending Y position.
-		///// </param>
-		///// <param name="workspaceArea">
-		///// Target workspace on the current canvas.
-		///// </param>
-		///// <param name="scale">
-		///// Scale to apply to the points.
-		///// </param>
-		//public static void DrawLine(Graphics graphics, Pen pen,
-		//	float startX, float startY, float endX, float endY,
-		//	Rectangle workspaceArea, float scale)
-		//{
-		//	int x1 = 0;
-		//	int x2 = 0;
-		//	int y1 = 0;
-		//	int y2 = 0;
-
-		//	if(graphics != null && pen != null)
-		//	{
-		//		x1 = (int)(startX * scale) + workspaceArea.X;
-		//		y1 = (int)(startY * scale) + workspaceArea.Y;
-		//		x2 = (int)(endX * scale) + workspaceArea.X;
-		//		y2 = (int)(endY * scale) + workspaceArea.Y;
-		//		graphics.DrawLine(pen,
-		//			new Point(x1, y1), new Point(x2, y2));
-		//	}
-		//}
-		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* DrawLine																															*
@@ -444,150 +1236,228 @@ namespace ShopTools
 			string previousToolName, Graphics g, Rectangle workspaceArea,
 			float scale, bool selected = false)
 		{
-			Pen drawPen = new Pen(ColorTranslator.FromHtml("#ffff0000"), 2f);
-			FPoint endOffset = new FPoint();
-			float endOffsetX = 0f;
-			float endOffsetY = 0f;
-			FPoint location = null;
-			float[] moveDashes = { 4, 4 };
-			Pen movePen = new Pen(ColorTranslator.FromHtml("#ffffffff"), 2f)
-			{
-				DashPattern = moveDashes
-			};
-			FPoint result = new FPoint();
-			FPoint startOffset = new FPoint();
-			float startOffsetX = 0f;
-			float startOffsetY = 0f;
-			SizeF systemSize = GetSystemSize();
-			string toolName = "";
-			FPoint transform = new FPoint();
+			float angleStart = 0f;
+			float angleSweep = 0f;
+			Rectangle area = Rectangle.Empty;
+			Brush brush = null;
+			Pen drawPen = null;
+			Point endCoordinate = Point.Empty;
+			int height = 0;
+			Pen movePen = null;
+			Pen[] penSet = null;
+			FPoint result = new FPoint(startingLocation);
+			Point startCoordinate = Point.Empty;
+			int width = 0;
 
 			if(operation != null && workpiece != null)
 			{
-				if(selected)
+				brush = GetFillBrush(selected);
+				penSet = GetPens(selected);
+				movePen = penSet[(int)PenSetEnum.Move];
+				drawPen = penSet[(int)PenSetEnum.Draw];
+				foreach(OperationLayoutItem layoutItem in operation.LayoutElements)
 				{
-					drawPen = new Pen(ColorTranslator.FromHtml("#ff0000ff"), 2f);
-					movePen = new Pen(ColorTranslator.FromHtml("#ff0000ff"), 2f)
+					switch(layoutItem.ActionType)
 					{
-						DashPattern = moveDashes
-					};
-				}
-				location = FPoint.Clone(startingLocation);
-				toolName = operation.Tool;
-				if(toolName.Length == 0 ||
-					toolName.ToLower() == "{generaltoolname}")
-				{
-					//	General tool specification.
-					toolName = ConfigProfile.GeneralCuttingTool;
-				}
-				else if(toolName.ToLower() == "{previoustoolname}")
-				{
-					//	Previously used tool.
-					toolName = previousToolName;
-				}
-				startOffset = location =
-					GetOperationStartLocation(operation, workpiece, location);
-				startOffsetX = location.X;
-				startOffsetY = location.Y;
-
-				endOffset = location =
-					GetOperationEndLocation(operation, workpiece, location);
-				endOffsetX = location.X;
-				endOffsetY = location.Y;
-				result = location;
-
-				//	We have start and end offsets.
-				switch(operation.Action)
-				{
-					case OperationActionEnum.DrawCircleCenterDiameter:
-					case OperationActionEnum.DrawCircleCenterRadius:
-					case OperationActionEnum.DrawCircleDiameter:
-					case OperationActionEnum.DrawCircleRadius:
-					case OperationActionEnum.DrawEllipseCenterDiameterXY:
-					case OperationActionEnum.DrawEllipseCenterRadiusXY:
-					case OperationActionEnum.DrawEllipseDiameterXY:
-					case OperationActionEnum.DrawEllipseLengthWidth:
-					case OperationActionEnum.DrawEllipseRadiusXY:
-					case OperationActionEnum.DrawEllipseXY:
-						break;
-					case OperationActionEnum.DrawLineAngleLength:
-						if(operation.OffsetX.Length > 0 ||
-							operation.OffsetY.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-							DrawLine(startingLocation, startOffset,
-								g, movePen, workspaceArea, scale);
-						}
-						DrawLine(startOffset, endOffset,
-							g, drawPen, workspaceArea, scale);
-						break;
-					case OperationActionEnum.DrawLineLengthWidth:
-						break;
-					case OperationActionEnum.DrawLineXY:
-						if(operation.StartOffsetX.Length > 0 ||
-							operation.StartOffsetY.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-							DrawLine(startingLocation, startOffset,
-								g, movePen, workspaceArea, scale);
-						}
-						DrawLine(startOffset, endOffset,
-							g, drawPen, workspaceArea, scale);
-						break;
-					case OperationActionEnum.DrawPath:
-					case OperationActionEnum.DrawRectangleLengthWidth:
-						break;
-					case OperationActionEnum.DrawRectangleXY:
-						if(operation.StartOffsetX.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-						}
-						break;
-					case OperationActionEnum.FillCircleCenterDiameter:
-					case OperationActionEnum.FillCircleCenterRadius:
-					case OperationActionEnum.FillCircleDiameter:
-					case OperationActionEnum.FillCircleRadius:
-					case OperationActionEnum.FillEllipseCenterDiameterXY:
-					case OperationActionEnum.FillEllipseCenterRadiusXY:
-					case OperationActionEnum.FillEllipseDiameterXY:
-					case OperationActionEnum.FillEllipseLengthWidth:
-					case OperationActionEnum.FillEllipseRadiusXY:
-						break;
-					case OperationActionEnum.FillEllipseXY:
-						if(operation.StartOffsetX.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-						}
-						break;
-					case OperationActionEnum.FillPath:
-					case OperationActionEnum.FillRectangleLengthWidth:
-						break;
-					case OperationActionEnum.FillRectangleXY:
-						if(operation.StartOffsetX.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-						}
-						break;
-					case OperationActionEnum.MoveAngleLength:
-					case OperationActionEnum.MoveXY:
-						DrawLine(startingLocation, endOffset,
-							g, movePen, workspaceArea, scale);
-						break;
-					case OperationActionEnum.None:
-						break;
-					case OperationActionEnum.PointXY:
-						if(operation.OffsetX.Length > 0 ||
-							operation.OffsetY.Length > 0)
-						{
-							//	The head needs to be moved to the starting position.
-							DrawLine(startingLocation, startOffset,
-								g, movePen, workspaceArea, scale);
-						}
-						DrawHole(endOffset, g, workspaceArea, scale, selected);
-						break;
+						case LayoutActionType.DrawArc:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							angleStart = Trig.RadToDeg(layoutItem.StartAngle);
+							angleSweep = Trig.RadToDeg(
+								layoutItem.EndAngle - layoutItem.StartAngle);
+							width = endCoordinate.X - startCoordinate.X;
+							height = endCoordinate.Y - startCoordinate.Y;
+							area = new Rectangle(
+								startCoordinate.X, startCoordinate.Y, width, height);
+							g.DrawArc(drawPen, area, angleStart, angleStart);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.DrawEllipse:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							width = endCoordinate.X - startCoordinate.X;
+							height = endCoordinate.Y - startCoordinate.Y;
+							area = new Rectangle(
+								startCoordinate.X, startCoordinate.Y, width, height);
+							g.DrawEllipse(drawPen, area);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.DrawLine:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							g.DrawLine(drawPen, startCoordinate, endCoordinate);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.DrawRectangle:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							width = endCoordinate.X - startCoordinate.X;
+							height = endCoordinate.Y - startCoordinate.Y;
+							area = new Rectangle(
+								startCoordinate.X, startCoordinate.Y, width, height);
+							g.DrawRectangle(drawPen, area);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.FillEllipse:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							width = endCoordinate.X - startCoordinate.X;
+							height = endCoordinate.Y - startCoordinate.Y;
+							area = new Rectangle(
+								startCoordinate.X, startCoordinate.Y, width, height);
+							g.FillEllipse(brush, area);
+							g.DrawEllipse(drawPen, area);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.FillRectangle:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							width = endCoordinate.X - startCoordinate.X;
+							height = endCoordinate.Y - startCoordinate.Y;
+							area = new Rectangle(
+								startCoordinate.X, startCoordinate.Y, width, height);
+							g.FillRectangle(brush, area);
+							g.DrawRectangle(drawPen, area);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.Move:
+							startCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayStartOffset, workspaceArea, scale);
+							endCoordinate = GetDisplayCoordinate(
+								layoutItem.DisplayEndOffset, workspaceArea, scale);
+							g.DrawLine(movePen, startCoordinate, endCoordinate);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+						case LayoutActionType.Point:
+							DrawHole(layoutItem.DisplayStartOffset,
+								g, workspaceArea, scale, selected);
+							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							break;
+					}
 				}
 			}
 			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawRectangle																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw a rectangle using the upper left coordinate with length and width.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="length">
+		/// The length of the rectangle.
+		/// </param>
+		/// <param name="width">
+		/// The width of the rectangle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawRectangle(FPoint start,
+			float length, float width, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int iHeight = 0;
+			int iWidth = 0;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null && pen != null)
+			{
+				if(LengthIsX())
+				{
+					if(length != 0f)
+					{
+						iWidth = (int)(length * scale);
+					}
+					if(width != 0f)
+					{
+						iHeight = (int)(width * scale);
+					}
+				}
+				else
+				{
+					if(length != 0f)
+					{
+						iHeight = (int)(length * scale);
+					}
+					if(width != 0f)
+					{
+						iWidth = (int)(width * scale);
+					}
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.DrawRectangle(pen,
+					new Rectangle(x, y, iWidth, iHeight));
+			}
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Draw a rectangle using the upper left coordinate with length and width.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="end">
+		/// Reference to the end coordinate of the rectangle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="pen">
+		/// Reference to the active pen.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		public static void DrawRectangle(FPoint start,
+			FPoint end, Graphics graphics, Pen pen,
+			Rectangle workspaceArea, float scale)
+		{
+			int x1 = 0;
+			int x2 = 0;
+			int y1 = 0;
+			int y2 = 0;
+
+			if(start != null && end != null && graphics != null && pen != null)
+			{
+				x1 = (int)(start.X * scale) + workspaceArea.X;
+				y1 = (int)(start.Y * scale) + workspaceArea.Y;
+				x2 = (int)(end.X * scale) + workspaceArea.X;
+				y2 = (int)(end.Y * scale) + workspaceArea.Y;
+				graphics.DrawRectangle(pen,
+					new Rectangle(x1, y1, x2 - x1, y2 - y1));
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -619,7 +1489,7 @@ namespace ShopTools
 		{
 			Rectangle targetArea = new Rectangle(0, 0, 16, 16);
 			Brush targetBackgroundBrush =
-				new SolidBrush(ColorTranslator.FromHtml("#7fffffff"));
+				new SolidBrush(ColorTranslator.FromHtml(mColorRouterBackgroundBrush));
 			Pen targetBorderPen = null;
 			int x1 = 0;
 			int x2 = 0;
@@ -632,12 +1502,12 @@ namespace ShopTools
 				{
 					case StartEndEnum.End:
 						targetBorderPen =
-							new Pen(ColorTranslator.FromHtml("#f0ff0000"), 2f);
+							new Pen(ColorTranslator.FromHtml(mColorRouterEndPen), 2f);
 						break;
 					case StartEndEnum.Start:
 					default:
 						targetBorderPen =
-							new Pen(ColorTranslator.FromHtml("#f0007f00"), 2f);
+							new Pen(ColorTranslator.FromHtml(mColorRouterStartPen), 2f);
 						break;
 				}
 				targetArea.X =
@@ -682,8 +1552,9 @@ namespace ShopTools
 			Graphics graphics)
 		{
 			Brush backgroundBrush =
-				new SolidBrush(ColorTranslator.FromHtml("#113366"));
-			Pen borderPen = new Pen(new SolidBrush(Color.Black), 2f);
+				new SolidBrush(ColorTranslator.FromHtml(mColorScreenBackground));
+			Pen borderPen =
+				new Pen(ColorTranslator.FromHtml(mColorWorkspaceBorderPen), 2f);
 			int index = 0;
 			Rectangle offsetArea = Rectangle.Empty;
 			FPoint offsetLocation = new FPoint();
@@ -704,12 +1575,14 @@ namespace ShopTools
 			//Pen targetBorderPen =
 			//	new Pen(ColorTranslator.FromHtml("#f0007f00"), 2f);
 			Pen workpieceBorderPen =
-				new Pen(new SolidBrush(ColorTranslator.FromHtml("#6e6d11")), 2f);
+				new Pen(
+					new SolidBrush(
+						ColorTranslator.FromHtml(mColorWorkpieceBorderPen)), 2f);
 			Brush workpieceBrush =
-				new SolidBrush(ColorTranslator.FromHtml("#333333"));
+				new SolidBrush(ColorTranslator.FromHtml(mColorWorkpieceBrush));
 			Rectangle workspaceArea = Rectangle.Empty;
 			Brush workspaceBrush =
-				new SolidBrush(ColorTranslator.FromHtml("#603e1f"));
+				new SolidBrush(ColorTranslator.FromHtml(mColorWorkspaceBackground));
 			Size workspaceSize = Size.Empty;
 			float workspaceRatio = GetWorkspaceRatio();
 			int x1 = 0;
@@ -756,13 +1629,13 @@ namespace ShopTools
 				//	Draw the workpiece.
 				if(FArea.HasVolume(workpieceInfo.Area))
 				{
-					offsetArea =
-						TransformToDisplay(workspaceArea, mSessionWorkpieceInfo);
-					//offsetArea = new Rectangle(
-					//	(int)(workspaceArea.Left + (workpieceInfo.Area.Left * scale)),
-					//	(int)(workspaceArea.Top + (workpieceInfo.Area.Top * scale)),
-					//	(int)(workpieceInfo.Area.Width * scale),
-					//	(int)(workpieceInfo.Area.Height * scale));
+					//offsetArea =
+					//	TransformToDisplay(workspaceArea, mSessionWorkpieceInfo);
+					offsetArea = new Rectangle(
+						workspaceArea.Left + (int)(workpieceInfo.Area.Left * scale),
+						workspaceArea.Top + (int)(workpieceInfo.Area.Top * scale),
+						(int)(workpieceInfo.Area.Width * scale),
+						(int)(workpieceInfo.Area.Height * scale));
 					graphics.FillRectangle(workpieceBrush, offsetArea);
 					graphics.DrawRectangle(workpieceBorderPen, offsetArea);
 				}
@@ -781,35 +1654,6 @@ namespace ShopTools
 				graphics.DrawLine(shadowPen,
 					new Point(x1, y1),
 					new Point(x2, y2));
-				////	Draw the router.
-				//offsetLocation = TransformFromAbsolute(workpieceInfo.RouterLocation);
-				//targetArea.X =
-				//	workspaceArea.Left +
-				//		(int)(offsetLocation.X * scale) - (targetArea.Width / 2);
-				//targetArea.Y =
-				//	workspaceArea.Top +
-				//		(int)(offsetLocation.Y * scale) - (targetArea.Height / 2);
-				////offsetLocation =
-				////	GetOffsetDisplayFromOrigin(
-				////		workpieceInfo.RouterLocation, scale);
-				////targetArea.X =
-				////	workspaceArea.Left +
-				////		(int)offsetLocation.X - (targetArea.Width / 2);
-				////targetArea.Y =
-				////	workspaceArea.Top +
-				////		(int)offsetLocation.Y - (targetArea.Height / 2);
-				//graphics.FillEllipse(targetBackgroundBrush, targetArea);
-				//graphics.DrawEllipse(targetBorderPen, targetArea);
-				//x1 = x2 = targetArea.Left + (targetArea.Width / 2);
-				//y1 = targetArea.Top;
-				//y2 = targetArea.Bottom;
-				//graphics.DrawLine(targetBorderPen,
-				//	new Point(x1, y1), new Point(x2, y2));
-				//x1 = targetArea.Left;
-				//x2 = targetArea.Right;
-				//y1 = y2 = targetArea.Top + (targetArea.Height / 2);
-				//graphics.DrawLine(targetBorderPen,
-				//	new Point(x1, y1), new Point(x2, y2));
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -858,6 +1702,425 @@ namespace ShopTools
 				}
 			}
 			return builder.ToString();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillEllipseCenterDiameter																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw a filled ellipse using a center coordinate with X and Y diameters.
+		/// </summary>
+		/// <param name="centerOffset">
+		/// Reference to the coordinate at the center of the circle.
+		/// </param>
+		/// <param name="diameterX">
+		/// The X diameter of the ellipse.
+		/// </param>
+		/// <param name="diameterY">
+		/// The Y diameter of the ellipse.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillEllipseCenterDiameter(FPoint centerOffset,
+			float diameterX, float diameterY, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			int iDiameterX = 0;
+			int iDiameterY = 0;
+			Pen pen = null;
+			int x = 0;
+			int y = 0;
+
+			if(centerOffset != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected), 2f);
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen), 2f);
+				}
+				if(diameterX != 0f)
+				{
+					iDiameterX = (int)(diameterX * scale);
+				}
+				if(diameterY != 0f)
+				{
+					iDiameterY = (int)(diameterY * scale);
+				}
+				x =
+					(int)((centerOffset.X - (diameterX / 2f)) * scale) + workspaceArea.X;
+				y =
+					(int)((centerOffset.Y - (diameterY / 2f)) * scale) + workspaceArea.Y;
+				graphics.FillEllipse(brush,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillEllipseCenterRadius																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw a filled ellipse using a center coordinate with X and Y diameters.
+		/// </summary>
+		/// <param name="centerOffset">
+		/// Reference to the coordinate at the center of the circle.
+		/// </param>
+		/// <param name="radiusX">
+		/// The X radius of the circle.
+		/// </param>
+		/// <param name="radiusY">
+		/// The Y radius of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillEllipseCenterRadius(FPoint centerOffset,
+			float radiusX, float radiusY, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			int iRadiusX2 = 0;
+			int iRadiusY2 = 0;
+			Pen pen = null;
+			int x = 0;
+			int y = 0;
+
+			if(centerOffset != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected), 2f);
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen), 2f);
+				}
+				if(radiusX != 0f)
+				{
+					iRadiusX2 = (int)(radiusX * 2f * scale);
+				}
+				if(radiusY != 0f)
+				{
+					iRadiusY2 = (int)(radiusY * 2f * scale);
+				}
+				x = (int)((centerOffset.X - radiusX) * scale) + workspaceArea.X;
+				y = (int)((centerOffset.Y - radiusY) * scale) + workspaceArea.Y;
+				graphics.FillEllipse(brush,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillEllipseDiameter																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw a filled ellipse using the upper left coordinate with X and Y
+		/// diameters.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="diameterX">
+		/// The X diameter of the circle.
+		/// </param>
+		/// <param name="diameterY">
+		/// The Y diameter of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillEllipseDiameter(FPoint start,
+			float diameterX, float diameterY, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			int iDiameterX = 0;
+			int iDiameterY = 0;
+			Pen pen = null;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected), 2f);
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen), 2f);
+				}
+				if(diameterX != 0f)
+				{
+					iDiameterX = (int)(diameterX * scale);
+				}
+				if(diameterY != 0f)
+				{
+					iDiameterY = (int)(diameterY * scale);
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.FillEllipse(brush,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iDiameterX, iDiameterY));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillEllipseRadius																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw a filledellipse using the upper left coordinate with X and Y
+		/// radii.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at the upper left corner of the circle.
+		/// </param>
+		/// <param name="radiusX">
+		/// The X radius of the circle.
+		/// </param>
+		/// <param name="radiusY">
+		/// The Y radius of the circle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillEllipseRadius(FPoint start,
+			float radiusX, float radiusY, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			int iRadiusX2 = 0;
+			int iRadiusY2 = 0;
+			Pen pen = null;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected), 2f);
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen), 2f);
+				}
+				if(radiusX != 0f)
+				{
+					iRadiusX2 = (int)(radiusX * 2f * scale);
+				}
+				if(radiusY != 0f)
+				{
+					iRadiusY2 = (int)(radiusY * 2f * scale);
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.FillEllipse(brush,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+				graphics.DrawEllipse(pen,
+					new Rectangle(x, y, iRadiusX2, iRadiusY2));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillRectangle																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Fill a rectangle using the upper left coordinate with length and width.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="length">
+		/// The length of the rectangle.
+		/// </param>
+		/// <param name="width">
+		/// The width of the rectangle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillRectangle(FPoint start,
+			float length, float width, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			int iHeight = 0;
+			int iWidth = 0;
+			Pen pen = null;
+			int x = 0;
+			int y = 0;
+
+			if(start != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected));
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen));
+				}
+				if(LengthIsX())
+				{
+					if(length != 0f)
+					{
+						iWidth = (int)(length * scale);
+					}
+					if(width != 0f)
+					{
+						iHeight = (int)(width * scale);
+					}
+				}
+				else
+				{
+					if(length != 0f)
+					{
+						iHeight = (int)(length * scale);
+					}
+					if(width != 0f)
+					{
+						iWidth = (int)(width * scale);
+					}
+				}
+				x = (int)(start.X * scale) + workspaceArea.X;
+				y = (int)(start.Y * scale) + workspaceArea.Y;
+				graphics.FillRectangle(brush,
+					new Rectangle(x, y, iWidth, iHeight));
+				graphics.DrawRectangle(pen,
+					new Rectangle(x, y, iWidth, iHeight));
+			}
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Fill a rectangle using the upper left coordinate with length and width.
+		/// </summary>
+		/// <param name="start">
+		/// Reference to the coordinate at upper left corner.
+		/// </param>
+		/// <param name="end">
+		/// Reference to the end coordinate of the rectangle.
+		/// </param>
+		/// <param name="graphics">
+		/// Reference to the active graphics device.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The local drawing workspace in which the shape will be drawn.
+		/// </param>
+		/// <param name="scale">
+		/// The scale to apply to the shape.
+		/// </param>
+		/// <param name="selected">
+		/// Optional value indicating whether the shape is selected in the
+		/// editor.
+		/// </param>
+		public static void FillRectangle(FPoint start,
+			FPoint end, Graphics graphics,
+			Rectangle workspaceArea, float scale, bool selected = false)
+		{
+			Brush brush = null;
+			Pen pen = null;
+			int x1 = 0;
+			int x2 = 0;
+			int y1 = 0;
+			int y2 = 0;
+
+			if(start != null && end != null && graphics != null)
+			{
+				if(selected)
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFillSelected));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPenSelected));
+				}
+				else
+				{
+					brush = new SolidBrush(ColorTranslator.FromHtml(mColorFill));
+					pen = new Pen(ColorTranslator.FromHtml(mColorDrawPen));
+				}
+				x1 = (int)(start.X * scale) + workspaceArea.X;
+				y1 = (int)(start.Y * scale) + workspaceArea.Y;
+				x2 = (int)(end.X * scale) + workspaceArea.X;
+				y2 = (int)(end.Y * scale) + workspaceArea.Y;
+				graphics.FillRectangle(brush,
+					new Rectangle(x1, y1, x2 - x1, y2 - y1));
+				graphics.DrawRectangle(pen,
+					new Rectangle(x1, y1, x2 - x1, y2 - y1));
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1017,6 +2280,89 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* GetClosestPoint																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the closest point between the caller's line and an arbitrary
+		/// point.
+		/// </summary>
+		/// <param name="line">
+		/// Reference to the line to be checked.
+		/// </param>
+		/// <param name="point">
+		/// Reference to the point to test for proximity.
+		/// </param>
+		/// <returns>
+		/// Reference to the closest point between the caller's line and an
+		/// arbitrary external point, if valid. Otherwise, null.
+		/// </returns>
+		public static FPoint GetClosestPoint(FLine line, FPoint point)
+		{
+			FPoint ab = null;
+			float abab = 0f;
+			FPoint ac = null;
+			float acab = 0f;
+			FPoint result = null;
+			float t = 0f;
+
+			if(!FLine.IsEmpty(line) && point != null)
+			{
+				ab = line.PointB - line.PointA;
+				ac = point - line.PointA;
+
+				abab = Dot(ab, ab);
+				acab = Dot(ac, ab);
+
+				if(abab != 0f)
+				{
+					t = acab / abab;
+				}
+
+				// Clamp t to ensure the closest point stays within the segment [A, B].
+				t = Math.Max(0, Math.Min(1, t));
+
+				result = line.PointA + ab * t;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetDisplayCoordinate																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the scaled representation of the caller's drawing space
+		/// coordinate for use on the current display canvas.
+		/// </summary>
+		/// <param name="offset">
+		/// Reference to the drawing space offset to convert.
+		/// </param>
+		/// <param name="workspaceArea">
+		/// The physical workspace onto which the drawing is being projected.
+		/// </param>
+		/// <param name="scale">
+		/// The current scale.
+		/// </param>
+		/// <returns>
+		/// The coordinate on the target canvas cooresponding to the caller's
+		/// offset.
+		/// </returns>
+		public static Point GetDisplayCoordinate(FPoint offset,
+			Rectangle workspaceArea, float scale)
+		{
+			Point result = Point.Empty;
+
+			if(offset != null && !workspaceArea.IsEmpty)
+			{
+				result = new Point(
+					workspaceArea.X + (int)(offset.X * scale),
+					workspaceArea.Y + (int)(offset.Y * scale));
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* GetFloatString																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1081,7 +2427,6 @@ namespace ShopTools
 			string defaultUnit = "")
 		{
 			StringBuilder builder = new StringBuilder();
-			//MeasurementProcessor measurements = null;
 			string unit = "";
 
 			if(value?.Length > 0)
@@ -1094,17 +2439,17 @@ namespace ShopTools
 				{
 					unit = BaseUnit(mConfigProfile.DisplayUnits);
 				}
-				builder.Append(
-					MeasurementProcessor.SumInches(value, unit).ToString("0.###"));
-				//measurements = MeasurementProcessor.GetMeasurements(value, unit);
-				switch(defaultUnit)
+				switch(unit)
 				{
 					case "in":
-						//builder.Append(measurements.SumInches().ToString("0.###"));
+						builder.Append(
+							MeasurementProcessor.SumInches(value, unit).ToString("0.###"));
 						builder.Append("in");
 						break;
 					case "mm":
-						//builder.Append(measurements.SumMillimeters().ToString("0.###"));
+						builder.Append(
+							MeasurementProcessor.
+								SumMillimeters(value, unit).ToString("0.###"));
 						builder.Append("mm");
 						break;
 				}
@@ -1112,56 +2457,6 @@ namespace ShopTools
 			return builder.ToString();
 		}
 		//*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* GetMeasurementString																									*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the full measurement string corresponding to the caller's value
-		///// and default unit.
-		///// </summary>
-		///// <param name="value">
-		///// The value, optionally including a specific measurement unit.
-		///// </param>
-		///// <param name="defaultUnit">
-		///// The default measurement unit to apply, if no unit was provided.
-		///// </param>
-		///// <param name="finalUnit">
-		///// The name of the unit to which the value will be converted for return
-		///// to the caller.
-		///// </param>
-		///// <returns>
-		///// The caller's measurement value and unit.
-		///// </returns>
-		//public static string GetMeasurementString(string value, string defaultUnit,
-		//	string finalUnit)
-		//{
-		//	StringBuilder builder = new StringBuilder();
-		//	MeasurementProcessor measurements = null;
-		//	double number = 0d;
-
-		//	if(value?.Length > 0 && defaultUnit?.Length > 0)
-		//	{
-		//		measurements = GetMeasurements(value, defaultUnit);
-		//		switch(defaultUnit)
-		//		{
-		//			case "in":
-		//				number = mSessionConverter.Convert(
-		//					measurements.SumInches(), "in", finalUnit);
-		//				builder.Append(number.ToString("0.###"));
-		//				builder.Append(finalUnit);
-		//				break;
-		//			case "mm":
-		//				number = mSessionConverter.Convert(
-		//					measurements.SumMillimeters(), "mm", finalUnit);
-		//				builder.Append(number.ToString("0.###"));
-		//				builder.Append(finalUnit);
-		//				break;
-		//		}
-		//	}
-		//	return builder.ToString();
-		//}
-		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* GetMillimeters																												*
@@ -1178,7 +2473,6 @@ namespace ShopTools
 		/// </returns>
 		public static float GetMillimeters(string value)
 		{
-			//	TODO: Variable and expression handling on Util.GetMillimeters.
 			return MeasurementProcessor.SumMillimeters(value,
 				BaseUnit(mConfigProfile.DisplayUnits));
 		}
@@ -1232,444 +2526,133 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		////*-----------------------------------------------------------------------*
-		////* GetOffsetDisplayFromOrigin																						*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the display coordinates of the offset from the currently defined
-		///// origin, given a relative system offset and scaling factor.
-		///// </summary>
-		///// <param name="relativeSystemOffset">
-		///// The relative system offset from which to determine the current position
-		///// in relation to the defined origin.
-		///// </param>
-		///// <param name="scale">
-		///// The optional scale to apply to the resulting coordinates.
-		///// </param>
-		///// <returns>
-		///// A point the specified distance from the currently defined origin,
-		///// scaled by the optional factor.
-		///// </returns>
-		///// <remarks>
-		///// The physical origin is the place on the working table where the
-		///// coordinates are said to be X:0; Y:0, while the display origin is the
-		///// same point expressed as a distance from the top left corner of the
-		///// visual representation.
-		///// </remarks>
-		//public static FPoint GetOffsetDisplayFromOrigin(
-		//	FPoint relativeSystemOffset, float scale = 1f)
-		//{
-		//	float height =
-		//		MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
-		//			BaseUnit(mConfigProfile.DisplayUnits));
-		//	FPoint result = new FPoint();
-		//	float width =
-		//		MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
-		//			BaseUnit(mConfigProfile.DisplayUnits));
-		//	float x = 0f;
-		//	float y = 0f;
-
-		//	//	X.
-		//	switch(mConfigProfile.XYOrigin)
-		//	{
-		//		case OriginLocationEnum.BottomLeft:
-		//		case OriginLocationEnum.Left:
-		//		case OriginLocationEnum.TopLeft:
-		//			x = 0f;
-		//			break;
-		//		case OriginLocationEnum.Bottom:
-		//		case OriginLocationEnum.Center:
-		//		case OriginLocationEnum.None:
-		//		case OriginLocationEnum.Top:
-		//			x = width / 2f;
-		//			break;
-		//		case OriginLocationEnum.BottomRight:
-		//		case OriginLocationEnum.Right:
-		//		case OriginLocationEnum.TopRight:
-		//			x = width;
-		//			break;
-		//	}
-		//	//	Y.
-		//	switch(mConfigProfile.XYOrigin)
-		//	{
-		//		case OriginLocationEnum.Top:
-		//		case OriginLocationEnum.TopLeft:
-		//		case OriginLocationEnum.TopRight:
-		//			y = 0f;
-		//			break;
-		//		case OriginLocationEnum.Center:
-		//		case OriginLocationEnum.Left:
-		//		case OriginLocationEnum.None:
-		//		case OriginLocationEnum.Right:
-		//			y = height / 2f;
-		//			break;
-		//		case OriginLocationEnum.Bottom:
-		//		case OriginLocationEnum.BottomLeft:
-		//		case OriginLocationEnum.BottomRight:
-		//			y = height;
-		//			break;
-		//	}
-		//	//	Apply offset.
-		//	if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//	{
-		//		x -= relativeSystemOffset.X;
-		//	}
-		//	else
-		//	{
-		//		x += relativeSystemOffset.X;
-		//	}
-		//	if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//	{
-		//		y -= relativeSystemOffset.Y;
-		//	}
-		//	else
-		//	{
-		//		y += relativeSystemOffset.Y;
-		//	}
-		//	if(scale != 1f)
-		//	{
-		//		//	Apply a scale.
-		//		x *= scale;
-		//		y *= scale;
-		//	}
-		//	result.X = x;
-		//	result.Y = y;
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* GetOffsetDisplayFromWorkpiece																					*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the display coordinates of the offset from the currently
-		///// positioned workpiece, given a relative system offset and scaling
-		///// factor.
-		///// </summary>
-		///// <param name="workpiece">
-		///// Reference to the workpiece information for which the offset is being
-		///// transformed.
-		///// </param>
-		///// <param name="relativeSystemOffset">
-		///// The relative system offset from which to determine the current position
-		///// in relation to the defined workpiece.
-		///// </param>
-		///// <param name="scale">
-		///// The optional scale to apply to the resulting coordinates.
-		///// </param>
-		///// <returns>
-		///// A point the specified distance from the currently defined workpiece,
-		///// scaled by the optional factor.
-		///// </returns>
-		///// <remarks>
-		///// The physical origin is the place on the working table where the
-		///// coordinates are said to be X:0; Y:0, and the material origin is the
-		///// corner of the material closest to the physical origin, while the
-		///// display origin is the same point expressed as a distance from the
-		///// top left corner of the visual screen.
-		///// </remarks>
-		//public static FPoint GetOffsetDisplayFromWorkpiece(
-		//	WorkpieceInfoItem workpiece, FPoint relativeSystemOffset,
-		//	float scale = 1f)
-		//{
-		//	FPoint result = null;
-
-		//	if(workpiece != null && relativeSystemOffset != null)
-		//	{
-		//		result = GetOffsetDisplayFromOrigin(
-		//			new FPoint(workpiece.Area.X + relativeSystemOffset.X,
-		//				workpiece.Area.Y + relativeSystemOffset.Y), scale);
-		//	}
-		//	if(result == null)
-		//	{
-		//		result = new FPoint();
-		//	}
-		//	return result;
-		//}
-		////*-----------------------------------------------------------------------*
-
 		//*-----------------------------------------------------------------------*
-		//* GetOperationEndLocation																								*
+		//* GetPens																																*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return the end offset location or extent for the represented operation
-		/// and its associated variables.
+		/// Return the pen set for the operation paint appropriate for the
+		/// specified selection state.
 		/// </summary>
-		/// <param name="operation">
-		/// Reference to the operation to inspect.
-		/// </param>
-		/// <param name="workpiece">
-		/// Reference to the workpiece against which relative actions are taken.
-		/// </param>
-		/// <param name="location">
-		/// Reference to the virtual default location.
+		/// <param name="selected">
+		/// Optional value indicating whether the pens are for drawing in the
+		/// selected state. Default = true.
 		/// </param>
 		/// <returns>
-		/// Reference to the starting offset of the operation, given the action
-		/// and the filled user variables.
+		/// Reference to an array of pens for use with the specified parameters.
+		/// 0 - Move Pen; 1 - Draw Pen;
 		/// </returns>
-		public static FPoint GetOperationEndLocation(
-			PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint location)
+		public static Pen[] GetPens(bool selected = false)
 		{
-			float angle = 0f;
-			float length = 0f;
-			FPoint newLocation = null;
-			float positionX = 0f;
-			float positionY = 0f;
-			FPoint result = new FPoint();
-			float width = 0f;
+			Pen[] result = new Pen[2];
+			float[] moveDashes = { 4, 4 };
 
-			if(operation != null)
+			if(selected)
 			{
-				//	Extent.
-				switch(operation.Action)
+				//	Move Pen.
+				result[(int)PenSetEnum.Move] = new Pen(
+					ColorTranslator.FromHtml(mColorMovePenSelected), 2f)
 				{
-					case OperationActionEnum.DrawCircleCenterDiameter:
-					case OperationActionEnum.DrawCircleCenterRadius:
-					case OperationActionEnum.DrawCircleDiameter:
-					case OperationActionEnum.DrawCircleRadius:
-					case OperationActionEnum.DrawEllipseCenterDiameterXY:
-					case OperationActionEnum.DrawEllipseCenterRadiusXY:
-					case OperationActionEnum.DrawEllipseDiameterXY:
-					case OperationActionEnum.DrawEllipseLengthWidth:
-					case OperationActionEnum.DrawEllipseRadiusXY:
-					case OperationActionEnum.DrawEllipseXY:
-					case OperationActionEnum.FillCircleCenterDiameter:
-					case OperationActionEnum.FillCircleCenterRadius:
-					case OperationActionEnum.FillCircleDiameter:
-					case OperationActionEnum.FillCircleRadius:
-					case OperationActionEnum.FillEllipseCenterDiameterXY:
-					case OperationActionEnum.FillEllipseCenterRadiusXY:
-					case OperationActionEnum.FillEllipseDiameterXY:
-					case OperationActionEnum.FillEllipseLengthWidth:
-					case OperationActionEnum.FillEllipseRadiusXY:
-					case OperationActionEnum.FillEllipseXY:
-					case OperationActionEnum.PointXY:
-						//	End = Start.
-						positionX = location.X;
-						positionY = location.Y;
-						break;
-					case OperationActionEnum.DrawLineAngleLength:
-					case OperationActionEnum.MoveAngleLength:
-						//	Angle, Length.
-						angle = GetAngle(operation.Angle);
-						length = GetMillimeters(operation.Length);
-						newLocation = Trig.GetDestPoint(location, angle, length);
-						positionX = newLocation.X;
-						positionY = newLocation.Y;
-						break;
-					case OperationActionEnum.DrawLineLengthWidth:
-					case OperationActionEnum.DrawRectangleLengthWidth:
-					case OperationActionEnum.FillRectangleLengthWidth:
-						//	Length, Width.
-						length = GetMillimeters(operation.Length);
-						width = GetMillimeters(operation.Width);
-						if(ConfigProfile.AxisXIsOpenEnded)
-						{
-							positionX += length;
-							positionY += width;
-						}
-						else
-						{
-							positionX += width;
-							positionY += length;
-						}
-						break;
-					case OperationActionEnum.DrawLineXY:
-					case OperationActionEnum.DrawRectangleXY:
-					case OperationActionEnum.FillRectangleXY:
-						//	EndOffsetX, EndOffsetY.
-						//	X.
-						if(operation.EndOffsetX.Length > 0 ||
-							operation.EndOffsetXOrigin != OffsetLeftRightEnum.None)
-						{
-							//	End offset was specified.
-							positionX = GetMillimeters(operation.EndOffsetX);
-							positionX = TranslateOffset(workpiece.Area, positionX,
-								operation.EndOffsetXOrigin, location.X);
-						}
-						else
-						{
-							positionX = location.X;
-						}
-						//	Y.
-						if(operation.EndOffsetY.Length > 0 ||
-							(operation.EndOffsetYOrigin != OffsetTopBottomEnum.None))
-						{
-							//	End offset was specified.
-							positionY = GetMillimeters(operation.EndOffsetY);
-							positionY = TranslateOffset(workpiece.Area, positionY,
-								operation.EndOffsetYOrigin, location.Y);
-						}
-						else
-						{
-							positionY = location.Y;
-						}
-						break;
-					case OperationActionEnum.MoveXY:
-						//	Ending OffsetX, OffsetY.
-						//	X.
-						if(operation.OffsetX.Length > 0 ||
-							operation.OffsetXOrigin != OffsetLeftRightEnum.None)
-						{
-							//	End offset was specified.
-							positionX = GetMillimeters(operation.OffsetX);
-							positionX = TranslateOffset(workpiece.Area, positionX,
-								operation.OffsetXOrigin, location.X);
-						}
-						else
-						{
-							positionX = location.X;
-						}
-						//	Y.
-						if(operation.OffsetY.Length > 0 ||
-							operation.OffsetYOrigin != OffsetTopBottomEnum.None)
-						{
-							//	End offset was specified.
-							positionY = GetMillimeters(operation.OffsetY);
-							positionY = TranslateOffset(workpiece.Area, positionY,
-								operation.OffsetYOrigin, location.Y);
-						}
-						else
-						{
-							positionY = location.Y;
-						}
-						break;
-				}
-				//	Update the location from the ending location.
-				result.X = positionX;
-				result.Y = positionY;
+					DashPattern = moveDashes
+				};
+				//	Draw Pen.
+				result[(int)PenSetEnum.Draw] = new Pen(
+					ColorTranslator.FromHtml(mColorDrawPenSelected), 2f);
+			}
+			else
+			{
+				//	Move Pen.
+				result[(int)PenSetEnum.Move] =
+					new Pen(ColorTranslator.FromHtml(mColorMovePen), 2f)
+				{
+					DashPattern = moveDashes
+				};
+				//	Draw Pen.
+				result[(int)PenSetEnum.Draw] =
+					new Pen(ColorTranslator.FromHtml(mColorDrawPen), 2f);
 			}
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* GetOperationStartLocation																							*
+		//* GetFillBrush																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return the start offset location for the represented operation and its
-		/// associated variables.
+		/// Return a solid brush used to fill the active area.
 		/// </summary>
-		/// <param name="operation">
-		/// Reference to the operation to inspect.
-		/// </param>
-		/// <param name="workpiece">
-		/// Reference to the workpiece against which relative actions are taken.
-		/// </param>
-		/// <param name="location">
-		/// Reference to the virtual default location.
+		/// <param name="selected">
+		/// Optional value indicating whether the area will be selected.
+		/// Default = false.
 		/// </param>
 		/// <returns>
-		/// Reference to the starting offset of the operation, given the action
-		/// and the filled user variables.
+		/// Reference to the brush used to fill the active area.
 		/// </returns>
-		public static FPoint GetOperationStartLocation(
-			PatternOperationItem operation,
+		public static Brush GetFillBrush(bool selected = false)
+		{
+			Brush result = new SolidBrush(
+				(selected ?
+				ColorTranslator.FromHtml(mColorFillSelected) :
+				ColorTranslator.FromHtml(mColorFill)
+				));
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetRawEndOffset																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the calculated end offset from the caller's starting location.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation in focus.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the workpiece information item.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location.
+		/// </param>
+		/// <returns>
+		/// Reference to a coordinate representing the ending offset for the
+		/// specified operation.
+		/// </returns>
+		public static FPoint GetRawEndOffset(PatternOperationItem operation,
 			WorkpieceInfoItem workpiece, FPoint location)
 		{
 			float positionX = 0f;
 			float positionY = 0f;
 			FPoint result = new FPoint();
 
-			if(location != null)
+			if(operation != null && workpiece != null && location != null)
 			{
-				positionX = location.X;
-				positionY = location.Y;
-			}
-			if(operation != null)
-			{
-				//	StartX,Y.
-				switch(operation.Action)
+				//	EndOffsetX, EndOffsetY.
+				//	X.
+				if(operation.EndOffsetX.Length > 0 ||
+					operation.EndOffsetXOrigin != OffsetLeftRightEnum.None)
 				{
-					case OperationActionEnum.DrawCircleCenterDiameter:
-					case OperationActionEnum.DrawCircleCenterRadius:
-					case OperationActionEnum.DrawCircleDiameter:
-					case OperationActionEnum.DrawCircleRadius:
-					case OperationActionEnum.DrawEllipseCenterDiameterXY:
-					case OperationActionEnum.DrawEllipseCenterRadiusXY:
-					case OperationActionEnum.DrawEllipseDiameterXY:
-					case OperationActionEnum.DrawEllipseLengthWidth:
-					case OperationActionEnum.DrawEllipseRadiusXY:
-					case OperationActionEnum.DrawLineAngleLength:
-					case OperationActionEnum.DrawLineLengthWidth:
-					case OperationActionEnum.DrawRectangleLengthWidth:
-					case OperationActionEnum.FillCircleCenterDiameter:
-					case OperationActionEnum.FillCircleCenterRadius:
-					case OperationActionEnum.FillCircleDiameter:
-					case OperationActionEnum.FillCircleRadius:
-					case OperationActionEnum.FillEllipseCenterDiameterXY:
-					case OperationActionEnum.FillEllipseCenterRadiusXY:
-					case OperationActionEnum.FillEllipseDiameterXY:
-					case OperationActionEnum.FillEllipseLengthWidth:
-					case OperationActionEnum.FillEllipseRadiusXY:
-					case OperationActionEnum.FillRectangleLengthWidth:
-					case OperationActionEnum.PointXY:
-						//	Starting OffsetX, OffsetY.
-						//	X.
-						if(operation.OffsetX.Length > 0 ||
-							operation.OffsetXOrigin != OffsetLeftRightEnum.None)
-						{
-							//	X was specified.
-							positionX = GetMillimeters(operation.OffsetX);
-							positionX = TranslateOffset(workpiece.Area, positionX,
-								operation.OffsetXOrigin, location.X);
-						}
-						else
-						{
-							positionX = location.X;
-						}
-						//	Y.
-						if(operation.OffsetY.Length > 0 ||
-							operation.OffsetYOrigin != OffsetTopBottomEnum.None)
-						{
-							//	Y was specified.
-							positionY = GetMillimeters(operation.OffsetY);
-							positionY = TranslateOffset(workpiece.Area, positionY,
-								operation.OffsetYOrigin, location.Y);
-						}
-						else
-						{
-							positionY = location.Y;
-						}
-						break;
-					case OperationActionEnum.DrawEllipseXY:
-					case OperationActionEnum.DrawLineXY:
-					case OperationActionEnum.DrawRectangleXY:
-					case OperationActionEnum.FillEllipseXY:
-					case OperationActionEnum.FillRectangleXY:
-						//	StartOffsetX, StartOffsetY.
-						//	X.
-						if(operation.StartOffsetX.Length > 0 ||
-							operation.StartOffsetXOrigin != OffsetLeftRightEnum.None)
-						{
-							//	X was specified.
-							positionX = GetMillimeters(operation.StartOffsetX);
-							positionX = TranslateOffset(workpiece.Area, positionX,
-								operation.StartOffsetXOrigin, location.X);
-						}
-						else
-						{
-							positionX = location.X;
-						}
-						//	Y.
-						if(operation.StartOffsetY.Length > 0 ||
-							operation.StartOffsetYOrigin != OffsetTopBottomEnum.None)
-						{
-							//	Y was specified.
-							positionY = GetMillimeters(operation.StartOffsetY);
-							positionY = TranslateOffset(workpiece.Area, positionY,
-								operation.StartOffsetYOrigin, location.Y);
-						}
-						else
-						{
-							positionY = location.Y;
-						}
-						break;
+					//	End offset was specified.
+					positionX = GetMillimeters(operation.EndOffsetX);
+					positionX = TranslateOffset(workpiece.Area, positionX,
+						operation.EndOffsetXOrigin, location.X);
 				}
-				//	Start offset X and Y have been set, where appropriate.
-				//	Update the location from the starting point.
+				else
+				{
+					positionX = location.X;
+				}
+				//	Y.
+				if(operation.EndOffsetY.Length > 0 ||
+					(operation.EndOffsetYOrigin != OffsetTopBottomEnum.None))
+				{
+					//	End offset was specified.
+					positionY = GetMillimeters(operation.EndOffsetY);
+					positionY = TranslateOffset(workpiece.Area, positionY,
+						operation.EndOffsetYOrigin, location.Y);
+				}
+				else
+				{
+					positionY = location.Y;
+				}
 				result.X = positionX;
 				result.Y = positionY;
 			}
@@ -1854,92 +2837,6 @@ namespace ShopTools
 
 			result = new FArea(0f, 0f, width, height);
 
-			//if(width > 0f)
-			//{
-			//	switch(mConfigProfile.XYOrigin)
-			//	{
-			//		case OriginLocationEnum.BottomLeft:
-			//		case OriginLocationEnum.Left:
-			//		case OriginLocationEnum.TopLeft:
-			//			//	Origin is on the left side of visual space.
-			//			result.Left = 0f;
-			//			offset = width;
-			//			if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Right = offset;
-			//			break;
-			//		case OriginLocationEnum.Bottom:
-			//		case OriginLocationEnum.Center:
-			//		case OriginLocationEnum.None:
-			//		case OriginLocationEnum.Top:
-			//			//	Origin is in the center of the visual space.
-			//			offset = width / 2f;
-			//			if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Left = 0f - offset;
-			//			result.Right = offset;
-			//			break;
-			//		case OriginLocationEnum.BottomRight:
-			//		case OriginLocationEnum.Right:
-			//		case OriginLocationEnum.TopRight:
-			//			//	Origin is on the right side of visual space.
-			//			result.Right = 0f;
-			//			offset = width;
-			//			if(mConfigProfile.TravelX == DirectionLeftRightEnum.Right)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Left = offset;
-			//			break;
-			//	}
-			//}
-			//if(height > 0f)
-			//{
-			//	switch(mConfigProfile.XYOrigin)
-			//	{
-			//		case OriginLocationEnum.Bottom:
-			//		case OriginLocationEnum.BottomLeft:
-			//		case OriginLocationEnum.BottomRight:
-			//			//	Origin is at the bottom of visual space.
-			//			result.Bottom = 0f;
-			//			offset = height;
-			//			if(mConfigProfile.TravelY == DirectionUpDownEnum.Down)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Top = offset;
-			//			break;
-			//		case OriginLocationEnum.Center:
-			//		case OriginLocationEnum.Left:
-			//		case OriginLocationEnum.None:
-			//		case OriginLocationEnum.Right:
-			//			//	Origin is at the center of visual space.
-			//			offset = height / 2f;
-			//			if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Top = 0f - offset;
-			//			result.Bottom = offset;
-			//			break;
-			//		case OriginLocationEnum.Top:
-			//		case OriginLocationEnum.TopLeft:
-			//		case OriginLocationEnum.TopRight:
-			//			//	Origin is at the top of visual space.
-			//			result.Top = 0f;
-			//			offset = height;
-			//			if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-			//			{
-			//				offset *= -1f;
-			//			}
-			//			result.Bottom = offset;
-			//			break;
-			//	}
-			//}
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
@@ -1962,16 +2859,8 @@ namespace ShopTools
 
 			width = MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
 				BaseUnit(mConfigProfile.DisplayUnits));
-			//measurements =
-			//	MeasurementProcessor.GetMeasurements(mConfigProfile.XDimension,
-			//		BaseUnit(mConfigProfile.DisplayUnits));
-			//width = measurements.SumMillimeters();
 			height = MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
 				BaseUnit(mConfigProfile.DisplayUnits));
-			//measurements =
-			//	MeasurementProcessor.GetMeasurements(mConfigProfile.YDimension,
-			//		BaseUnit(mConfigProfile.DisplayUnits));
-			//height = measurements.SumMillimeters();
 
 			if(height != 0f)
 			{
@@ -2037,26 +2926,6 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		////*-----------------------------------------------------------------------*
-		////* InitializeDefaultProfile																							*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Initialize the default configuration profile for this session.
-		///// </summary>
-		//public static void InitializeDefaultProfile()
-		//{
-		//	string content = "";
-
-		//	try
-		//	{
-		//		content = File.ReadAllText("ShopToolsConfig.json");
-		//		mConfigProfile =
-		//			JsonConvert.DeserializeObject<ShopToolsConfigItem>(content);
-		//	}
-		//	catch { }
-		//}
-		////*-----------------------------------------------------------------------*
-
 		//*-----------------------------------------------------------------------*
 		//* InitializeApplication																									*
 		//*-----------------------------------------------------------------------*
@@ -2093,6 +2962,32 @@ namespace ShopTools
 
 			result = (width >= height &&
 				(mConfigProfile.AxisXIsOpenEnded || !mConfigProfile.AxisYIsOpenEnded));
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* LengthIsX																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the Length variable runs on the X
+		/// axis.
+		/// </summary>
+		/// <returns>
+		/// True if the Length of a material is measured along the X axis.
+		/// Otherwise, false.
+		/// </returns>
+		public static bool LengthIsX()
+		{
+			bool result = false;
+
+			if(mConfigProfile.AxisXIsOpenEnded ||
+				(!mConfigProfile.AxisYIsOpenEnded &&
+				GetMillimeters(mConfigProfile.XDimension) >
+				GetMillimeters(mConfigProfile.YDimension)))
+			{
+				result = true;
+			}
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
@@ -2899,48 +3794,6 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* TransformToDisplay																										*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return the display area of the workpiece, given the established
-		/// </summary>
-		/// <param name="workspace">
-		/// The display workspace.
-		/// </param>
-		/// <param name="workpiece">
-		/// Reference to the workpiece information currently being considered.
-		/// </param>
-		/// <returns>
-		/// Reference to the display area of the workpiece, if legitimate.
-		/// Otherwise, an empty area.
-		/// </returns>
-		public static Rectangle TransformToDisplay(Rectangle workspace,
-			WorkpieceInfoItem workpiece)
-		{
-			Rectangle result = Rectangle.Empty;
-			float scale = 1f;
-			FPoint translate = null;
-
-			if(!workspace.IsEmpty && workpiece != null)
-			{
-				translate = new FPoint(0f - workpiece.WorkspaceArea.Left,
-					0f - workpiece.WorkspaceArea.Top);
-				if((float)workspace.Width != Math.Abs(workpiece.WorkspaceArea.Width))
-				{
-					scale =
-						(float)workspace.Width / Math.Abs(workpiece.WorkspaceArea.Width);
-				}
-				result = new Rectangle(
-					workspace.X + (int)((workpiece.Area.Left + translate.X) * scale),
-					workspace.Y + (int)((workpiece.Area.Top + translate.Y) * scale),
-					(int)(workpiece.Area.Width * scale),
-					(int)(workpiece.Area.Height * scale));
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* TranslateDirection																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -3231,238 +4084,6 @@ namespace ShopTools
 			}
 			return result;
 		}
-		////*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
-		///// <summary>
-		///// Return the absolute offset of the provided point from the currently
-		///// configured origin of the workspace.
-		///// </summary>
-		///// <param name="offset">
-		///// The relative coordinate.
-		///// </param>
-		///// <param name="offsetXType">
-		///// The type of offset represented by the X coordinate.
-		///// </param>
-		///// <param name="offsetYType">
-		///// The type of offset represented by the Y coordinate.
-		///// </param>
-		///// <returns>
-		///// Reference to a newly created point that represents the absolute
-		///// position of the caller's relative location upon the configured
-		///// workspace, if elligible. Otherwise, an empty point.
-		///// </returns>
-		//public static FPoint TranslateOffset(FPoint offset,
-		//	OffsetLeftRightEnum offsetXType, OffsetTopBottomEnum offsetYType)
-		//{
-		//	float height =
-		//		MeasurementProcessor.SumMillimeters(mConfigProfile.YDimension,
-		//			BaseUnit(mConfigProfile.DisplayUnits));
-		//	FPoint result = new FPoint();
-		//	float width =
-		//		MeasurementProcessor.SumMillimeters(mConfigProfile.XDimension,
-		//			BaseUnit(mConfigProfile.DisplayUnits));
-		//	float x = 0f;
-		//	float y = 0f;
-
-		//	if(offset != null)
-		//	{
-		//		//	X.
-		//		switch(mConfigProfile.XYOrigin)
-		//		{
-		//			case OriginLocationEnum.BottomLeft:
-		//			case OriginLocationEnum.Left:
-		//			case OriginLocationEnum.TopLeft:
-		//				//	The origin is at the left side of the table.
-		//				switch(offsetXType)
-		//				{
-		//					case OffsetLeftRightEnum.Center:
-		//						x = (width / 2f) + offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//					case OffsetLeftRightEnum.Left:
-		//						x = offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//					case OffsetLeftRightEnum.None:
-		//					case OffsetLeftRightEnum.Relative:
-		//						//	Raw relative offset.
-		//						x = offset.X;
-		//						break;
-		//					case OffsetLeftRightEnum.Right:
-		//						x = width - offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//				}
-		//				break;
-		//			case OriginLocationEnum.Bottom:
-		//			case OriginLocationEnum.Center:
-		//			case OriginLocationEnum.None:
-		//			case OriginLocationEnum.Top:
-		//				//	The origin is in the center of the table.
-		//				switch(offsetXType)
-		//				{
-		//					case OffsetLeftRightEnum.Center:
-		//						x = offset.X;
-		//						break;
-		//					case OffsetLeftRightEnum.Left:
-		//						x = (0f - (width / 2f)) + offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//					case OffsetLeftRightEnum.None:
-		//					case OffsetLeftRightEnum.Relative:
-		//						//	Raw relative offset.
-		//						x = offset.X;
-		//						break;
-		//					case OffsetLeftRightEnum.Right:
-		//						x = (width / 2f) - offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//				}
-		//				break;
-		//			case OriginLocationEnum.BottomRight:
-		//			case OriginLocationEnum.Right:
-		//			case OriginLocationEnum.TopRight:
-		//				//	The origin is at the right side of the table.
-		//				switch(offsetXType)
-		//				{
-		//					case OffsetLeftRightEnum.Center:
-		//						x = (0f - (width / 2f)) + offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//					case OffsetLeftRightEnum.Left:
-		//						x = (0f - width) + offset.X;
-		//						if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//						{
-		//							x *= -1f;
-		//						}
-		//						break;
-		//					case OffsetLeftRightEnum.None:
-		//					case OffsetLeftRightEnum.Relative:
-		//						//	Raw relative offset.
-		//						x = offset.X;
-		//						break;
-		//					case OffsetLeftRightEnum.Right:
-		//						x = offset.X;
-		//						break;
-		//				}
-		//				break;
-		//		}
-		//		//	Y.
-		//		switch(mConfigProfile.XYOrigin)
-		//		{
-		//			case OriginLocationEnum.Top:
-		//			case OriginLocationEnum.TopLeft:
-		//			case OriginLocationEnum.TopRight:
-		//				//	Origin is at the top of the table.
-		//				switch(offsetYType)
-		//				{
-		//					case OffsetTopBottomEnum.Bottom:
-		//						y = height - offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//					case OffsetTopBottomEnum.Center:
-		//						y = (height / 2f) - offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//					case OffsetTopBottomEnum.None:
-		//					case OffsetTopBottomEnum.Relative:
-		//						y = offset.Y;
-		//						break;
-		//					case OffsetTopBottomEnum.Top:
-		//						y = offset.Y;
-		//						break;
-		//				}
-		//				break;
-		//			case OriginLocationEnum.Center:
-		//			case OriginLocationEnum.Left:
-		//			case OriginLocationEnum.None:
-		//			case OriginLocationEnum.Right:
-		//				//	Origin is at the center of the table.
-		//				switch(offsetYType)
-		//				{
-		//					case OffsetTopBottomEnum.Bottom:
-		//						y = (height / 2f) - offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//					case OffsetTopBottomEnum.Center:
-		//						y = offset.Y;
-		//						break;
-		//					case OffsetTopBottomEnum.None:
-		//					case OffsetTopBottomEnum.Relative:
-		//						y = offset.Y;
-		//						break;
-		//					case OffsetTopBottomEnum.Top:
-		//						y = (0f - (height / 2f)) + offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//				}
-		//				break;
-		//			case OriginLocationEnum.Bottom:
-		//			case OriginLocationEnum.BottomLeft:
-		//			case OriginLocationEnum.BottomRight:
-		//				//	Origin is at the bottom of the table.
-		//				switch(offsetYType)
-		//				{
-		//					case OffsetTopBottomEnum.Bottom:
-		//						y = offset.Y;
-		//						break;
-		//					case OffsetTopBottomEnum.Center:
-		//						y = (height / 2f) + offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Down)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//					case OffsetTopBottomEnum.None:
-		//					case OffsetTopBottomEnum.Relative:
-		//						y = offset.Y;
-		//						break;
-		//					case OffsetTopBottomEnum.Top:
-		//						y = height - offset.Y;
-		//						if(mConfigProfile.TravelY == DirectionUpDownEnum.Down)
-		//						{
-		//							y *= -1f;
-		//						}
-		//						break;
-		//				}
-		//				break;
-		//		}
-		//	}
-		//	if(result == null)
-		//	{
-		//		result = new FPoint();
-		//	}
-		//	return result;
-		//}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*

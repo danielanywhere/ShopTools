@@ -706,15 +706,15 @@ namespace ShopTools
 		/// </param>
 		private void mnuFormSaveChangesClose_Click(object sender, EventArgs e)
 		{
-			if(mCutProfile != null)
-			{
-				//	Transfer the updated operations.
-				mCutProfile.Operations.Clear();
-				foreach(PatternOperationItem operationItem in mResolvedOperations)
-				{
-					mCutProfile.Operations.Add(operationItem);
-				}
-			}
+			//if(mCutProfile != null)
+			//{
+			//	//	Transfer the updated operations.
+			//	mCutProfile.Operations.Clear();
+			//	foreach(PatternOperationItem operationItem in mResolvedOperations)
+			//	{
+			//		mCutProfile.Operations.Add(operationItem);
+			//	}
+			//}
 			this.DialogResult = DialogResult.OK;
 			this.Hide();
 		}
@@ -795,12 +795,17 @@ namespace ShopTools
 
 				location = TransformFromAbsolute(location);
 				DrawRouter(location, StartEndEnum.Start, graphics, workspaceArea, scale);
-				foreach(PatternOperationItem operationItem in mResolvedOperations)
+				//foreach(PatternOperationItem operationItem in mResolvedOperations)
+				//{
+				//	//Trace.WriteLine($"CutEdit Operation: Location: {location}; " +
+				//	//	$"Operation: {operationItem.Action}");
+				//	location = DrawOperation(operationItem,
+				//		mWorkpieceInfo, location, "", graphics, workspaceArea, scale);
+				//}
+				foreach(PatternOperationItem operationItem in mCutProfile.Operations)
 				{
-					//Trace.WriteLine($"CutEdit Operation: Location: {location}; " +
-					//	$"Operation: {operationItem.Action}");
-					location = DrawOperation(operationItem,
-						mWorkpieceInfo, location, "", graphics, workspaceArea, scale);
+					location = DrawOperation(operationItem, mWorkpieceInfo, location,
+						"", graphics, workspaceArea, scale);
 				}
 				DrawRouter(location, StartEndEnum.End, graphics, workspaceArea, scale);
 			}
@@ -895,30 +900,19 @@ namespace ShopTools
 		private void UpdateWorkpiece()
 		{
 			FPoint location = new FPoint();
-			PatternOperationItem operation = null;
-			string previousToolName = ConfigProfile.GeneralCuttingTool;
 			List<OperationVariableItem> variables =
 				new List<OperationVariableItem>();
 
 			mResolvedOperations.Clear();
 			location = FPoint.Clone(mCutProfile.StartLocation);
 			location = TransformFromAbsolute(location);
+
+			//	Transfer user variables to operation.
 			foreach(PatternOperationItem operationItem in mCutProfile.Operations)
 			{
 				//	Process each operation.
 				if(operationItem.Action != OperationActionEnum.None)
 				{
-					//	An action is defined.
-					operation = new PatternOperationItem()
-					{
-						Action = operationItem.Action,
-						OperationName = operationItem.OperationName
-					};
-					foreach(string entryItem in operationItem.HiddenVariables)
-					{
-						operation.HiddenVariables.Add(entryItem);
-					}
-
 					variables.Clear();
 					foreach(OperationVariableItem variableItem in mSettingsTable)
 					{
@@ -931,17 +925,15 @@ namespace ShopTools
 					{
 						//	There are variables defined for this operation.
 						OperationVariableCollection.TransferWorkingValues(
-							variables, operation);
+							variables, operationItem);
 					}
-					//	Render the resulting values and update the ending location.
-					location = PatternOperationItem.GetResultingLocation(operation,
-						mWorkpieceInfo, location, previousToolName);
-					mResolvedOperations.Add(operation);
-					previousToolName = operation.Tool;
 				}
 			}
+			location = CalculateLayout(mCutProfile, mWorkpieceInfo, location);
+
 			location = TransformToAbsolute(location);
 			mCutProfile.EndLocation = location;
+
 			mRedrawNeeded = true;
 			//pnlPreview.Refresh();
 

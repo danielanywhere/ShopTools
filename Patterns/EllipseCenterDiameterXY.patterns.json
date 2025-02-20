@@ -1,0 +1,13 @@
+[
+	{
+		"PatternTemplateId": "b48416d1-63d5-4846-a2b5-19c263914e6a",
+		"TemplateName": "Ellipse Center Dia",
+		"IconFilename": "CutEllipseIcon.png",
+		"DisplayFormat": "{TemplateName} - {OffsetXOrigin:Abbreviation}{OffsetX:+-}, {OffsetYOrigin:Abbreviation}{OffsetY:+-}",
+		"Operations": [
+			{
+				"Action": "DrawEllipseCenterDiameterXY"
+			}
+		]
+	}
+]

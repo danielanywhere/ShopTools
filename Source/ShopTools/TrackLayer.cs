@@ -114,6 +114,22 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//	---
+		//	TODO: Update GenerateTracks to support the new calculated patterns.
+		private static FPoint GetOperationStartLocation(
+			PatternOperationItem operationItem, WorkpieceInfoItem workpiece,
+			FPoint location)
+		{
+			return location;
+		}
+		private static FPoint GetOperationEndLocation(
+			PatternOperationItem operationItem, WorkpieceInfoItem workpiece,
+			FPoint startOffset)
+		{
+			return startOffset;
+		}
+		//	---
+
 		//*-----------------------------------------------------------------------*
 		//* GenerateTracks																												*
 		//*-----------------------------------------------------------------------*

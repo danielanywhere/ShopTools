@@ -32,6 +32,9 @@ namespace ShopTools
 	/// the contents of this collection or when the property of one of its items
 	/// have changed.
 	/// </summary>
+	/// <typeparam name="T">
+	/// Any type for which change handling will be configured.
+	/// </typeparam>
 	public class ChangeObjectCollection<T> : List<T>
 	{
 		//*************************************************************************

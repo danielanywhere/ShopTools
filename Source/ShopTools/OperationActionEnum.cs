@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -36,6 +36,22 @@ namespace ShopTools
 		/// No cut type defined or unknown.
 		/// </summary>
 		None = 0,
+		/// <summary>
+		/// Draw an arc from the specified start coordinate to the point nearest
+		/// the specified end point, given the radius from the center to the
+		/// starting offset.
+		/// </summary>
+		DrawArcCenterOffsetXY,
+		/// <summary>
+		/// Draw an arc using a center coordinate, an offset starting coordinate,
+		/// and a sweep angle.
+		/// </summary>
+		DrawArcCenterOffsetXYAngle,
+		/// <summary>
+		/// Draw an arc using a center coordinate, a radius, a start angle, and an
+		/// end angle.
+		/// </summary>
+		DrawArcCenterRadiusStartEndAngle,
 		/// <summary>
 		/// Draw a circle using a center reference point and diameter.
 		/// </summary>
@@ -98,6 +114,10 @@ namespace ShopTools
 		/// </summary>
 		DrawPath,
 		/// <summary>
+		/// Draw a rectangle using a center coordinate, length, and width.
+		/// </summary>
+		DrawRectangleCenterLengthWidth,
+		/// <summary>
 		/// Draw a rectangle using a corner, length, and width.
 		/// </summary>
 		DrawRectangleLengthWidth,
@@ -152,6 +172,10 @@ namespace ShopTools
 		/// Fill the path specified in the PathData property.
 		/// </summary>
 		FillPath,
+		/// <summary>
+		/// Fill a rectangle using a center coordinate, length, and width.
+		/// </summary>
+		FillRectangleCenterLengthWidth,
 		/// <summary>
 		/// Fill a rectangle using one corner, width, and height.
 		/// </summary>

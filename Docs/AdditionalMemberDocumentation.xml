@@ -536,6 +536,11 @@
 		The File / Export / G-code menu option.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuFileExportPatterns">
+	<summary>
+		The File / Export / Patterns menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.mnuFileExportSep1">
 	<summary>
 		File / Export menu separator 1.
@@ -549,6 +554,11 @@
 <member name="F:ShopTools.frmMain.mnuFileImportConfiguration">
 	<summary>
 		The File / Import / Configuration menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuFileImportPatterns">
+	<summary>
+		The File / Import / Patterns menu option.
 	</summary>
 </member>
 <member name="F:ShopTools.frmMain.mnuFileOpen">

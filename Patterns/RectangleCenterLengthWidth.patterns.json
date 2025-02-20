@@ -1,0 +1,13 @@
+[
+	{
+		"PatternTemplateId": "cd61cc04-140d-4c7d-9524-784682661220",
+		"TemplateName": "Rectangle Center LW",
+		"IconFilename": "CutRectangleIcon.png",
+		"DisplayFormat": "{TemplateName} - {OffsetXOrigin:Abbreviation}{OffsetX:+-}, {OffsetYOrigin:Abbreviation}{OffsetY:+-}",
+		"Operations": [
+			{
+				"Action": "DrawRectangleCenterLengthWidth"
+			}
+		]
+	}
+]

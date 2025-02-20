@@ -95,120 +95,6 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
-		////*-----------------------------------------------------------------------*
-		////* GetHorizontalPosition																									*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the effective horizontal offset from the left side of the
-		///// workpiece, given the offset and offset type.
-		///// </summary>
-		///// <param name="offsetType">
-		///// The offset type by which the relative position will be calculated.
-		///// </param>
-		///// <param name="offsetX">
-		///// The raw offset value to apply to the given offset type.
-		///// </param>
-		///// <param name="materialWidth">
-		///// The width of the material.
-		///// </param>
-		///// <param name="previousX">
-		///// The previously known X position.
-		///// </param>
-		///// <returns>
-		///// The total X position, relative to the material.
-		///// </returns>
-		//private static float GetHorizontalOffset(OffsetLeftRightEnum offsetType,
-		//	float offsetX, float materialWidth, float previousX)
-		//{
-		//	float position = offsetX;
-
-		//	switch(offsetType)
-		//	{
-		//		case OffsetLeftRightEnum.Center:
-		//			position += (materialWidth / 2f);
-		//			break;
-		//		case OffsetLeftRightEnum.Left:
-		//			//	Left or right sides of material.
-		//			if(ConfigProfile.TravelX == DirectionLeftRightEnum.Left)
-		//			{
-		//				//	RTL.
-		//				position = materialWidth - position;
-		//			}
-		//			break;
-		//		case OffsetLeftRightEnum.None:
-		//		case OffsetLeftRightEnum.Relative:
-		//			position += previousX;
-		//			break;
-		//		case OffsetLeftRightEnum.Right:
-		//			//	Right or left sides of material.
-		//			if(ConfigProfile.TravelX == DirectionLeftRightEnum.Right)
-		//			{
-		//				//	LTR.
-		//				position = materialWidth - position;
-		//			}
-		//			break;
-		//	}
-		//	return position;
-		//}
-		////*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////* GetVerticalPosition																										*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Return the effective vertical offset from the top side of the
-		///// workpiece, given the offset and offset type.
-		///// </summary>
-		///// <param name="offsetType">
-		///// The offset type by which the relative position will be calculated.
-		///// </param>
-		///// <param name="offsetY">
-		///// The raw offset value to apply to the given offset type.
-		///// </param>
-		///// <param name="materialHeight">
-		///// The height of the material.
-		///// </param>
-		///// <param name="previousY">
-		///// The previously known Y position.
-		///// </param>
-		///// <returns>
-		///// The total Y position, relative to the material.
-		///// </returns>
-		//private static float GetVerticalOffset(OffsetTopBottomEnum offsetType,
-		//	float offsetY, float materialHeight, float previousY)
-		//{
-		//	float position = offsetY;
-
-		//	switch(offsetType)
-		//	{
-		//		case OffsetTopBottomEnum.Bottom:
-		//			//	Bottom or top sides of material.
-		//			if(ConfigProfile.TravelY == DirectionUpDownEnum.Down)
-		//			{
-		//				//	BTT.
-		//				position = materialHeight - position;
-		//			}
-		//			break;
-		//		case OffsetTopBottomEnum.Center:
-		//			position += (materialHeight / 2f);
-		//			break;
-		//		case OffsetTopBottomEnum.None:
-		//		case OffsetTopBottomEnum.Relative:
-		//			position += previousY;
-		//			break;
-		//		case OffsetTopBottomEnum.Top:
-		//			//	Top or bottom sides of material.
-		//			if(ConfigProfile.TravelY == DirectionUpDownEnum.Up)
-		//			{
-		//				//	TTB.
-		//				position = materialHeight - position;
-		//			}
-		//			break;
-		//	}
-		//	return position;
-		//}
-		////*-----------------------------------------------------------------------*
-
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
@@ -269,7 +155,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the angle at which the operation will take place.
 		/// </summary>
-		[JsonProperty(Order = 15)]
+		[JsonProperty(Order = 21)]
 		public string Angle
 		{
 			get { return mAngle; }
@@ -310,6 +196,10 @@ namespace ShopTools
 					mAction = item.mAction,
 					mAngle = item.mAngle,
 					mDepth = item.mDepth,
+					mDiameter = item.mDiameter,
+					mDiameterX = item.mDiameterX,
+					mDiameterY = item.mDiameterY,
+					mEndAngle = item.mEndAngle,
 					mEndOffsetX = item.mEndOffsetX,
 					mEndOffsetXOrigin = item.mEndOffsetXOrigin,
 					mEndOffsetY = item.mEndOffsetY,
@@ -321,6 +211,10 @@ namespace ShopTools
 					mOffsetY = item.mOffsetY,
 					mOffsetYOrigin = item.mOffsetYOrigin,
 					mOperationName = item.mOperationName,
+					mRadius = item.mRadius,
+					mRadiusX = item.mRadiusX,
+					mRadiusY = item.mRadiusY,
+					mStartAngle = item.mStartAngle,
 					mStartOffsetX = item.mStartOffsetX,
 					mStartOffsetXOrigin = item.mStartOffsetXOrigin,
 					mStartOffsetY = item.mStartOffsetY,
@@ -331,6 +225,10 @@ namespace ShopTools
 				foreach(string entryItem in item.mHiddenVariables)
 				{
 					result.mHiddenVariables.Add(entryItem);
+				}
+				foreach(OperationLayoutItem layoutItem in item.mLayoutElements)
+				{
+					result.mLayoutElements.Add(OperationLayoutItem.Clone(layoutItem));
 				}
 			}
 			return result;
@@ -351,7 +249,7 @@ namespace ShopTools
 		/// If depth is defined in this operation and the property is blank, then
 		/// the depth of the material is assumed.
 		/// </remarks>
-		[JsonProperty(Order = 18)]
+		[JsonProperty(Order = 26)]
 		public string Depth
 		{
 			get { return mDepth; }
@@ -360,6 +258,114 @@ namespace ShopTools
 				bool bChanged = (mDepth != value);
 
 				mDepth = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	Diameter																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Diameter">Diameter</see>.
+		/// </summary>
+		private string mDiameter = "";
+		/// <summary>
+		/// Get/Set the diameter of the shape.
+		/// </summary>
+		[JsonProperty(Order = 7)]
+		public string Diameter
+		{
+			get { return mDiameter; }
+			set
+			{
+				bool bChanged = (mDiameter != value);
+
+				mDiameter = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	DiameterX																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DiameterX">DiameterX</see>.
+		/// </summary>
+		private string mDiameterX = "";
+		/// <summary>
+		/// Get/Set the X diameter of the shape.
+		/// </summary>
+		[JsonProperty(Order = 9)]
+		public string DiameterX
+		{
+			get { return mDiameterX; }
+			set
+			{
+				bool bChanged = (mDiameterX != value);
+
+				mDiameterX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	DiameterY																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DiameterY">DiameterY</see>.
+		/// </summary>
+		private string mDiameterY = "";
+		/// <summary>
+		/// Get/Set the Y diameter of the shape.
+		/// </summary>
+		[JsonProperty(Order = 10)]
+		public string DiameterY
+		{
+			get { return mDiameterY; }
+			set
+			{
+				bool bChanged = (mDiameterY != value);
+
+				mDiameterY = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	EndAngle																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="EndAngle">EndAngle</see>.
+		/// </summary>
+		private string mEndAngle = "";
+		/// <summary>
+		/// Get/Set the angle at which the operation will start.
+		/// </summary>
+		[JsonProperty(Order = 23)]
+		public string EndAngle
+		{
+			get { return mEndAngle; }
+			set
+			{
+				bool bChanged = (mEndAngle != value);
+
+				mEndAngle = value;
 				if(bChanged)
 				{
 					OnPropertyChanged();
@@ -385,7 +391,7 @@ namespace ShopTools
 		/// Relative, the ending X offset will be relative to the starting X
 		/// position.
 		/// </remarks>
-		[JsonProperty(Order = 11)]
+		[JsonProperty(Order = 17)]
 		public string EndOffsetX
 		{
 			get { return mEndOffsetX; }
@@ -418,7 +424,7 @@ namespace ShopTools
 		/// stroke ends at the left or right sides, respectively.
 		/// </remarks>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 12)]
+		[JsonProperty(Order = 18)]
 		public OffsetLeftRightEnum EndOffsetXOrigin
 		{
 			get { return mEndOffsetXOrigin; }
@@ -452,7 +458,7 @@ namespace ShopTools
 		/// Relative, the ending Y offset will be relative to the starting Y
 		/// position.
 		/// </remarks>
-		[JsonProperty(Order = 13)]
+		[JsonProperty(Order = 19)]
 		public string EndOffsetY
 		{
 			get { return mEndOffsetY; }
@@ -484,7 +490,7 @@ namespace ShopTools
 		/// stroke ends at the top or bottom sides, respectively.
 		/// </remarks>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 14)]
+		[JsonProperty(Order = 20)]
 		public OffsetTopBottomEnum EndOffsetYOrigin
 		{
 			get { return mEndOffsetYOrigin; }
@@ -502,49 +508,304 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* GetResultingLocation																									*
+		//* GetDiameterXYParameter																								*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Calculate and return the resulting system location for the supplied
-		/// user values on the provided operation.
+		/// Return a coordinate representing the specified or implicit DiameterX /
+		/// DiameterY parameter pair for the provided operation.
 		/// </summary>
 		/// <param name="operation">
-		/// The operation for which user values have been provided.
+		/// Reference to the operation for which the DiameterXY pair parameter is
+		/// being requested.
 		/// </param>
 		/// <param name="workpiece">
-		/// Reference to information about the workpiece.
-		/// </param>
-		/// <param name="startingLocation">
-		/// Reference to the starting location from which the operation will
-		/// begin, in system units
-		/// </param>
-		/// <param name="previousToolName">
-		/// Name of the previous tool.
+		/// Reference to the active workpiece against which relational references
+		/// can be made.
 		/// </param>
 		/// <returns>
-		/// Reference to the location at which the current operation will end,
-		/// in system units.
+		/// Reference to a coordinate representing the user's resolved DiameterXY
+		/// parameter.
 		/// </returns>
-		public static FPoint GetResultingLocation(
-			PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint startingLocation,
-			string previousToolName)
+		public static FPoint GetDiameterXYParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece)
 		{
-			FPoint location = null;
+			FPoint result = new FPoint();
+			float valueX = 0f;
+			float valueY = 0f;
 
 			if(operation != null && workpiece != null)
 			{
-				location = FPoint.Clone(startingLocation);
-				location = GetOperationStartLocation(operation, workpiece, location);
-				location = GetOperationEndLocation(operation, workpiece, location);
+				//	X.
+				if(operation.DiameterX.Length > 0)
+				{
+					//	X was specified.
+					valueX = GetMillimeters(operation.DiameterX);
+				}
 			}
-			if(location == null)
+			//	Y.
+			if(operation.DiameterY.Length > 0)
 			{
-				location = new FPoint();
+				//	Y was specified.
+				valueY = GetMillimeters(operation.DiameterY);
 			}
-			return location;
+			result.X = valueX;
+			result.Y = valueY;
+			return result;
 		}
 		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetEndOffsetParameter																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a coordinate representing the specified or implicit EndOffset
+		/// parameter  for the provided operation.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation for which the EndOffset parameter is being
+		/// requested.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the active workpiece against which relational references
+		/// can be made.
+		/// </param>
+		/// <param name="defaultLocation">
+		/// The default location to use if no offset was specified.
+		/// </param>
+		/// <returns>
+		/// Reference to a coordinate representing the user's resolved EndOffset
+		/// parameter.
+		/// </returns>
+		public static FPoint GetEndOffsetParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece, FPoint defaultLocation)
+		{
+			float positionX = 0f;
+			float positionY = 0f;
+			FPoint result = new FPoint();
+
+			if(operation != null && workpiece != null && defaultLocation != null)
+			{
+				//	X.
+				if(operation.EndOffsetX.Length > 0 ||
+					operation.EndOffsetXOrigin != OffsetLeftRightEnum.None)
+				{
+					//	X was specified.
+					positionX = GetMillimeters(operation.EndOffsetX);
+					positionX = TranslateOffset(workpiece.Area, positionX,
+						operation.EndOffsetXOrigin, defaultLocation.X);
+				}
+				else
+				{
+					positionX = defaultLocation.X;
+				}
+			}
+			//	Y.
+			if(operation.EndOffsetY.Length > 0 ||
+				operation.EndOffsetYOrigin != OffsetTopBottomEnum.None)
+			{
+				//	Y was specified.
+				positionY = GetMillimeters(operation.EndOffsetY);
+				positionY = TranslateOffset(workpiece.Area, positionY,
+					operation.EndOffsetYOrigin, defaultLocation.Y);
+			}
+			else
+			{
+				positionY = defaultLocation.Y;
+			}
+			result.X = positionX;
+			result.Y = positionY;
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetLengthWidthXYParameter																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the caller's length and width as an X/Y coordinate.
+		/// </summary>
+		/// <param name="length">
+		/// The distance along the length axis.
+		/// </param>
+		/// <param name="width">
+		/// The distance along the width axis.
+		/// </param>
+		/// <returns>
+		/// The X and Y distances represented by the caller's length and width.
+		/// </returns>
+		public static FPoint GetLengthWidthXYParameter(float length, float width)
+		{
+			FPoint result = new FPoint();
+
+			if(LengthIsX())
+			{
+				result.X = length;
+				result.Y = width;
+			}
+			else
+			{
+				result.X = width;
+				result.Y = length;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetOffsetParameter																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a coordinate representing the specified or implicit Offset
+		/// parameter  for the provided operation.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation for which the Offset parameter is being
+		/// requested.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the active workpiece against which relational references
+		/// can be made.
+		/// </param>
+		/// <param name="defaultLocation">
+		/// The default location to use if no offset was specified.
+		/// </param>
+		/// <returns>
+		/// Reference to a coordinate representing the user's resolved Offset
+		/// parameter.
+		/// </returns>
+		public static FPoint GetOffsetParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece, FPoint defaultLocation)
+		{
+			float positionX = 0f;
+			float positionY = 0f;
+			FPoint result = new FPoint();
+
+			if(operation != null && workpiece != null && defaultLocation != null)
+			{
+				//	X.
+				if(operation.OffsetX.Length > 0 ||
+					operation.OffsetXOrigin != OffsetLeftRightEnum.None)
+				{
+					//	X was specified.
+					positionX = GetMillimeters(operation.OffsetX);
+					positionX = TranslateOffset(workpiece.Area, positionX,
+						operation.OffsetXOrigin, defaultLocation.X);
+				}
+				else
+				{
+					positionX = defaultLocation.X;
+				}
+			}
+			//	Y.
+			if(operation.OffsetY.Length > 0 ||
+				operation.OffsetYOrigin != OffsetTopBottomEnum.None)
+			{
+				//	Y was specified.
+				positionY = GetMillimeters(operation.OffsetY);
+				positionY = TranslateOffset(workpiece.Area, positionY,
+					operation.OffsetYOrigin, defaultLocation.Y);
+			}
+			else
+			{
+				positionY = defaultLocation.Y;
+			}
+			result.X = positionX;
+			result.Y = positionY;
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetRadiusXYParameter																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a coordinate representing the specified or implicit RadiusX /
+		/// RadiusY parameter pair for the provided operation.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation for which the RadiusXY pair parameter is
+		/// being requested.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the active workpiece against which relational references
+		/// can be made.
+		/// </param>
+		/// <returns>
+		/// Reference to a coordinate representing the user's resolved RadiusXY
+		/// parameter.
+		/// </returns>
+		public static FPoint GetRadiusXYParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece)
+		{
+			FPoint result = new FPoint();
+			float valueX = 0f;
+			float valueY = 0f;
+
+			if(operation != null && workpiece != null)
+			{
+				//	X.
+				if(operation.RadiusX.Length > 0)
+				{
+					//	X was specified.
+					valueX = GetMillimeters(operation.RadiusX);
+				}
+			}
+			//	Y.
+			if(operation.RadiusY.Length > 0)
+			{
+				//	Y was specified.
+				valueY = GetMillimeters(operation.RadiusY);
+			}
+			result.X = valueX;
+			result.Y = valueY;
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		////*-----------------------------------------------------------------------*
+		////* GetResultingLocation																									*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Calculate and return the resulting system location for the supplied
+		///// user values on the provided operation.
+		///// </summary>
+		///// <param name="operation">
+		///// The operation for which user values have been provided.
+		///// </param>
+		///// <param name="workpiece">
+		///// Reference to information about the workpiece.
+		///// </param>
+		///// <param name="startingLocation">
+		///// Reference to the starting location from which the operation will
+		///// begin, in system units
+		///// </param>
+		///// <param name="previousToolName">
+		///// Name of the previous tool.
+		///// </param>
+		///// <returns>
+		///// Reference to the location at which the current operation will end,
+		///// in system units.
+		///// </returns>
+		//public static FPoint GetResultingLocation(
+		//	PatternOperationItem operation,
+		//	WorkpieceInfoItem workpiece, FPoint startingLocation,
+		//	string previousToolName)
+		//{
+		//	FPoint location = null;
+
+		//	if(operation != null && workpiece != null)
+		//	{
+		//		location = FPoint.Clone(startingLocation);
+		//		location = GetOperationStartLocation(operation, workpiece, location);
+		//		location = GetOperationEndLocation(operation, workpiece, location);
+		//	}
+		//	if(location == null)
+		//	{
+		//		location = new FPoint();
+		//	}
+		//	return location;
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* GetRows																																*
@@ -575,13 +836,78 @@ namespace ShopTools
 			if(operation != null && table?.Rows.Count > 0 && keyColumn?.Length > 0)
 			{
 				rows = from row in table.AsEnumerable()
-								where row.Field<string>(keyColumn) == operation.mOperationId
-									select row;
+							 where row.Field<string>(keyColumn) == operation.mOperationId
+							 select row;
 				if(rows.Count() > 0)
 				{
 					result = rows.ToArray();
 				}
 			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetStartOffsetParameter																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a coordinate representing the specified or implicit start offset
+		/// for the provided operation.
+		/// </summary>
+		/// <param name="operation">
+		/// Reference to the operation for which the StartOffset parameter is being
+		/// requested.
+		/// </param>
+		/// <param name="workpiece">
+		/// Reference to the active workpiece against which relational references
+		/// can be made.
+		/// </param>
+		/// <param name="defaultLocation">
+		/// The default location to use if no offset was specified.
+		/// </param>
+		/// <returns>
+		/// Reference to a coordinate representing the user's resolved StartOffset
+		/// parameter.
+		/// </returns>
+		public static FPoint GetStartOffsetParameter(
+			PatternOperationItem operation, WorkpieceInfoItem workpiece,
+			FPoint defaultLocation)
+		{
+			float positionX = 0f;
+			float positionY = 0f;
+			FPoint result = new FPoint();
+
+			if(operation != null && workpiece != null && defaultLocation != null)
+			{
+				//	X.
+				if(operation.StartOffsetX.Length > 0 ||
+					operation.StartOffsetXOrigin != OffsetLeftRightEnum.None)
+				{
+					//	X was specified.
+					positionX = GetMillimeters(operation.StartOffsetX);
+					positionX = TranslateOffset(workpiece.Area, positionX,
+						operation.StartOffsetXOrigin, defaultLocation.X);
+				}
+				else
+				{
+					positionX = defaultLocation.X;
+				}
+			}
+			//	Y.
+			if(operation.StartOffsetY.Length > 0 ||
+				operation.StartOffsetYOrigin != OffsetTopBottomEnum.None)
+			{
+				//	Y was specified.
+				positionY = GetMillimeters(operation.StartOffsetY);
+				positionY = TranslateOffset(workpiece.Area, positionY,
+					operation.StartOffsetYOrigin, defaultLocation.Y);
+			}
+			else
+			{
+				positionY = defaultLocation.Y;
+			}
+			result.X = positionX;
+			result.Y = positionY;
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
@@ -706,7 +1032,6 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//	TODO: Test serialization and deserialization of PatternOperationItem.HiddenVariables.
 		//*-----------------------------------------------------------------------*
 		//*	HiddenVariables																												*
 		//*-----------------------------------------------------------------------*
@@ -717,7 +1042,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get a reference to a list of variable names hidden from user input.
 		/// </summary>
-		[JsonProperty(Order = 21)]
+		[JsonProperty(Order = 29)]
 		public ChangeObjectCollection<string> HiddenVariables
 		{
 			get { return mHiddenVariables; }
@@ -737,7 +1062,7 @@ namespace ShopTools
 		/// side.
 		/// </summary>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 19)]
+		[JsonProperty(Order = 27)]
 		public DirectionLeftRightEnum Kerf
 		{
 			get { return mKerf; }
@@ -755,6 +1080,24 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//*	LayoutElements																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="LayoutElements">LayoutElements</see>.
+		/// </summary>
+		private OperationLayoutCollection mLayoutElements =
+			new OperationLayoutCollection();
+		/// <summary>
+		/// Get a reference to the layout of individual elements.
+		/// </summary>
+		[JsonIgnore]
+		public OperationLayoutCollection LayoutElements
+		{
+			get { return mLayoutElements; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	Length																																*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -764,7 +1107,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the length of the operation.
 		/// </summary>
-		[JsonProperty(Order = 16)]
+		[JsonProperty(Order = 24)]
 		public string Length
 		{
 			get { return mLength; }
@@ -802,7 +1145,7 @@ namespace ShopTools
 		/// position.
 		/// </para>
 		/// </remarks>
-		[JsonProperty(Order = 7)]
+		[JsonProperty(Order = 13)]
 		public string OffsetX
 		{
 			get { return mOffsetX; }
@@ -832,7 +1175,7 @@ namespace ShopTools
 		/// starting point.
 		/// </summary>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 8)]
+		[JsonProperty(Order = 14)]
 		public OffsetLeftRightEnum OffsetXOrigin
 		{
 			get { return mOffsetXOrigin; }
@@ -870,7 +1213,7 @@ namespace ShopTools
 		/// position.
 		/// </para>
 		/// </remarks>
-		[JsonProperty(Order = 9)]
+		[JsonProperty(Order = 15)]
 		public string OffsetY
 		{
 			get { return mOffsetY; }
@@ -899,7 +1242,7 @@ namespace ShopTools
 		/// starting point.
 		/// </summary>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 10)]
+		[JsonProperty(Order = 16)]
 		public OffsetTopBottomEnum OffsetYOrigin
 		{
 			get { return mOffsetYOrigin; }
@@ -967,6 +1310,87 @@ namespace ShopTools
 				bool bChanged = (mOperationName != value);
 
 				mOperationName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	Radius																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Radius">Radius</see>.
+		/// </summary>
+		private string mRadius = "";
+		/// <summary>
+		/// Get/Set the radius of the shape.
+		/// </summary>
+		[JsonProperty(Order = 8)]
+		public string Radius
+		{
+			get { return mRadius; }
+			set
+			{
+				bool bChanged = (mRadius != value);
+
+				mRadius = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	RadiusX																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="RadiusX">RadiusX</see>.
+		/// </summary>
+		private string mRadiusX = "";
+		/// <summary>
+		/// Get/Set the X radius of the shape.
+		/// </summary>
+		[JsonProperty(Order = 11)]
+		public string RadiusX
+		{
+			get { return mRadiusX; }
+			set
+			{
+				bool bChanged = (mRadiusX != value);
+
+				mRadiusX = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	RadiusY																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="RadiusY">RadiusY</see>.
+		/// </summary>
+		private string mRadiusY = "";
+		/// <summary>
+		/// Get/Set the Y radius of the shape.
+		/// </summary>
+		[JsonProperty(Order = 12)]
+		public string RadiusY
+		{
+			get { return mRadiusY; }
+			set
+			{
+				bool bChanged = (mRadiusY != value);
+
+				mRadiusY = value;
 				if(bChanged)
 				{
 					OnPropertyChanged();
@@ -1191,6 +1615,66 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeDiameter																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the Diameter property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeDiameter()
+		{
+			return this.mDiameter?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeDiameterX																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the DiameterX property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeDiameterX()
+		{
+			return this.mDiameterX?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeDiameterY																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the DiameterY property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeDiameterY()
+		{
+			return this.mDiameterY?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeEndAngle																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the EndAngle property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeEndAngle()
+		{
+			return this.mEndAngle?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* ShouldSerializeEndOffsetX																							*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1393,6 +1877,69 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeRadius																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the Radius
+		/// property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeRadius()
+		{
+			return this.mRadius?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeRadiusX																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the RadiusX
+		/// property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeRadiusX()
+		{
+			return this.mRadiusX?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeRadiusY																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the RadiusY
+		/// property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeRadiusY()
+		{
+			return this.mRadiusY?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeStartAngle																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the StartAngle property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeStartAngle()
+		{
+			return this.mStartAngle?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* ShouldSerializeStartOffsetX																						*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1483,6 +2030,33 @@ namespace ShopTools
 		public bool ShouldSerializeWidth()
 		{
 			return this.mWidth?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	StartAngle																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="StartAngle">StartAngle</see>.
+		/// </summary>
+		private string mStartAngle = "";
+		/// <summary>
+		/// Get/Set the angle at which the operation will start.
+		/// </summary>
+		[JsonProperty(Order = 22)]
+		public string StartAngle
+		{
+			get { return mStartAngle; }
+			set
+			{
+				bool bChanged = (mStartAngle != value);
+
+				mStartAngle = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1631,7 +2205,7 @@ namespace ShopTools
 		/// Get/Set the name of the selected tool. If no tool was specified, then
 		/// the general cutting tool is used.
 		/// </summary>
-		[JsonProperty(Order = 20)]
+		[JsonProperty(Order = 28)]
 		public string Tool
 		{
 			get { return mTool; }
@@ -1658,7 +2232,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the width of the operation.
 		/// </summary>
-		[JsonProperty(Order = 17)]
+		[JsonProperty(Order = 25)]
 		public string Width
 		{
 			get { return mWidth; }
@@ -1674,7 +2248,6 @@ namespace ShopTools
 			}
 		}
 		//*-----------------------------------------------------------------------*
-
 
 	}
 	//*-------------------------------------------------------------------------*

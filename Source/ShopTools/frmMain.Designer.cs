@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -111,6 +111,8 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
+			mnuFileImportPatterns = new System.Windows.Forms.ToolStripMenuItem();
+			mnuFileExportPatterns = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -123,7 +125,7 @@ namespace ShopTools
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(267, 70);
+			lblSuggestion.Size = new System.Drawing.Size(247, 70);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
@@ -171,7 +173,7 @@ namespace ShopTools
 			// 
 			// mnuFileImport
 			// 
-			mnuFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileImportConfiguration });
+			mnuFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileImportConfiguration, mnuFileImportPatterns });
 			mnuFileImport.Name = "mnuFileImport";
 			mnuFileImport.Size = new System.Drawing.Size(235, 26);
 			mnuFileImport.Text = "&Import";
@@ -179,12 +181,12 @@ namespace ShopTools
 			// mnuFileImportConfiguration
 			// 
 			mnuFileImportConfiguration.Name = "mnuFileImportConfiguration";
-			mnuFileImportConfiguration.Size = new System.Drawing.Size(183, 26);
+			mnuFileImportConfiguration.Size = new System.Drawing.Size(224, 26);
 			mnuFileImportConfiguration.Text = "&Configuration";
 			// 
 			// mnuFileExport
 			// 
-			mnuFileExport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileExportGCode, mnuFileExportSep1, mnuFileExportConfiguration });
+			mnuFileExport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileExportGCode, mnuFileExportSep1, mnuFileExportConfiguration, mnuFileExportPatterns });
 			mnuFileExport.Name = "mnuFileExport";
 			mnuFileExport.Size = new System.Drawing.Size(235, 26);
 			mnuFileExport.Text = "&Export";
@@ -192,18 +194,18 @@ namespace ShopTools
 			// mnuFileExportGCode
 			// 
 			mnuFileExportGCode.Name = "mnuFileExportGCode";
-			mnuFileExportGCode.Size = new System.Drawing.Size(183, 26);
+			mnuFileExportGCode.Size = new System.Drawing.Size(224, 26);
 			mnuFileExportGCode.Text = "&G-code";
 			// 
 			// mnuFileExportSep1
 			// 
 			mnuFileExportSep1.Name = "mnuFileExportSep1";
-			mnuFileExportSep1.Size = new System.Drawing.Size(180, 6);
+			mnuFileExportSep1.Size = new System.Drawing.Size(221, 6);
 			// 
 			// mnuFileExportConfiguration
 			// 
 			mnuFileExportConfiguration.Name = "mnuFileExportConfiguration";
-			mnuFileExportConfiguration.Size = new System.Drawing.Size(183, 26);
+			mnuFileExportConfiguration.Size = new System.Drawing.Size(224, 26);
 			mnuFileExportConfiguration.Text = "&Configuration";
 			// 
 			// mnuFileSep2
@@ -411,27 +413,23 @@ namespace ShopTools
 			// 
 			// btnStop
 			// 
-			btnStop.BackColor = System.Drawing.SystemColors.ButtonFace;
-			btnStop.Enabled = false;
-			btnStop.ForeColor = System.Drawing.SystemColors.ControlDark;
+			btnStop.Enabled = true;
 			btnStop.Location = new System.Drawing.Point(160, 783);
 			btnStop.Name = "btnStop";
 			btnStop.Size = new System.Drawing.Size(94, 29);
 			btnStop.TabIndex = 32;
 			btnStop.Text = "&Stop";
-			btnStop.UseVisualStyleBackColor = false;
+			btnStop.UseVisualStyleBackColor = true;
 			// 
 			// btnGO
 			// 
-			btnGO.BackColor = System.Drawing.SystemColors.ButtonFace;
-			btnGO.Enabled = false;
-			btnGO.ForeColor = System.Drawing.SystemColors.ControlDark;
+			btnGO.Enabled = true;
 			btnGO.Location = new System.Drawing.Point(160, 749);
 			btnGO.Name = "btnGO";
 			btnGO.Size = new System.Drawing.Size(94, 29);
 			btnGO.TabIndex = 31;
 			btnGO.Text = "&GO";
-			btnGO.UseVisualStyleBackColor = false;
+			btnGO.UseVisualStyleBackColor = true;
 			// 
 			// cmboWorkpieceY
 			// 
@@ -669,6 +667,18 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
+			// mnuFileImportPatterns
+			// 
+			mnuFileImportPatterns.Name = "mnuFileImportPatterns";
+			mnuFileImportPatterns.Size = new System.Drawing.Size(224, 26);
+			mnuFileImportPatterns.Text = "&Patterns";
+			// 
+			// mnuFileExportPatterns
+			// 
+			mnuFileExportPatterns.Name = "mnuFileExportPatterns";
+			mnuFileExportPatterns.Size = new System.Drawing.Size(224, 26);
+			mnuFileExportPatterns.Text = "&Patterns";
+			// 
 			// frmMain
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -761,5 +771,7 @@ namespace ShopTools
 		private System.Windows.Forms.ToolStripMenuItem mnuFileSaveAs;
 		private System.Windows.Forms.ToolStripSeparator mnuFileSep2;
 		private System.Windows.Forms.Button btnStop;
+		private System.Windows.Forms.ToolStripMenuItem mnuFileImportPatterns;
+		private System.Windows.Forms.ToolStripMenuItem mnuFileExportPatterns;
 	}
 }

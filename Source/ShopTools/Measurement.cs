@@ -373,8 +373,9 @@ namespace ShopTools
 								if(defaultUnit?.Length > 0 &&
 									lastOperator != "*" && lastOperator != "/")
 								{
-									number =
-										(float)SessionConverter.Convert(number, defaultUnit, "mm");
+									//	Should stand-alone numbers not be converted?
+									//number =
+									//	(float)SessionConverter.Convert(number, defaultUnit, "mm");
 								}
 								newToken = new MeasurementTokenItem()
 								{
@@ -544,6 +545,8 @@ namespace ShopTools
 		/// unit.
 		/// </param>
 		/// <returns>
+		/// The calculated value of the provided measurement tokens, in system
+		/// units.
 		/// </returns>
 		public static float Calculate(MeasurementTokenCollection items,
 			string defaultUnit)

@@ -41,6 +41,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	ActionName																														*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="ActionName">ActionName</see>.
+		/// </summary>
 		private string mActionName = "";
 		/// <summary>
 		/// Get/Set the name of the action.
@@ -55,6 +58,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Handled																																*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Handled">Handled</see>.
+		/// </summary>
 		private bool mHandled = false;
 		/// <summary>
 		/// Get/Set a value indicating whether this change has been handled.
@@ -69,6 +75,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	PropertyName																													*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="PropertyName">PropertyName</see>.
+		/// </summary>
 		private string mPropertyName = "";
 		/// <summary>
 		/// Get/Set the name of the property affected on the item.

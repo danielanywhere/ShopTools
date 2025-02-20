@@ -382,6 +382,9 @@ namespace ShopTools
 			List<string> loadedIconFilenames = new List<string>();
 			ListViewItem lvItem = null;
 
+			ilPatterns.Images.Clear();
+			ilPatternsSmall.Images.Clear();
+			lvPatterns.Items.Clear();
 			foreach(PatternTemplateItem templateItem in
 				ConfigProfile.PatternTemplates)
 			{
@@ -443,7 +446,7 @@ namespace ShopTools
 		/// </param>
 		private void lvCutList_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			btnGO.Enabled = (lvCutList.Items.Count != 0);
+			//btnGO.Enabled = (lvCutList.Items.Count != 0);
 			if(lvCutList.SelectedItems.Count > 0)
 			{
 				btnEditCut.Enabled = (lvCutList.SelectedItems.Count == 1);
@@ -615,6 +618,107 @@ namespace ShopTools
 					ExportGCode(dialog.FileName);
 				}
 			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuFileImportPatterns_Click																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The File / Import / Patterns menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuFileImportPatterns_Click(object sender, EventArgs e)
+		{
+			string content = "";
+			int count = 0;
+			OpenFileDialog dialog = new OpenFileDialog();
+			List<PatternTemplateItem> templates = null;
+
+			dialog.AddExtension = true;
+			dialog.AutoUpgradeEnabled = true;
+			dialog.CheckFileExists = true;
+			dialog.DefaultExt = ".patterns.json";
+			dialog.DereferenceLinks = true;
+			dialog.Filter =
+				"ShopTools Pattern Files " +
+				"(*.patterns.json)|" +
+				"*.patterns.json;|" +
+				"Text Files " +
+				"(*.txt)|" +
+				"*.txt;|" +
+				"All Files (*.*)|*.*";
+			dialog.FilterIndex = 0;
+			dialog.Multiselect = true;
+			dialog.SupportMultiDottedExtensions = true;
+			dialog.Title = "Open Pattern Files";
+			dialog.ValidateNames = true;
+			if(dialog.ShowDialog() == DialogResult.OK)
+			{
+				if(dialog.FileNames.Length > 0)
+				{
+					//	Filenames were specified.
+
+					foreach(string filenameItem in dialog.FileNames)
+					{
+						content = File.ReadAllText(filenameItem);
+						try
+						{
+							templates =
+								JsonConvert.
+									DeserializeObject<List<PatternTemplateItem>>(content);
+							foreach(PatternTemplateItem templateItem in templates)
+							{
+								if(!ConfigProfile.PatternTemplates.Exists(x =>
+									x.PatternTemplateId.ToLower() ==
+										templateItem.PatternTemplateId.ToLower()))
+								{
+									//	A unique template was found.
+									ConfigProfile.PatternTemplates.Add(templateItem);
+									count++;
+								}
+							}
+						}
+						catch(Exception ex)
+						{
+							MessageBox.Show($"Error opening pattern file: {ex.Message}",
+								$"Open Pattern Files - {Path.GetFileName(filenameItem)}",
+								MessageBoxButtons.OK, MessageBoxIcon.Error);
+						}
+					}
+					if(count > 0)
+					{
+						WriteConfiguration();
+						InitializePatterns();
+					}
+					statMessage.Text =
+						$"{count} patterns were added to the toolbar...";
+				}
+
+				this.Refresh();
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuFileExportPatterns_Click																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The File / Export / Patterns menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuFileExportPatterns_Click(object sender, EventArgs e)
+		{
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -917,6 +1021,11 @@ namespace ShopTools
 			Size workspaceSize = Size.Empty;
 			float workspaceRatio = GetWorkspaceRatio();
 
+			if(mCutListFilename.Length > 0)
+			{
+				//	If a file is open, check the layout.
+				Trace.WriteLine("pnlWorkspace_Paint - Break here...");
+			}
 			workspaceSize = ResizeArea(
 				pnlWorkspace.Width - 16, pnlWorkspace.Height - 16, workspaceRatio);
 			scale = (float)workspaceSize.Width / systemSize.Width;
@@ -939,24 +1048,30 @@ namespace ShopTools
 				{
 					profile = (CutProfileItem)lvItem.Tag;
 					profile.StartLocation = TransformToAbsolute(location);
-					if(lvItem.Selected)
+					foreach(PatternOperationItem operationItem in profile.Operations)
 					{
-						foreach(PatternOperationItem operationItem in profile.Operations)
-						{
-							location = DrawOperation(operationItem,
-								SessionWorkpieceInfo, location, "", graphics,
-								workspaceArea, scale, true);
-						}
+						location = DrawOperation(operationItem,
+							SessionWorkpieceInfo, location, "", graphics,
+							workspaceArea, scale, lvItem.Selected);
 					}
-					else
-					{
-						foreach(PatternOperationItem operationItem in profile.Operations)
-						{
-							location = DrawOperation(operationItem,
-								SessionWorkpieceInfo, location, "", graphics,
-								workspaceArea, scale, false);
-						}
-					}
+					//if(lvItem.Selected)
+					//{
+					//	foreach(PatternOperationItem operationItem in profile.Operations)
+					//	{
+					//		location = DrawOperation(operationItem,
+					//			SessionWorkpieceInfo, location, "", graphics,
+					//			workspaceArea, scale, true);
+					//	}
+					//}
+					//else
+					//{
+					//	foreach(PatternOperationItem operationItem in profile.Operations)
+					//	{
+					//		location = DrawOperation(operationItem,
+					//			SessionWorkpieceInfo, location, "", graphics,
+					//			workspaceArea, scale, false);
+					//	}
+					//}
 					profile.EndLocation = TransformToAbsolute(location);
 				}
 				//foreach(CutProfileItem profileItem in SessionWorkpieceInfo.Cuts)
@@ -969,10 +1084,10 @@ namespace ShopTools
 				//	}
 				//}
 				DrawRouter(location, StartEndEnum.End, graphics, workspaceArea, scale);
-				if(!btnGO.Enabled)
-				{
-					btnGO.Enabled = true;
-				}
+				//if(!btnGO.Enabled)
+				//{
+				//	btnGO.Enabled = true;
+				//}
 			}
 			else
 			{
@@ -988,10 +1103,10 @@ namespace ShopTools
 				{
 					btnEditCut.Enabled = false;
 				}
-				if(btnGO.Enabled)
-				{
-					btnGO.Enabled = false;
-				}
+				//if(btnGO.Enabled)
+				//{
+				//	btnGO.Enabled = false;
+				//}
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -1455,7 +1570,7 @@ namespace ShopTools
 				}
 			}
 			lvCutList.Columns[0].Width = -1;
-			btnGO.Enabled = (lvCutList.Items.Count > 0);
+			//btnGO.Enabled = (lvCutList.Items.Count > 0);
 			this.Refresh();
 		}
 		//*-----------------------------------------------------------------------*
@@ -1576,6 +1691,8 @@ namespace ShopTools
 				//	Router Location Y.
 				lblWorkpieceYUnit.Text = SessionWorkpieceInfo.AltRouterLocationY;
 
+				CalculateLayout();
+
 				pnlWorkspace.Refresh();
 				mWorkpieceBusy = false;
 			}
@@ -1596,12 +1713,16 @@ namespace ShopTools
 				mWorkpieceBusy = true;
 				//	Length.
 				txtWorkpieceLength.Text = SessionWorkpieceInfo.UserLength;
+				lblWorkpieceLengthUnit.Text = SessionWorkpieceInfo.AltLength;
 				//	Width.
 				txtWorkpieceWidth.Text = SessionWorkpieceInfo.UserWidth;
+				lblWorkpieceWidthUnit.Text = SessionWorkpieceInfo.AltWidth;
 				//	Depth.
 				txtWorkpieceDepth.Text = SessionWorkpieceInfo.UserDepth;
+				lblWorkpieceDepthUnit.Text = SessionWorkpieceInfo.AltDepth;
 				//	X.
 				txtWorkpieceX.Text = SessionWorkpieceInfo.UserOffsetX;
+				lblWorkpieceXUnit.Text = SessionWorkpieceInfo.AltOffsetX;
 				switch(SessionWorkpieceInfo.UserOffsetXOrigin)
 				{
 					case OffsetLeftRightEnum.Center:
@@ -1625,6 +1746,7 @@ namespace ShopTools
 				}
 				//	Y.
 				txtWorkpieceY.Text = SessionWorkpieceInfo.UserOffsetY;
+				lblWorkpieceYUnit.Text = SessionWorkpieceInfo.AltOffsetY;
 				switch(SessionWorkpieceInfo.UserOffsetYOrigin)
 				{
 					case OffsetTopBottomEnum.Bottom:
@@ -1648,24 +1770,12 @@ namespace ShopTools
 				}
 				//	Router location X.
 				txtRouterPositionX.Text = SessionWorkpieceInfo.UserRouterLocationX;
+				lblRouterPositionXUnit.Text = SessionWorkpieceInfo.AltRouterLocationX;
 				//	Router location Y.
 				txtRouterPositionY.Text = SessionWorkpieceInfo.UserRouterLocationY;
+				lblRouterPositionYUnit.Text = SessionWorkpieceInfo.AltRouterLocationY;
 
-				//	Length.
-				SessionWorkpieceInfo.AltLength = lblWorkpieceLengthUnit.Text;
-				//	Width.
-				SessionWorkpieceInfo.AltWidth = lblWorkpieceWidthUnit.Text;
-				//	Depth.
-				SessionWorkpieceInfo.AltDepth = lblWorkpieceDepthUnit.Text;
-				//	X.
-				SessionWorkpieceInfo.AltOffsetX = lblWorkpieceXUnit.Text;
-				//	Y.
-				SessionWorkpieceInfo.AltOffsetY = lblWorkpieceYUnit.Text;
-				//	Router Location X.
-				SessionWorkpieceInfo.AltRouterLocationX = lblWorkpieceXUnit.Text;
-				//	Router Location Y.
-				SessionWorkpieceInfo.AltRouterLocationY = lblWorkpieceYUnit.Text;
-
+				CalculateLayout();
 				UpdateCutList();
 
 				pnlWorkspace.Refresh();
@@ -1770,6 +1880,7 @@ namespace ShopTools
 			btnDeleteCut.Enabled = false;
 			btnEditCut.Enabled = false;
 			btnGO.Enabled = false;
+			btnStop.Enabled = false;
 
 			//	The design-time version of cut list is its defined minimum height.
 			mCutListMinHeight = lvCutList.Height;
@@ -1820,10 +1931,17 @@ namespace ShopTools
 			mnuFileExit.Click += mnuFileExit_Click;
 			mnuFileExportConfiguration.Click += mnuFileExportConfiguration_Click;
 			mnuFileExportGCode.Click += mnuFileExportGCode_Click;
+			mnuFileExportPatterns.Click += mnuFileExportPatterns_Click;
 			mnuFileImportConfiguration.Click += mnuFileImportConfiguration_Click;
+			mnuFileImportPatterns.Click += mnuFileImportPatterns_Click;
 			mnuFileOpen.Click += mnuFileOpen_Click;
 			mnuFileSave.Click += mnuFileSave_Click;
 			mnuFileSaveAs.Click += mnuFileSaveAs_Click;
+
+			mnuFileImportConfiguration.Enabled = false;
+			mnuFileExportConfiguration.Enabled = false;
+			mnuFileExportGCode.Enabled = false;
+			mnuFileExportPatterns.Enabled = false;
 
 			//	Form events.
 			btnDeleteCut.Click += btnDeleteCut_Click;
