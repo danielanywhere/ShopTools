@@ -2,12 +2,12 @@
 style="width:100%" />
 
 One of the biggest complaints I've heard about CNC routers in recent
-years is that even if you want to use your machine for simple ad-hoc
-drills and cuts, by the time you get everything planned out, drafted
-into your favorite CAD application, and configured with a matching CAM
-application, you would've saved a lot of time to just have walked over
-to your traditional power tools and had done it manually. That situation
-is about to change...
+years is that, even when you want to use your machine for simple ad-hoc
+drills and cuts, the time it takes to plan everything out, draft it in
+your favorite CAD application, and create your tool paths with a
+matching CAM application often outweighs the convenience. You could have
+saved time by just walking over to your traditional power tools and
+doing it manually. But that's about to change…
 
 Welcome to **ShopTools**, the application that finally makes CNC routing
 easier than using your old power tools - except now, you don’t have to
