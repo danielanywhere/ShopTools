@@ -58,14 +58,6 @@
 		]
 	},
 	{
-		"PropertyName": "EndAngle",
-		"DataType": "AngleString",
-		"SortIndex": 22,
-		"IncludeOperationActions": [
-			"DrawArcCenterRadiusStartEndAngle"
-		]
-	},
-	{
 		"PropertyName": "EndOffsetX",
 		"DataType": "MeasurementString",
 		"SortIndex": 16,
@@ -122,6 +114,20 @@
 		"DataType": "DirectionLeftRightEnum",
 		"SortIndex": 26,
 		"ExcludeOperationActions": [
+			"FillCircleCenterDiameter",
+			"FillCircleCenterRadius",
+			"FillCircleDiameter",
+			"FillCircleRadius",
+			"FillEllipseCenterDiameterXY",
+			"FillEllipseCenterRadiusXY",
+			"FillEllipseDiameterXY",
+			"FillEllipseLengthWidth",
+			"FillEllipseRadiusXY",
+			"FillEllipseXY",
+			"FillPath",
+			"FillRectangleCenterLengthWidth",
+			"FillRectangleLengthWidth",
+			"FillRectangleXY",
 			"PointXY"
 		]
 	},
@@ -148,7 +154,7 @@
 		"IncludeOperationActions": [
 			"DrawArcCenterOffsetXY",
 			"DrawArcCenterOffsetXYAngle",
-			"DrawArcCenterRadiusStartEndAngle",
+			"DrawArcCenterRadiusStartSweepAngle",
 			"DrawCircleCenterDiameter",
 			"DrawCircleCenterRadius",
 			"DrawCircleDiameter",
@@ -184,7 +190,7 @@
 		"IncludeOperationActions": [
 			"DrawArcCenterOffsetXY",
 			"DrawArcCenterOffsetXYAngle",
-			"DrawArcCenterRadiusStartEndAngle",
+			"DrawArcCenterRadiusStartSweepAngle",
 			"DrawCircleCenterDiameter",
 			"DrawCircleCenterRadius",
 			"DrawCircleDiameter",
@@ -220,7 +226,7 @@
 		"IncludeOperationActions": [
 			"DrawArcCenterOffsetXY",
 			"DrawArcCenterOffsetXYAngle",
-			"DrawArcCenterRadiusStartEndAngle",
+			"DrawArcCenterRadiusStartSweepAngle",
 			"DrawCircleCenterDiameter",
 			"DrawCircleCenterRadius",
 			"DrawCircleDiameter",
@@ -256,7 +262,7 @@
 		"IncludeOperationActions": [
 			"DrawArcCenterOffsetXY",
 			"DrawArcCenterOffsetXYAngle",
-			"DrawArcCenterRadiusStartEndAngle",
+			"DrawArcCenterRadiusStartSweepAngle",
 			"DrawCircleCenterDiameter",
 			"DrawCircleCenterRadius",
 			"DrawCircleDiameter",
@@ -296,7 +302,7 @@
 		"DataType": "MeasurementString",
 		"SortIndex": 7,
 		"IncludeOperationActions": [
-			"DrawArcCenterRadiusStartEndAngle",
+			"DrawArcCenterRadiusStartSweepAngle",
 			"DrawCircleCenterRadius",
 			"DrawCircleRadius",
 			"FillCircleCenterRadius",
@@ -331,7 +337,7 @@
 		"SortIndex": 21,
 		"IncludeOperationActions":
 		[
-			"DrawArcCenterRadiusStartEndAngle"
+			"DrawArcCenterRadiusStartSweepAngle"
 		]
 	},
 	{
@@ -388,6 +394,14 @@
 			"DrawRectangleXY",
 			"FillEllipseXY",
 			"FillRectangleXY"
+		]
+	},
+	{
+		"PropertyName": "SweepAngle",
+		"DataType": "AngleString",
+		"SortIndex": 22,
+		"IncludeOperationActions": [
+			"DrawArcCenterRadiusStartSweepAngle"
 		]
 	},
 	{

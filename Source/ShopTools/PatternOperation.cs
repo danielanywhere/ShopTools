@@ -199,7 +199,6 @@ namespace ShopTools
 					mDiameter = item.mDiameter,
 					mDiameterX = item.mDiameterX,
 					mDiameterY = item.mDiameterY,
-					mEndAngle = item.mEndAngle,
 					mEndOffsetX = item.mEndOffsetX,
 					mEndOffsetXOrigin = item.mEndOffsetXOrigin,
 					mEndOffsetY = item.mEndOffsetY,
@@ -219,6 +218,7 @@ namespace ShopTools
 					mStartOffsetXOrigin = item.mStartOffsetXOrigin,
 					mStartOffsetY = item.mStartOffsetY,
 					mStartOffsetYOrigin = item.mStartOffsetYOrigin,
+					mSweepAngle = item.mSweepAngle,
 					mTool = item.mTool,
 					mWidth = item.mWidth
 				};
@@ -339,33 +339,6 @@ namespace ShopTools
 				bool bChanged = (mDiameterY != value);
 
 				mDiameterY = value;
-				if(bChanged)
-				{
-					OnPropertyChanged();
-				}
-			}
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	EndAngle																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="EndAngle">EndAngle</see>.
-		/// </summary>
-		private string mEndAngle = "";
-		/// <summary>
-		/// Get/Set the angle at which the operation will start.
-		/// </summary>
-		[JsonProperty(Order = 23)]
-		public string EndAngle
-		{
-			get { return mEndAngle; }
-			set
-			{
-				bool bChanged = (mEndAngle != value);
-
-				mEndAngle = value;
 				if(bChanged)
 				{
 					OnPropertyChanged();
@@ -1660,21 +1633,6 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* ShouldSerializeEndAngle																								*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether to serialize the EndAngle property.
-		/// </summary>
-		/// <returns>
-		/// True if the property will be serialized. Otherwise, false.
-		/// </returns>
-		public bool ShouldSerializeEndAngle()
-		{
-			return this.mEndAngle?.Length > 0;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* ShouldSerializeEndOffsetX																							*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2004,6 +1962,21 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeSweepAngle																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether to serialize the SweepAngle property.
+		/// </summary>
+		/// <returns>
+		/// True if the property will be serialized. Otherwise, false.
+		/// </returns>
+		public bool ShouldSerializeSweepAngle()
+		{
+			return this.mSweepAngle?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* ShouldSerializeTool																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2186,6 +2159,33 @@ namespace ShopTools
 				bool bChanged = (mStartOffsetYOrigin != value);
 
 				mStartOffsetYOrigin = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	SweepAngle																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SweepAngle">SweepAngle</see>.
+		/// </summary>
+		private string mSweepAngle = "";
+		/// <summary>
+		/// Get/Set the sweep angle for the operation.
+		/// </summary>
+		[JsonProperty(Order = 23)]
+		public string SweepAngle
+		{
+			get { return mSweepAngle; }
+			set
+			{
+				bool bChanged = (mSweepAngle != value);
+
+				mSweepAngle = value;
 				if(bChanged)
 				{
 					OnPropertyChanged();

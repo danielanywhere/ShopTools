@@ -48,10 +48,10 @@ namespace ShopTools
 		/// </summary>
 		DrawArcCenterOffsetXYAngle,
 		/// <summary>
-		/// Draw an arc using a center coordinate, a radius, a start angle, and an
-		/// end angle.
+		/// Draw an arc using a center coordinate, a radius, a start angle, and a
+		/// sweep angle.
 		/// </summary>
-		DrawArcCenterRadiusStartEndAngle,
+		DrawArcCenterRadiusStartSweepAngle,
 		/// <summary>
 		/// Draw a circle using a center reference point and diameter.
 		/// </summary>

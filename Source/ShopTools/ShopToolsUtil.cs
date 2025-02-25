@@ -223,7 +223,6 @@ namespace ShopTools
 			float angle = 0f;
 			float diameter = 0f;
 			FPoint diameterXY = null;
-			float endAngle = 0f;
 			FPoint endOffset = null;
 			float length = 0f;
 			FPoint location = null;
@@ -232,6 +231,7 @@ namespace ShopTools
 			FPoint radiusXY = null;
 			float startAngle = 0f;
 			FPoint startOffset = null;
+			float sweepAngle = 0f;
 			float width = 0f;
 
 			if(pattern != null)
@@ -247,19 +247,20 @@ namespace ShopTools
 					//	Start of Operation.
 					switch(operationItem.Action)
 					{
-						case OperationActionEnum.DrawArcCenterOffsetXY:
-							//	Offset - Center coordinate.
-							//	StartOffset - Starting Point.
-							//	EndOffset - Ending Point.
-							offset = PatternOperationItem.GetOffsetParameter(
-								operationItem, workpiece, location);
-							startOffset = PatternOperationItem.GetStartOffsetParameter(
-								operationItem, workpiece, offset);
-							endOffset = PatternOperationItem.GetEndOffsetParameter(
-								operationItem, workpiece, startOffset);
-							location = OperationLayoutCollection.AddArcCenterOffsetXY(
-								operationItem, offset, startOffset, endOffset, location);
-							break;
+						//	TODO: Add Winding parameter to configuration.
+						//case OperationActionEnum.DrawArcCenterOffsetXY:
+						//	//	Offset - Center coordinate.
+						//	//	StartOffset - Starting Point.
+						//	//	EndOffset - Ending Point.
+						//	offset = PatternOperationItem.GetOffsetParameter(
+						//		operationItem, workpiece, location);
+						//	startOffset = PatternOperationItem.GetStartOffsetParameter(
+						//		operationItem, workpiece, offset);
+						//	endOffset = PatternOperationItem.GetEndOffsetParameter(
+						//		operationItem, workpiece, startOffset);
+						//	location = OperationLayoutCollection.AddArcCenterOffsetXY(
+						//		operationItem, offset, startOffset, endOffset, location);
+						//	break;
 						case OperationActionEnum.DrawArcCenterOffsetXYAngle:
 							//	Offset - Center coordinate.
 							//	StartOffset - Starting Point.
@@ -272,7 +273,7 @@ namespace ShopTools
 							location = OperationLayoutCollection.AddArcCenterOffsetXYAngle(
 								operationItem, offset, startOffset, angle, location);
 							break;
-						case OperationActionEnum.DrawArcCenterRadiusStartEndAngle:
+						case OperationActionEnum.DrawArcCenterRadiusStartSweepAngle:
 							//	Offset - Center coordinate.
 							//	Radius - Circle radius from center.
 							//	StartAngle - Starting angle.
@@ -281,10 +282,10 @@ namespace ShopTools
 								operationItem, workpiece, location);
 							radius = GetMillimeters(operationItem.Radius);
 							startAngle = GetAngle(operationItem.StartAngle);
-							endAngle = GetAngle(operationItem.EndAngle);
+							sweepAngle = GetAngle(operationItem.SweepAngle);
 							location = OperationLayoutCollection.
-								AddArcCenterRadiusStartEndAngle(operationItem,
-								offset, radius, startAngle, endAngle, location);
+								AddArcCenterRadiusStartSweepAngle(operationItem,
+								offset, radius, startAngle, sweepAngle, location);
 							break;
 						case OperationActionEnum.DrawCircleCenterDiameter:
 							//	Offset - Center coordinate.
@@ -1266,7 +1267,7 @@ namespace ShopTools
 								layoutItem.DisplayEndOffset, workspaceArea, scale);
 							angleStart = Trig.RadToDeg(layoutItem.StartAngle);
 							angleSweep = Trig.RadToDeg(
-								layoutItem.EndAngle - layoutItem.StartAngle);
+								layoutItem.SweepAngle - layoutItem.StartAngle);
 							width = endCoordinate.X - startCoordinate.X;
 							height = endCoordinate.Y - startCoordinate.Y;
 							area = new Rectangle(
@@ -2599,6 +2600,124 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* GetIntersectingLine																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a reference to the first line intersecting the caller's point
+		/// from the supplied list of lines.
+		/// </summary>
+		/// <param name="lines">
+		/// Reference to a list of lines, one or more of which might contain
+		/// the caller's point.
+		/// </param>
+		/// <param name="point">
+		/// Reference to the point to compare.
+		/// </param>
+		/// <returns>
+		/// Reference to the first line in the collection containing the caller's
+		/// point, if found. Otherwise, null.
+		/// </returns>
+		public static FLine GetIntersectingLine(List<FLine> lines, FPoint point)
+		{
+			FLine result = null;
+
+			if(lines?.Count > 0)
+			{
+				foreach(FLine lineItem in lines)
+				{
+					if(FLine.IsPointOnLine(lineItem, point))
+					{
+						result = lineItem;
+						break;
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetIntersectingLines																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a list of lines intersecting the caller's point
+		/// within the supplied list of lines.
+		/// </summary>
+		/// <param name="lines">
+		/// Reference to a list of lines, one or more of which might contain
+		/// the caller's point.
+		/// </param>
+		/// <param name="point">
+		/// Reference to the point to compare.
+		/// </param>
+		/// <returns>
+		/// Reference to a list of lines in the collection containing the
+		/// caller's point, if found. Otherwise, an empty list.
+		/// </returns>
+		public static List<FLine> GetIntersectingLines(List<FLine> lines,
+			FPoint point)
+		{
+			List<FLine> result = new List<FLine>();
+
+			if(lines?.Count > 0)
+			{
+				foreach(FLine lineItem in lines)
+				{
+					if(FLine.IsPointOnLine(lineItem, point))
+					{
+						result.Add(lineItem);
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetLines																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return four lines representing the bounding edge of the provided area.
+		/// </summary>
+		/// <param name="area">
+		/// Reference to the area for which the lines will be returned.
+		/// </param>
+		/// <returns>
+		/// Reference to a list of four lines, if the area was legitimate and
+		/// non-empty. Otherwise, an empty array.
+		/// </returns>
+		/// <remarks>
+		/// In drawing space, the lines from this method are arranged in a
+		/// counter-clockwise progression from top-right, including the top, left,
+		/// bottom, then right sides.
+		/// </remarks>
+		public static List<FLine> GetLines(FArea area)
+		{
+			List<FLine> result = new List<FLine>();
+
+			if(!FArea.IsEmpty(area))
+			{
+				result = new List<FLine>
+				{
+					new FLine(
+						new FPoint(area.Right, area.Top),
+						new FPoint(area.Left, area.Top)),
+					new FLine(
+						new FPoint(area.Left, area.Top),
+						new FPoint(area.Left, area.Bottom)),
+					new FLine(
+						new FPoint(area.Left, area.Bottom),
+						new FPoint(area.Right, area.Bottom)),
+					new FLine(
+						new FPoint(area.Right, area.Bottom),
+						new FPoint(area.Right, area.Top))
+				};
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* GetRawEndOffset																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2921,6 +3040,69 @@ namespace ShopTools
 						System.Reflection.BindingFlags.Public) != null);
 				}
 				catch { }
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* IsPointAtCorner																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the provided point is at one of the
+		/// corners of the caller's rectangle.
+		/// </summary>
+		/// <param name="area">
+		/// Reference to the area to test for corner.
+		/// </param>
+		/// <param name="point">
+		/// Reference to the point to compare with corners.
+		/// </param>
+		/// <returns>
+		/// True if the caller's point is located at one of the corners of the
+		/// supplied area.
+		/// </returns>
+		public static bool IsPointAtCorner(FArea area, FPoint point)
+		{
+			bool result = false;
+
+			if(area != null && point != null)
+			{
+				result =
+					((area.Left == point.X && area.Top == point.Y) ||
+					(area.Right == point.X && area.Top == point.Y) ||
+					(area.Left == point.X && area.Bottom == point.Y) ||
+					(area.Right == point.X && area.Bottom == point.Y));
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* IsPointAtCorner																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the provided point is at one of the
+		/// ends of the specified line.
+		/// </summary>
+		/// <param name="line">
+		/// Reference to the line to test.
+		/// </param>
+		/// <param name="point">
+		/// The point to compare.
+		/// </param>
+		/// <returns>
+		/// True if the specified point is at one of the ends of the line.
+		/// </returns>
+		public static bool IsPointAtCorner(FLine line, FPoint point)
+		{
+			bool result = false;
+
+			if(line != null && point != null)
+			{
+				result =
+					((line.PointA.X == point.X && line.PointA.Y == point.Y) ||
+					(line.PointB.X == point.X && line.PointB.Y == point.Y));
 			}
 			return result;
 		}

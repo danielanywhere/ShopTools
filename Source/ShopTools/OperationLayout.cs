@@ -67,6 +67,10 @@ namespace ShopTools
 		/// drawn. The actual ending offset will be calculated by the angle of
 		/// the provided ending offset, using the radius as a line distance.
 		/// </param>
+		/// <param name="winding">
+		/// The winding direction to use for the arc sweep. Choices are clockwise and
+		/// counterclockwise.
+		/// </param>
 		/// <param name="location">
 		/// Reference to the last known traveling tool location.
 		/// </param>
@@ -76,7 +80,9 @@ namespace ShopTools
 		/// </returns>
 		public static FPoint AddArcCenterOffsetXY(
 			PatternOperationItem operation,
-			FPoint center, FPoint startOffset, FPoint endOffset, FPoint location)
+			FPoint center, FPoint startOffset, FPoint endOffset,
+			WindingOrientationEnum winding,
+			FPoint location)
 		{
 			float angleEnd = 0f;
 			float angleStart = 0f;
@@ -88,6 +94,7 @@ namespace ShopTools
 			FPoint localLocation = null;
 			float radius = 0f;
 			FPoint result = null;
+			float sweepAngle = 0f;
 
 			if(operation != null && startOffset != null && endOffset != null &&
 				location != null)
@@ -113,10 +120,36 @@ namespace ShopTools
 				radius = Math.Abs(Trig.GetLineDistance(center, startOffset));
 				angleStart = Trig.GetLineAngle(center, startOffset);
 				angleEnd = Trig.GetLineAngle(center, endOffset);
-				actualEndOffset = Trig.GetDestPoint(center, angleEnd, radius);
+				if(winding == WindingOrientationEnum.Clockwise ||
+					winding == WindingOrientationEnum.None)
+				{
+					//	Forward in drawing space.
+					if(angleStart > angleEnd)
+					{
+						sweepAngle = (angleEnd + GeometryUtil.TwoPi) - angleStart;
+					}
+					else
+					{
+						sweepAngle = (angleEnd - angleStart);
+					}
+				}
+				else
+				{
+					//	Reverse in drawing space.
+					if(angleEnd > angleStart)
+					{
+						sweepAngle = angleEnd - (angleStart + GeometryUtil.TwoPi);
+					}
+					else
+					{
+						sweepAngle = angleEnd - angleStart;
+					}
+				}
+				sweepAngle = Trig.GetLineAngle(center, endOffset) - angleStart;
+				actualEndOffset =
+					Trig.GetDestPoint(center, angleStart + sweepAngle, radius);
 				boxTL = new FPoint(center.X - radius, center.Y - radius);
 				boxBR = new FPoint(center.X + radius, center.Y + radius);
-				//	TODO: Convert parameters to arc display.
 				element = new OperationLayoutItem()
 				{
 					ActionType = LayoutActionType.DrawArc,
@@ -124,7 +157,7 @@ namespace ShopTools
 					DisplayStartOffset = new FPoint(boxTL),
 					DisplayEndOffset = new FPoint(boxBR),
 					StartAngle = angleStart,
-					EndAngle = angleEnd,
+					SweepAngle = sweepAngle,
 					ToolStartOffset = new FPoint(startOffset),
 					ToolEndOffset = new FPoint(actualEndOffset)
 				};
@@ -169,7 +202,6 @@ namespace ShopTools
 			PatternOperationItem operation,
 			FPoint center, FPoint startOffset, float sweepAngle, FPoint location)
 		{
-			float angleEnd = 0f;
 			float angleStart = 0f;
 			FPoint boxBR = null;
 			FPoint boxTL = null;
@@ -203,8 +235,8 @@ namespace ShopTools
 				//	Plot the shape.
 				radius = Math.Abs(Trig.GetLineDistance(center, startOffset));
 				angleStart = Trig.GetLineAngle(center, startOffset);
-				angleEnd = angleStart + sweepAngle;
-				actualEndOffset = Trig.GetDestPoint(center, angleEnd, radius);
+				actualEndOffset =
+					Trig.GetDestPoint(center, angleStart + sweepAngle, radius);
 				boxTL = new FPoint(center.X - radius, center.Y - radius);
 				boxBR = new FPoint(center.X + radius, center.Y + radius);
 				element = new OperationLayoutItem()
@@ -214,7 +246,7 @@ namespace ShopTools
 					DisplayStartOffset = new FPoint(boxTL),
 					DisplayEndOffset = new FPoint(boxBR),
 					StartAngle = angleStart,
-					EndAngle = angleEnd,
+					SweepAngle = sweepAngle,
 					ToolStartOffset = new FPoint(startOffset),
 					ToolEndOffset = new FPoint(actualEndOffset)
 				};
@@ -230,11 +262,11 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* AddArcCenterRadiusStartEndAngle																				*
+		//* AddArcCenterRadiusStartSweepAngle																			*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
 		/// Add an arc to the layout given its center coordinate, radius, start
-		/// angle and end angle.
+		/// angle and sweep angle.
 		/// </summary>
 		/// <param name="operation">
 		/// Reference to the operation for which the layout is being prepared.
@@ -248,8 +280,8 @@ namespace ShopTools
 		/// <param name="startAngle">
 		/// The clockwise start angle of the arc, in radians.
 		/// </param>
-		/// <param name="endAngle">
-		/// The clockwise end angle of the arc, in radians.
+		/// <param name="sweepAngle">
+		/// The sweep angle of the arc, in radians.
 		/// </param>
 		/// <param name="location">
 		/// Reference to the last known traveling tool location.
@@ -258,9 +290,9 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddArcCenterRadiusStartEndAngle(
+		public static FPoint AddArcCenterRadiusStartSweepAngle(
 			PatternOperationItem operation,
-			FPoint center, float radius, float startAngle, float endAngle,
+			FPoint center, float radius, float startAngle, float sweepAngle,
 			FPoint location)
 		{
 			FPoint boxBR = null;
@@ -273,7 +305,7 @@ namespace ShopTools
 			FPoint startOffset = null;
 
 			if(operation != null && radius != 0f &&
-				startAngle != endAngle && location != null)
+				sweepAngle != 0f && location != null)
 			{
 				localLocation = new FPoint(location);
 				startOffset = Trig.GetDestPoint(center, startAngle, radius);
@@ -294,7 +326,8 @@ namespace ShopTools
 					FPoint.TransferValues(element.ToolEndOffset, localLocation);
 				}
 				//	Plot the shape.
-				actualEndOffset = Trig.GetDestPoint(center, endAngle, radius);
+				actualEndOffset =
+					Trig.GetDestPoint(center, startAngle + sweepAngle, radius);
 				boxTL = new FPoint(center.X - radius, center.Y - radius);
 				boxBR = new FPoint(center.X + radius, center.Y + radius);
 				element = new OperationLayoutItem()
@@ -304,7 +337,7 @@ namespace ShopTools
 					DisplayStartOffset = new FPoint(boxTL),
 					DisplayEndOffset = new FPoint(boxBR),
 					StartAngle = startAngle,
-					EndAngle = endAngle,
+					SweepAngle = sweepAngle,
 					ToolStartOffset = new FPoint(startOffset),
 					ToolEndOffset = new FPoint(actualEndOffset)
 				};
@@ -371,7 +404,7 @@ namespace ShopTools
 				distance = (float)Math.Max(radiusX, radiusY) * 2f;
 				//	Point guaranteed to be outside the ellipse.
 				outside = Trig.GetDestPoint(center, angle, distance);
-				intersections = Ellipse.FindIntersections(center, radiusX, radiusY,
+				intersections = FEllipse.FindIntersections(center, radiusX, radiusY,
 					new FLine(center, outside));
 				if(intersections.Length > 0)
 				{
@@ -857,6 +890,44 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* CloneLayout																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a deep clone of the entire layout of from the caller's
+		/// host object.
+		/// </summary>
+		/// <param name="cuts">
+		/// Reference to a cut profile collection whose layout will be cloned.
+		/// </param>
+		/// <returns>
+		/// Reference to a newly created operation layout collection containing
+		/// representation of all of the layout elements in the host context, if
+		/// elements were found. Otherwise, an empty collection.
+		/// </returns>
+		public static OperationLayoutCollection CloneLayout(
+			CutProfileCollection cuts)
+		{
+			OperationLayoutCollection result = new OperationLayoutCollection();
+
+			if(cuts?.Count > 0)
+			{
+				foreach(CutProfileItem profileItem in cuts)
+				{
+					foreach(PatternOperationItem operationItem in profileItem.Operations)
+					{
+						foreach(OperationLayoutItem layoutItem in
+							operationItem.LayoutElements)
+						{
+							result.Add(OperationLayoutItem.Clone(layoutItem));
+						}
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
 
 	}
 	//*-------------------------------------------------------------------------*
@@ -918,9 +989,9 @@ namespace ShopTools
 					mActionType = item.mActionType,
 					mDisplayEndOffset = new FPoint(item.mDisplayEndOffset),
 					mDisplayStartOffset = new FPoint(item.mDisplayStartOffset),
-					mEndAngle = item.mEndAngle,
 					mOperation = item.mOperation,
 					mStartAngle = item.mStartAngle,
+					mSweepAngle = item.mSweepAngle,
 					mToolEndOffset = new FPoint(item.mToolEndOffset),
 					mToolStartOffset = new FPoint(item.mToolStartOffset)
 				};
@@ -965,23 +1036,6 @@ namespace ShopTools
 		{
 			get { return mDisplayStartOffset; }
 			set { mDisplayStartOffset = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	EndAngle																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="EndAngle">EndAngle</see>.
-		/// </summary>
-		private float mEndAngle = 0f;
-		/// <summary>
-		/// Get/Set the end angle of the operation.
-		/// </summary>
-		public float EndAngle
-		{
-			get { return mEndAngle; }
-			set { mEndAngle = value; }
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1052,6 +1106,23 @@ namespace ShopTools
 		{
 			get { return mStartAngle; }
 			set { mStartAngle = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	SweepAngle																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="SweepAngle">SweepAngle</see>.
+		/// </summary>
+		private float mSweepAngle = 0f;
+		/// <summary>
+		/// Get/Set the sweep angle of the operation.
+		/// </summary>
+		public float SweepAngle
+		{
+			get { return mSweepAngle; }
+			set { mSweepAngle = value; }
 		}
 		//*-----------------------------------------------------------------------*
 

@@ -365,6 +365,8 @@ namespace ShopTools
 			{
 				content = GCode.RenderGCode();
 				File.WriteAllText(filename, content);
+				statMessage.Text =
+					$"G-code exported to {Path.GetFileName(filename)}...";
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -1940,7 +1942,7 @@ namespace ShopTools
 
 			mnuFileImportConfiguration.Enabled = false;
 			mnuFileExportConfiguration.Enabled = false;
-			mnuFileExportGCode.Enabled = false;
+			mnuFileExportGCode.Enabled = true;
 			mnuFileExportPatterns.Enabled = false;
 
 			//	Form events.

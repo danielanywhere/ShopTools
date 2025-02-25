@@ -36,7 +36,7 @@
 <DocumentationSource sourceFile="..\Source\ShopTools\bin\Release\net8.0-windows\ShopTools.dll" />
 <DocumentationSource sourceFile="..\Docs\AdditionalMemberDocumentation.xml" /></DocumentationSources>
     <HelpTitle>Dan&amp;#39%3bs ShopTools Desktop</HelpTitle>
-    <HelpFileVersion>25.1219.4900</HelpFileVersion>
+    <HelpFileVersion>25.1225.4218</HelpFileVersion>
     <NamingMethod>MemberName</NamingMethod>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <RootNamespaceContainer>False</RootNamespaceContainer>

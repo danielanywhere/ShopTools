@@ -19,10 +19,10 @@
 using Geometry;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using static ShopTools.ShopToolsUtil;
 
 namespace ShopTools
@@ -38,328 +38,47 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		/// <summary>
+		/// The default maximum depth per pass, in system units, if no tool
+		/// information could be found.
+		/// </summary>
+		private const float mDefaultMaxDepthPerPass = 1.5875f;
+
+		//	TODO: !1 - Stopped here...
+		//	TODO: Test this version of the track layer processor.
 		//*-----------------------------------------------------------------------*
-		//* IsPlot																																*
+		//* AdjustKerf																														*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return a value indicating whether the specified action is of a plotting
-		/// type, subject to kerf.
+		/// Adjust the tool position to place the kerf on the desired side of the
+		/// line.
 		/// </summary>
-		/// <param name="action">
-		/// The action in question.
-		/// </param>
 		/// <returns>
-		/// True if the specified action plots a line and is subject to kerf
-		/// offset. Otherwise, false.
+		/// Reference to the updated last-known location.
 		/// </returns>
-		/// <remarks>
-		/// Note that point operations are always center-oriented, while fill
-		/// operations always distribute the kerf to the inside area. As a result,
-		/// point and fill operations always return false from this method.
-		/// </remarks>
-		private static bool IsPlot(OperationActionEnum action)
-		{
-			bool result = false;
-
-			switch(action)
-			{
-				case OperationActionEnum.DrawCircleCenterDiameter:
-				case OperationActionEnum.DrawCircleCenterRadius:
-				case OperationActionEnum.DrawCircleDiameter:
-				case OperationActionEnum.DrawCircleRadius:
-				case OperationActionEnum.DrawEllipseCenterDiameterXY:
-				case OperationActionEnum.DrawEllipseCenterRadiusXY:
-				case OperationActionEnum.DrawEllipseDiameterXY:
-				case OperationActionEnum.DrawEllipseLengthWidth:
-				case OperationActionEnum.DrawEllipseRadiusXY:
-				case OperationActionEnum.DrawEllipseXY:
-				case OperationActionEnum.DrawLineAngleLength:
-				case OperationActionEnum.DrawLineLengthWidth:
-				case OperationActionEnum.DrawLineXY:
-				case OperationActionEnum.DrawPath:
-				case OperationActionEnum.DrawRectangleLengthWidth:
-				case OperationActionEnum.DrawRectangleXY:
-					result = true;
-					break;
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*************************************************************************
-		//*	Protected																															*
-		//*************************************************************************
-		//*************************************************************************
-		//*	Public																																*
-		//*************************************************************************
-		//*-----------------------------------------------------------------------*
-		//*	_Constructor																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Create a new instance of the TrackLayerCollection Item.
-		/// </summary>
-		public TrackLayerCollection()
-		{
-		}
-		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
-		/// <summary>
-		/// Create a new instance of the TrackLayerCollection Item.
-		/// </summary>
-		/// <param name="cutList">
-		/// Reference to to a collection of cuts from which to generate tracks.
-		/// </param>
-		public TrackLayerCollection(CutProfileCollection cutList)
-		{
-			GenerateTracks(cutList);
-		}
-		//*-----------------------------------------------------------------------*
-
-		//	---
-		//	TODO: Update GenerateTracks to support the new calculated patterns.
-		private static FPoint GetOperationStartLocation(
-			PatternOperationItem operationItem, WorkpieceInfoItem workpiece,
-			FPoint location)
-		{
-			return location;
-		}
-		private static FPoint GetOperationEndLocation(
-			PatternOperationItem operationItem, WorkpieceInfoItem workpiece,
-			FPoint startOffset)
-		{
-			return startOffset;
-		}
-		//	---
-
-		//*-----------------------------------------------------------------------*
-		//* GenerateTracks																												*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Process all of the cuts in the caller's cut profile collection to
-		/// generate the tracks for this collection.
-		/// </summary>
-		/// <param name="cutList">
-		/// Reference to the collection of cuts to process.
-		/// </param>
-		public void GenerateTracks(CutProfileCollection cutList)
+		private FPoint AdjustKerf()
 		{
 			int count = 0;
-			float cutDepth = 0f;
-			float depth = 0f;
-			FPoint endOffset = null;
-			int index = 0;
-			float kerfClearance = 0f;
-			TrackSegmentCollection kerfSegments = null;
-			TrackLayerItem lastLayer = null;
-			FPoint lastLocation = null;
-			TrackLayerItem layer = null;
 			FLine line1 = new FLine();
 			FLine line2 = new FLine();
+			int index = 0;
+			float kerfClearance = 0f;
+			FPoint lastLocation = null;
 			FPoint location = null;
-			float maxDepth = float.MinValue;
-			float maxDepthPerPass = 0f;
-			float minDepth = float.MaxValue;
-			TrackSegmentItem nextSegment = null;
+			TrackSegmentCollection kerfSegments = null;
 			TrackSegmentItem newSegment = null;
+			TrackSegmentItem nextSegment = null;
 			TrackSegmentItem prevSegment = null;
 			TrackSegmentItem segment = null;
 			TrackSegmentCollection segments = null;
-			FPoint startOffset = null;
-			float targetDepth = 0f;
-			string text = "";
-			UserToolItem tool = null;
-			WorkpieceInfoItem workpiece = SessionWorkpieceInfo;
 
-			if(cutList?.Count > 0 && workpiece != null)
+			foreach(TrackLayerItem trackLayerItem in this)
 			{
-				//	Initialize the maximum depth per pass.
-				tool = ConfigProfile.UserTools.FirstOrDefault(x =>
-					x.ToolName == ConfigProfile.GeneralCuttingTool);
-				if(tool != null)
+				if(!trackLayerItem.FinalLayer)
 				{
-					text = tool.Properties["Diameter"].Value;
-					if(text.Length > 0)
-					{
-						//	In general, the maximum depth per pass is 50% of the
-						//	tool diameter, unless the implement is a facing tool, in
-						//	which case, we need to adjust the feed rate.
-						kerfClearance = maxDepthPerPass = GetMillimeters(text) * 0.5f;
-					}
-				}
-				if(maxDepthPerPass == 0f)
-				{
-					maxDepthPerPass = 1.5875f;
-				}
-				//	Get the minimum and maximum desired depths.
-				foreach(CutProfileItem cutItem in cutList)
-				{
-					foreach(PatternOperationItem operationItem in cutItem.Operations)
-					{
-						if(operationItem.Action != OperationActionEnum.PointXY)
-						{
-							depth = ResolveDepth(operationItem);
-							minDepth = Math.Min(minDepth, depth);
-							maxDepth = Math.Max(maxDepth, depth);
-						}
-					}
-				}
-				if(minDepth == float.MaxValue)
-				{
-					minDepth = 0f;
-				}
-				if(maxDepth == float.MinValue)
-				{
-					maxDepth = 0f;
-				}
-				if(maxDepth > 0f)
-				{
-					//	A depth is known.
-					depth = Math.Min(maxDepth, maxDepthPerPass);
-					//	Create a default layer.
-					layer = new TrackLayerItem();
-					layer.CurrentDepth = maxDepth;
-					layer.TargetDepth = maxDepth;
-					segments = layer.Segments;
-					//	*** DRILLS ***
-					//	Get all plunges first.
-					//	All of the offsets need to be visited to assure correct
-					//	positioning.
-					location = lastLocation =
-						TransformFromAbsolute(workpiece.RouterLocation);
-					//	Plunges are always center kerf.
-					foreach(CutProfileItem cutItem in cutList)
-					{
-						foreach(PatternOperationItem operationItem in cutItem.Operations)
-						{
-							startOffset = GetOperationStartLocation(operationItem,
-								workpiece, location);
-							endOffset = GetOperationEndLocation(operationItem,
-								workpiece, startOffset);
-							location = endOffset;
-							if(operationItem.Action == OperationActionEnum.PointXY)
-							{
-								//	Plunge point found.
-								if(!location.Equals(lastLocation))
-								{
-									segment = new TrackSegmentItem()
-									{
-										Operation = operationItem,
-										SegmentType = TrackSegmentType.Transit
-									};
-									FPoint.TransferValues(startOffset, segment.StartOffset);
-									FPoint.TransferValues(endOffset, segment.EndOffset);
-									segments.Add(segment);
-									segment = new TrackSegmentItem()
-									{
-										Operation = operationItem,
-										SegmentType = TrackSegmentType.Plunge,
-										Depth = ResolveDepth(operationItem)
-									};
-									segments.Add(segment);
-								}
-								FPoint.TransferValues(location, lastLocation);
-							}
-						}
-					}
-					if(segments.Count > 0)
-					{
-						//	Add the plunges as a separate layer.
-						this.Add(layer);
-						layer = new TrackLayerItem();
-						layer.CurrentDepth = depth;
-						layer.TargetDepth = maxDepth;
-						segments = layer.Segments;
-					}
-					//	*** LINES AND SHAPES ***
-					//	Get all direct plots, skipping plunges.
-					location = lastLocation =
-						TransformFromAbsolute(workpiece.RouterLocation);
-					foreach(CutProfileItem cutItem in cutList)
-					{
-						foreach(PatternOperationItem operationItem in cutItem.Operations)
-						{
-							startOffset = GetOperationStartLocation(operationItem,
-								workpiece, location);
-							endOffset = GetOperationEndLocation(operationItem,
-									workpiece, startOffset);
-							location = endOffset;
-							switch(operationItem.Action)
-							{
-								case OperationActionEnum.DrawCircleCenterDiameter:
-								case OperationActionEnum.DrawCircleCenterRadius:
-								case OperationActionEnum.DrawCircleDiameter:
-								case OperationActionEnum.DrawCircleRadius:
-								case OperationActionEnum.DrawEllipseCenterDiameterXY:
-								case OperationActionEnum.DrawEllipseCenterRadiusXY:
-								case OperationActionEnum.DrawEllipseDiameterXY:
-								case OperationActionEnum.DrawEllipseLengthWidth:
-								case OperationActionEnum.DrawEllipseRadiusXY:
-								case OperationActionEnum.DrawEllipseXY:
-									break;
-								case OperationActionEnum.DrawLineAngleLength:
-								case OperationActionEnum.DrawLineLengthWidth:
-								case OperationActionEnum.DrawLineXY:
-									//	Drawing a single line.
-									targetDepth = ResolveDepth(operationItem);
-									cutDepth = Math.Min(depth, targetDepth);
-									if(cutDepth > 0f)
-									{
-										if(!startOffset.Equals(lastLocation))
-										{
-											segment = new TrackSegmentItem()
-											{
-												Operation = operationItem,
-												SegmentType = TrackSegmentType.Transit
-											};
-											FPoint.TransferValues(lastLocation, segment.StartOffset);
-											FPoint.TransferValues(startOffset, segment.EndOffset);
-											segments.Add(segment);
-										}
-										segment = new TrackSegmentItem()
-										{
-											Operation = operationItem,
-											SegmentType = TrackSegmentType.Plot,
-											Depth = cutDepth,
-											TargetDepth = targetDepth
-										};
-										FPoint.TransferValues(startOffset, segment.StartOffset);
-										FPoint.TransferValues(endOffset, segment.EndOffset);
-										segments.Add(segment);
-									}
-									break;
-								case OperationActionEnum.DrawPath:
-								case OperationActionEnum.DrawRectangleLengthWidth:
-								case OperationActionEnum.DrawRectangleXY:
-								case OperationActionEnum.FillCircleCenterDiameter:
-								case OperationActionEnum.FillCircleCenterRadius:
-								case OperationActionEnum.FillCircleDiameter:
-								case OperationActionEnum.FillCircleRadius:
-								case OperationActionEnum.FillEllipseCenterDiameterXY:
-								case OperationActionEnum.FillEllipseCenterRadiusXY:
-								case OperationActionEnum.FillEllipseDiameterXY:
-								case OperationActionEnum.FillEllipseLengthWidth:
-								case OperationActionEnum.FillEllipseRadiusXY:
-								case OperationActionEnum.FillEllipseXY:
-								case OperationActionEnum.FillPath:
-								case OperationActionEnum.FillRectangleLengthWidth:
-								case OperationActionEnum.FillRectangleXY:
-									break;
-								case OperationActionEnum.MoveAngleLength:
-								case OperationActionEnum.MoveXY:
-									//	Transits are implicit when building a track
-									//	in this version.
-									break;
-								case OperationActionEnum.None:
-									break;
-								case OperationActionEnum.PointXY:
-									//	Plunges have already been handled.
-									break;
-							}
-							lastLocation = location;
-						}
-					}
-					//	*** KERF ***
-					//	TODO: Debug kerf offsets.
-					//	Adjust initial segment set for kerf.
+					//	If this layer has not been finalized, then kerf is adjustable.
+					kerfClearance = trackLayerItem.Tool.Diameter / 2f;
+					segments = trackLayerItem.Segments;
 					if(segments.Count > 0)
 					{
 						kerfSegments = new TrackSegmentCollection();
@@ -397,7 +116,7 @@ namespace ShopTools
 							//	Blend with previous.
 							if(prevSegment != null &&
 								prevSegment.SegmentType == TrackSegmentType.Plot &&
-								prevSegment.EndOffset.Equals(segment.StartOffset))
+								prevSegment.EndOffset == segment.StartOffset)
 							{
 								//	The previous and current segments are joined.
 								if((int)prevSegment.Operation?.Kerf > 1 ||
@@ -426,7 +145,7 @@ namespace ShopTools
 							//	Blend with next.
 							if(nextSegment != null &&
 								nextSegment.SegmentType == TrackSegmentType.Plot &&
-								nextSegment.StartOffset.Equals(segment.EndOffset))
+								nextSegment.StartOffset == segment.EndOffset)
 							{
 								//	The current and next segments are joined.
 								if((int)nextSegment.Operation?.Kerf > 1 ||
@@ -461,7 +180,7 @@ namespace ShopTools
 						//	Heal the start/end locations on transits.
 						lastLocation = new FPoint();
 						prevSegment = null;
-						for(index = 0; index < count; index ++)
+						for(index = 0; index < count; index++)
 						{
 							segment = kerfSegments[index];
 							if(index + 1 < count)
@@ -493,26 +212,1237 @@ namespace ShopTools
 						segments.Clear();
 						segments.AddRange(kerfSegments);
 					}
-					//	*** RESOLVE TOOL PATH ***
-					//	Reversing paths until all layers are completed.
-					depth += maxDepthPerPass;
-					if(segments.Count > 0)
+				}
+			}
+			return lastLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawArc																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw the arc described by the supplied layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item to be drawn.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track layer to which new segments will be stored.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint DrawArc(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			float angle = 0f;
+			float angleIncrement = 0f;
+			float cutDepth = 0f;
+			FEllipse ellipse = null;
+			float endAngle = 0f;
+			FPoint endOffset = null;
+			FPoint localLocation = new FPoint(location);
+			float radiusX = 0f;
+			float radiusY = 0f;
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+			float toolOffset = 0f;
+			float targetDepth = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				toolOffset = track.Tool.Diameter;
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				//	The display coordinates contain the entire virtual ellipse.
+				startOffset = layoutItem.DisplayStartOffset;
+				endOffset = layoutItem.DisplayEndOffset;
+				radiusX = (endOffset.X - startOffset.X) / 2f;
+				radiusY = (endOffset.Y - startOffset.Y) / 2f;
+				ellipse = new FEllipse(
+					startOffset.X + radiusX, startOffset.Y + radiusY,
+					radiusX,
+					radiusY);
+				//	Tune the number of facets to be the smaller of 6mm travel and 6deg.
+				angleIncrement = Trig.GetLineAngle(ellipse.Center.X, ellipse.Center.Y,
+					ellipse.Center.X + 6f,
+					ellipse.Center.Y - Math.Min(ellipse.RadiusX, ellipse.RadiusY));
+				if(Trig.RadToDeg(angleIncrement) > 6f)
+				{
+					angleIncrement = Trig.DegToRad(6f);
+				}
+				//	Reassign Start/End offsets to per-facet usage.
+				startOffset = layoutItem.ToolStartOffset;
+				angle = Trig.GetLineAngle(ellipse.Center, startOffset);
+
+				//	Transit to site, if applicable.
+				if(startOffset != localLocation)
+				{
+					segment = new TrackSegmentItem()
 					{
-						this.Add(layer);
-						lastLayer = layer;
-						layer = new TrackLayerItem();
-						layer.CurrentDepth = depth;
-						layer.TargetDepth = maxDepth;
-						segments = layer.Segments;
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+				if(angleIncrement != 0f)
+				{
+					//	Run the loop.
+					if(GetAngle(layoutItem.Operation.SweepAngle) >= 0f)
+					{
+						//	Clockwise sweep.
+						endAngle = angle + GetAngle(layoutItem.Operation.SweepAngle);
+						for(; angle <= endAngle; angle += angleIncrement)
+						{
+							endOffset = FEllipse.GetCoordinateAtAngle(ellipse, angle);
+							segment = new TrackSegmentItem()
+							{
+								Operation = layoutItem.Operation,
+								SegmentType = TrackSegmentType.Plot,
+								StartOffset = new FPoint(startOffset),
+								EndOffset = new FPoint(endOffset),
+								Depth = cutDepth,
+								TargetDepth = targetDepth
+							};
+							track.Segments.Add(segment);
+							FPoint.TransferValues(segment.EndOffset, startOffset);
+							FPoint.TransferValues(segment.EndOffset, localLocation);
+						}
 					}
+					else
+					{
+						//	Counterclockwise sweep.
+						endAngle = angle + GetAngle(layoutItem.Operation.SweepAngle);
+						for(; angle >= endAngle; angle -= angleIncrement)
+						{
+							endOffset = FEllipse.GetCoordinateAtAngle(ellipse, angle);
+							segment = new TrackSegmentItem()
+							{
+								Operation = layoutItem.Operation,
+								SegmentType = TrackSegmentType.Plot,
+								StartOffset = new FPoint(startOffset),
+								EndOffset = new FPoint(endOffset),
+								Depth = cutDepth,
+								TargetDepth = targetDepth
+							};
+							track.Segments.Add(segment);
+							FPoint.TransferValues(segment.EndOffset, startOffset);
+							FPoint.TransferValues(segment.EndOffset, localLocation);
+						}
+					}
+					//	Finalize the path.
+					endOffset = layoutItem.ToolEndOffset;
+					if(endOffset != localLocation)
+					{
+						segment = new TrackSegmentItem()
+						{
+							Operation = layoutItem.Operation,
+							SegmentType = TrackSegmentType.Plot,
+							StartOffset = new FPoint(startOffset),
+							EndOffset = new FPoint(endOffset),
+							Depth = cutDepth,
+							TargetDepth = targetDepth
+						};
+						track.Segments.Add(segment);
+						FPoint.TransferValues(segment.EndOffset, localLocation);
+					}
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawEllipse																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw the ellipse described by the supplied layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item to be drawn.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track layer to which new segments will be stored.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint DrawEllipse(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			float angle = 0f;
+			float angleIncrement = 0f;
+			float cutDepth = 0f;
+			FEllipse ellipse = null;
+			FPoint endOffset = null;
+			float facetIndex = 0f;
+			float facetCount = 50f;
+			FPoint localLocation = new FPoint(location);
+			float radiusX = 0f;
+			float radiusY = 0f;
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+			float toolOffset = 0f;
+			float targetDepth = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				toolOffset = track.Tool.Diameter;
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				startOffset = layoutItem.DisplayStartOffset;
+				endOffset = layoutItem.DisplayEndOffset;
+				radiusX = (endOffset.X - startOffset.X) / 2f;
+				radiusY = (endOffset.Y - startOffset.Y) / 2f;
+				ellipse = new FEllipse(
+					startOffset.X + radiusX, startOffset.Y + radiusY,
+					radiusX,
+					radiusY);
+				//	Tune the number of facets to be the smaller of 6mm travel and 6deg.
+				angleIncrement = Trig.GetLineAngle(ellipse.Center.X, ellipse.Center.Y,
+					ellipse.Center.X + 6f,
+					ellipse.Center.Y - Math.Min(ellipse.RadiusX, ellipse.RadiusY));
+				if(Trig.RadToDeg(angleIncrement) > 6f)
+				{
+					angleIncrement = Trig.DegToRad(6f);
+				}
+				//	Reassign Start/End offsets to per-facet usage.
+				startOffset = layoutItem.ToolStartOffset;
+				endOffset = layoutItem.ToolEndOffset;
+				angle = Trig.GetLineAngle(ellipse.Center, startOffset);
+				//	Transit to site, if applicable.
+				if(startOffset != localLocation)
+				{
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+				if(angleIncrement != 0f)
+				{
+					//	Run the loop.
+					facetCount = GeometryUtil.TwoPi / angleIncrement;
+					for(facetIndex = 0f; facetIndex < facetCount; facetIndex++,
+						angle -= angleIncrement)
+					{
+						endOffset = FEllipse.GetCoordinateAtAngle(ellipse, angle);
+						segment = new TrackSegmentItem()
+						{
+							Operation = layoutItem.Operation,
+							SegmentType = TrackSegmentType.Plot,
+							StartOffset = new FPoint(startOffset),
+							EndOffset = new FPoint(endOffset),
+							Depth = cutDepth,
+							TargetDepth = targetDepth
+						};
+						track.Segments.Add(segment);
+						FPoint.TransferValues(segment.EndOffset, startOffset);
+						FPoint.TransferValues(segment.EndOffset, localLocation);
+					}
+					//	Finalize the path.
+					endOffset = layoutItem.ToolEndOffset;
+					if(endOffset != localLocation)
+					{
+						segment = new TrackSegmentItem()
+						{
+							Operation = layoutItem.Operation,
+							SegmentType = TrackSegmentType.Plot,
+							StartOffset = new FPoint(startOffset),
+							EndOffset = new FPoint(endOffset),
+							Depth = cutDepth,
+							TargetDepth = targetDepth
+						};
+						track.Segments.Add(segment);
+						FPoint.TransferValues(segment.EndOffset, localLocation);
+					}
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawLine																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw the line indicated by the layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item describing the line to plot.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track where new segments will be added.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint DrawLine(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			float cutDepth = 0f;
+			FPoint endOffset = null;
+			FPoint localLocation = new FPoint(location);
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+			float targetDepth = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				startOffset = layoutItem.ToolStartOffset;
+				endOffset = layoutItem.ToolEndOffset;
+				if(startOffset != localLocation)
+				{
+					//	Transit to the line.
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+				}
+				segment = new TrackSegmentItem()
+				{
+					Operation = layoutItem.Operation,
+					SegmentType = TrackSegmentType.Plot,
+					Depth = cutDepth,
+					TargetDepth = targetDepth
+				};
+				FPoint.TransferValues(startOffset, segment.StartOffset);
+				FPoint.TransferValues(endOffset, segment.EndOffset);
+				track.Segments.Add(segment);
+				FPoint.TransferValues(endOffset, localLocation);
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrawRectangle																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Draw the rectangle described by the provided layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item to draw.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track layer to which new segments will be stored.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint DrawRectangle(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			FArea boundingBox = null;
+			int count = 0;
+			float cutDepth = 0f;
+			FPoint endOffset = null;
+			int index = 0;
+			FLine line = null;
+			int lineIndex = 0;
+			List<FLine> lineList = new List<FLine>();
+			FLine lineRemainder = null;
+			List<FLine> lines = null;
+			List<FLine> linesMatching = null;
+			FPoint localLocation = new FPoint(location);
+			TrackSegmentItem segment = null;
+			FLine startLine = null;
+			FPoint startOffset = null;
+			float targetDepth = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				startOffset = layoutItem.ToolStartOffset;
+				endOffset = layoutItem.ToolEndOffset;
+				//	In the case of a rectangle, the tool offset represents
+				//	a point on one of the lines, which might or might not
+				//	be located at a corner.
+				boundingBox = new FArea(
+					layoutItem.DisplayStartOffset,
+					layoutItem.DisplayEndOffset);
+				lines = GetLines(boundingBox);
+				//	Transit to site, if applicable.
+				if(startOffset != localLocation)
+				{
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+				}
+				if(IsPointAtCorner(boundingBox, layoutItem.ToolStartOffset))
+				{
+					//	If the tool is pre-positioned at a corner, then
+					//	lay all lines beginning with the line whose start
+					//	end matches that corner.
+					lineList.Clear();
+					linesMatching = GetIntersectingLines(lines,
+						layoutItem.ToolStartOffset);
+					startLine = linesMatching.FirstOrDefault(x =>
+						x.PointA == layoutItem.ToolStartOffset);
+					if(startLine != null)
+					{
+						//	This line's starting point is the correct starting
+						//	location.
+						//	Add the bounding box lines to the queue in the proper
+						//	order.
+						count = 4;
+						for(index = 0, lineIndex = lines.IndexOf(startLine);
+							index < count; index++, lineIndex++)
+						{
+							lineList.Add(lines[lineIndex % 4]);
+						}
+						//	Plot the lines.
+						for(index = 0; index < count; index++)
+						{
+							line = lineList[index];
+							segment = new TrackSegmentItem()
+							{
+								Operation = layoutItem.Operation,
+								SegmentType = TrackSegmentType.Plot,
+								Depth = cutDepth,
+								TargetDepth = targetDepth
+							};
+							FPoint.TransferValues(line.PointA,
+								segment.StartOffset);
+							FPoint.TransferValues(line.PointB,
+								segment.EndOffset);
+							FPoint.TransferValues(segment.EndOffset, localLocation);
+						}
+					}
+				}
+				else
+				{
+					//	The point is not at the corner. Find the intersecting
+					//	line and split it.
+					startLine = GetIntersectingLine(lines,
+						layoutItem.ToolStartOffset);
+					if(startLine != null)
+					{
+						lineRemainder = null;
+						count = 4;
+						for(index = 0, lineIndex = lines.IndexOf(startLine);
+							index < count; index++, lineIndex++)
+						{
+							line = lines[lineIndex % 4];
+							if(index == 0)
+							{
+								//	The first line needs to be split at the
+								//	intersection.
+								lineRemainder = new FLine(line.PointA,
+									layoutItem.ToolStartOffset);
+								line.PointA = new FPoint(layoutItem.ToolStartOffset);
+								lineList.Add(line);
+							}
+							else
+							{
+								lineList.Add(line);
+							}
+						}
+						lineList.Add(lineRemainder);
+						//	Plot the lines.
+						count = 5;
+						for(index = 0; index < count; index++)
+						{
+							line = lineList[index];
+							segment = new TrackSegmentItem()
+							{
+								Operation = layoutItem.Operation,
+								SegmentType = TrackSegmentType.Plot,
+								Depth = cutDepth,
+								TargetDepth = targetDepth
+							};
+							FPoint.TransferValues(line.PointA,
+								segment.StartOffset);
+							FPoint.TransferValues(line.PointB,
+								segment.EndOffset);
+							FPoint.TransferValues(segment.EndOffset, localLocation);
+						}
+					}
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DrillHoles																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Drill the holes found in the layout list, separating each set of holes
+		/// by the tool used to make that hole.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the collection of layout elements for which to drill the
+		/// holes.
+		/// </param>
+		/// <param name="tools">
+		/// Reference to the collection of tools available for the holes.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint DrillHoles(OperationLayoutCollection layouts,
+			TrackToolCollection tools, FPoint location)
+		{
+			string defaultToolName = "";
+			FPoint endOffset = null;
+			List<OperationLayoutItem> layoutsMatching = null;
+			FPoint localLocation = new FPoint(location);
+			MinMaxItem minMax = null;
+			FPoint newLocation = null;
+			FPoint startOffset = null;
+			TrackToolItem tool = null;
+			List<string> toolNames = null;
+			TrackLayerItem trackLayer = null;
+			TrackSegmentItem segment = null;
+			TrackSegmentCollection segments = null;
+
+			if(layouts?.Count > 0 && tools?.Count > 0)
+			{
+				tool = tools.FirstOrDefault(x => x.IsDefault);
+				if(tool != null)
+				{
+					defaultToolName = tool.ToolName;
+				}
+				//	One separate layer per tool.
+				toolNames = layouts.Select(x => x.Operation?.Tool).Distinct().ToList();
+				if(toolNames.Contains(null))
+				{
+					//	Non-operational layout elements are not supported in this
+					//	version.
+					toolNames.Remove(null);
+				}
+				if(toolNames.Count > 0)
+				{
+					foreach(string toolNameItem in toolNames)
+					{
+						tool = tools.SelectTool(toolNameItem);
+						layoutsMatching = layouts.FindAll(x =>
+							x.ActionType == LayoutActionType.Point &&
+							x.Operation?.Tool == toolNameItem);
+						if(layoutsMatching.Count > 0)
+						{
+							minMax = GetMinMaxDepth(layoutsMatching);
+							trackLayer = new TrackLayerItem()
+							{
+								BaseLayer = true,
+								FinalLayer = true,
+								Tool = tool
+							};
+							trackLayer.CurrentDepth = minMax.Maximum;
+							trackLayer.TargetDepth = minMax.Maximum;
+							segments = trackLayer.Segments;
+							foreach(OperationLayoutItem layoutItem in layoutsMatching)
+							{
+								startOffset = layoutItem.ToolStartOffset;
+								endOffset = layoutItem.ToolEndOffset;
+								newLocation = endOffset;
+								//	Plunge point found.
+								if(localLocation != newLocation)
+								{
+									//	Transit to the site.
+									segment = new TrackSegmentItem()
+									{
+										Operation = layoutItem.Operation,
+										SegmentType = TrackSegmentType.Transit
+									};
+									FPoint.TransferValues(startOffset, segment.StartOffset);
+									FPoint.TransferValues(endOffset, segment.EndOffset);
+									segments.Add(segment);
+									//	Drill the site.
+									segment = new TrackSegmentItem()
+									{
+										Operation = layoutItem.Operation,
+										SegmentType = TrackSegmentType.Plunge,
+										Depth = ResolveDepth(layoutItem.Operation)
+									};
+									FPoint.TransferValues(startOffset, segment.StartOffset);
+									FPoint.TransferValues(endOffset, segment.EndOffset);
+									segments.Add(segment);
+								}
+								FPoint.TransferValues(newLocation, localLocation);
+							}
+						}
+						if(trackLayer != null && segments.Count > 0)
+						{
+							//	Every drill tool is on its own layer.
+							//	Add the plunges as a separate layer.
+							this.Add(trackLayer);
+						}
+					}
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillEllipse																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Fill the ellipse described by the supplied layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item to be drawn.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track layer to which new segments will be stored.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint FillEllipse(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			FArea boundingBox = null;
+			FPoint boxEndOffset = null;
+			FPoint boxStartOffset = null;
+			float cutDepth = 0f;
+			FEllipse ellipse = null;
+			FPoint endOffset = null;
+			FPoint[] ends = null;
+			int index = 0;
+			FLine line = null;
+			float lineY = 0f;
+			FPoint localLocation = new FPoint(location);
+			float radiusX = 0f;
+			float radiusY = 0f;
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+			float targetDepth = 0f;
+			float toolOffset = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				toolOffset = track.Tool.Diameter;
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				startOffset = layoutItem.DisplayStartOffset;
+				endOffset = layoutItem.DisplayEndOffset;
+				//	There is material to cut.
+				//	Transit to the upper left center.
+				radiusX = (endOffset.X - startOffset.X) / 2f;
+				radiusY = (endOffset.Y - startOffset.Y) / 2f;
+				ellipse = new FEllipse(
+					startOffset.X + radiusX,
+					startOffset.Y + radiusY,
+					radiusX - toolOffset,
+					radiusY - toolOffset
+					);
+				boundingBox = FEllipse.BoundingBox(ellipse);
+				boxStartOffset = new FPoint(boundingBox.Left, boundingBox.Top);
+				boxEndOffset = new FPoint(boundingBox.Right, boundingBox.Bottom);
+				//	Further increments will be by radius.
+				toolOffset /= 2f;
+				line = new FLine(
+					new FPoint(startOffset.X, boundingBox.Top + toolOffset),
+					new FPoint(endOffset.X, boundingBox.Top + toolOffset));
+				ends = FEllipse.FindIntersections(ellipse, line, false);
+				//	Reassign Start/End offsets to per-line usage.
+				startOffset = null;
+				endOffset = null;
+				if(ends.Length > 0)
+				{
+					//	At least one end was found.
+					startOffset = GetLeftPoint(ends);
+					endOffset = GetRightPoint(ends);
+				}
+				//	Transit to site, if applicable.
+				if(startOffset != localLocation)
+				{
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+				//	Draw a radiator pattern of lines from the top to the bottom
+				//	coordinates.
+				for(index = 0, lineY = boxStartOffset.Y; lineY <= boxEndOffset.Y;
+					index++, lineY += Math.Min(toolOffset, boxEndOffset.Y - lineY))
+				{
+					line.PointA.Y = line.PointB.Y = lineY;
+					ends = FEllipse.FindIntersections(ellipse, line, false);
+					if(index % 2 == 0)
+					{
+						//	Even pass. Left -> Right.
+						startOffset = GetLeftPoint(ends);
+						endOffset = GetRightPoint(ends);
+					}
+					else
+					{
+						//	Odd pass. Right -> Left.
+						startOffset = GetRightPoint(ends);
+						endOffset = GetLeftPoint(ends);
+					}
+					//	Plot downward to the next row, if appropriate.
+					if(localLocation.Y != lineY)
+					{
+						segment = new TrackSegmentItem()
+						{
+							Operation = layoutItem.Operation,
+							SegmentType = TrackSegmentType.Plot,
+							Depth = cutDepth,
+							TargetDepth = targetDepth,
+							StartOffset = new FPoint(localLocation.X, localLocation.Y),
+							EndOffset = new FPoint(startOffset.X, startOffset.Y)
+						};
+						track.Segments.Add(segment);
+						FPoint.TransferValues(segment.EndOffset, localLocation);
+					}
+					//	Plot across the row.
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Plot,
+						Depth = cutDepth,
+						TargetDepth = targetDepth,
+						StartOffset = new FPoint(startOffset.X, startOffset.Y),
+						EndOffset = new FPoint(endOffset.X, endOffset.Y)
+					};
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FillRectangle																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Fill the rectangle described by the supplied layout item.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item to be drawn.
+		/// </param>
+		/// <param name="track">
+		/// Reference to the track layer to which new segments will be stored.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint FillRectangle(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FPoint location)
+		{
+			FArea boundingBox = null;
+			FPoint boxEndOffset = null;
+			float boxLeft = 0f;
+			float boxRight = 0f;
+			FPoint boxStartOffset = null;
+			float cutDepth = 0f;
+			FPoint endOffset = null;
+			int index = 0;
+			List<FLine> lines = null;
+			float lineY = 0f;
+			FPoint localLocation = new FPoint(location);
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+			float targetDepth = 0f;
+			float toolOffset = 0f;
+
+			if(layoutItem != null && track != null)
+			{
+				toolOffset = track.Tool.Diameter;
+				targetDepth = ResolveDepth(layoutItem.Operation);
+				cutDepth = Math.Min(track.CurrentDepth, targetDepth);
+				startOffset = layoutItem.DisplayStartOffset;
+				endOffset = layoutItem.DisplayEndOffset;
+				//	There is material to cut.
+				//	Transit to the upper left corner.
+				boundingBox = new FArea(
+					layoutItem.DisplayStartOffset,
+					layoutItem.DisplayEndOffset);
+				//	Further increments will be by radius.
+				toolOffset /= 2f;
+				//	Shrink the area uniformly by 1 tool radius.
+				boundingBox.Left += toolOffset;
+				boundingBox.Top += toolOffset;
+				boundingBox.Right -= toolOffset;
+				boundingBox.Bottom -= toolOffset;
+				boxLeft = boundingBox.Left;
+				boxRight = boundingBox.Right;
+				boxStartOffset = new FPoint(boundingBox.Left, boundingBox.Top);
+				boxEndOffset = new FPoint(boundingBox.Right, boundingBox.Bottom);
+				//	Reassign Start/End offsets to per-line usage.
+				startOffset = null;
+				endOffset = null;
+				lines = GetLines(boundingBox);
+				startOffset = new FPoint(boxStartOffset);
+				endOffset = new FPoint(boundingBox.Right, boundingBox.Top);
+				//	Transit to site, if applicable.
+				if(startOffset != localLocation)
+				{
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Transit
+					};
+					FPoint.TransferValues(localLocation, segment.StartOffset);
+					FPoint.TransferValues(startOffset, segment.EndOffset);
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+				//	Draw a radiator pattern of lines from the top left to the bottom
+				//	right coordinates.
+				for(index = 0, lineY = boxStartOffset.Y; lineY <= boxEndOffset.Y;
+					index ++, lineY += Math.Min(toolOffset, boxEndOffset.Y - lineY))
+				{
+					startOffset.Y = endOffset.Y = lineY;
+					if(index % 2 == 0)
+					{
+						//	Even pass. Left -> Right.
+						startOffset.X = boxLeft;
+						endOffset.X = boxRight;
+					}
+					else
+					{
+						//	Odd pass. Right -> Left.
+						startOffset.X = boxRight;
+						endOffset.X = boxLeft;
+					}
+					//	Plot downward to the next row, if appropriate.
+					if(localLocation.Y != lineY)
+					{
+						segment = new TrackSegmentItem()
+						{
+							Operation = layoutItem.Operation,
+							SegmentType = TrackSegmentType.Plot,
+							Depth = cutDepth,
+							TargetDepth = targetDepth,
+							StartOffset = new FPoint(localLocation.X, localLocation.Y),
+							EndOffset = new FPoint(startOffset.X, startOffset.Y)
+						};
+						track.Segments.Add(segment);
+						FPoint.TransferValues(segment.EndOffset, localLocation);
+					}
+					//	Plot across the row.
+					segment = new TrackSegmentItem()
+					{
+						Operation = layoutItem.Operation,
+						SegmentType = TrackSegmentType.Plot,
+						Depth = cutDepth,
+						TargetDepth = targetDepth,
+						StartOffset = new FPoint(startOffset.X, startOffset.Y),
+						EndOffset = new FPoint(endOffset.X, endOffset.Y)
+					};
+					track.Segments.Add(segment);
+					FPoint.TransferValues(segment.EndOffset, localLocation);
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetLeftPoint																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the leftmost point from the caller's array.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to an array of points.
+		/// </param>
+		/// <returns>
+		/// Reference to the piont with the lowest x-axis value in the set, if
+		/// found. Otherwise, null.
+		/// </returns>
+		private static FPoint GetLeftPoint(FPoint[] points)
+		{
+			FPoint match = null;
+			FPoint result = null;
+
+			if(points?.Length > 0)
+			{
+				foreach(FPoint pointItem in points)
+				{
+					if(match == null || pointItem.X < match.X)
+					{
+						match = pointItem;
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetMinMaxDepth																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the minimum and maximum required depths for the provided set of
+		/// layouts.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the set of layouts to test for minimum and maximum.
+		/// </param>
+		/// <returns>
+		/// Reference to a minimum/maximum value representing the minimum and
+		/// maximum depths of the set of layout actions.
+		/// </returns>
+		/// <remarks>
+		/// This method doesn't consider whether the specified depths for the
+		/// layer are within range for the current pass.
+		/// </remarks>
+		private MinMaxItem GetMinMaxDepth(List<OperationLayoutItem> layouts)
+		{
+			float depth = 0f;
+			float maxDepth = float.MinValue;
+			float minDepth = float.MaxValue;
+			MinMaxItem result = new MinMaxItem();
+
+			if(layouts?.Count > 0)
+			{
+				foreach(OperationLayoutItem layoutItem in layouts)
+				{
+					depth = ResolveDepth(layoutItem.Operation);
+					minDepth = Math.Min(minDepth, depth);
+					maxDepth = Math.Max(maxDepth, depth);
+				}
+				if(minDepth == float.MaxValue)
+				{
+					minDepth = 0f;
+				}
+				if(maxDepth == float.MinValue)
+				{
+					maxDepth = 0f;
+				}
+				result.Minimum = minDepth;
+				result.Maximum = maxDepth;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetRightPoint																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the rightmost point from the caller's array.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to an array of points.
+		/// </param>
+		/// <returns>
+		/// Reference to the piont with the highest x-axis value in the set, if
+		/// found. Otherwise, null.
+		/// </returns>
+		private static FPoint GetRightPoint(FPoint[] points)
+		{
+			FPoint match = null;
+			FPoint result = null;
+
+			if(points?.Length > 0)
+			{
+				foreach(FPoint pointItem in points)
+				{
+					if(match == null || pointItem.X > match.X)
+					{
+						match = pointItem;
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* PlotLinesAndShapes																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Plot all basic lines and shapes.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the collection of layout elements for which to drill the
+		/// holes.
+		/// </param>
+		/// <param name="tools">
+		/// Reference to the collection of tools available for the holes.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location of the tool prior to drilling
+		/// the first hole.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated last known location.
+		/// </returns>
+		private FPoint PlotLinesAndShapes(OperationLayoutCollection layouts,
+			TrackToolCollection tools, FPoint location)
+		{
+			string defaultToolName = "";
+			List<OperationLayoutItem> layoutsMatching = null;
+			FPoint localLocation = new FPoint(location);
+			MinMaxItem minMax = null;
+			TrackSegmentCollection segments = null;
+			TrackToolItem tool = null;
+			List<string> toolNames = null;
+			TrackLayerItem trackLayer = null;
+
+			if(layouts?.Count > 0 && tools?.Count > 0)
+			{
+				tool = tools.FirstOrDefault(x => x.IsDefault);
+				if(tool != null)
+				{
+					defaultToolName = tool.ToolName;
+				}
+				//	One separate layer per tool.
+				toolNames = layouts.Select(x => x.Operation?.Tool).Distinct().ToList();
+				if(toolNames.Contains(null))
+				{
+					//	Non-operational layout elements are not supported in this
+					//	version.
+					toolNames.Remove(null);
+				}
+				foreach(string toolNameItem in toolNames)
+				{
+					tool = tools.SelectTool(toolNameItem);
+					layoutsMatching = layouts.FindAll(x =>
+						x.ActionType != LayoutActionType.Point &&
+						x.Operation?.Tool == toolNameItem);
+					if(layoutsMatching.Count > 0)
+					{
+						minMax = GetMinMaxDepth(layoutsMatching);
+						trackLayer = new TrackLayerItem()
+						{
+							BaseLayer = true,
+							Tool = tool
+						};
+						SetCurrentTargetDepths(trackLayer, minMax, tool);
+						segments = trackLayer.Segments;
+						foreach(OperationLayoutItem layoutItem in layoutsMatching)
+						{
+							//startOffset = layoutItem.ToolStartOffset;
+							//endOffset = layoutItem.ToolEndOffset;
+							switch(layoutItem.ActionType)
+							{
+								case LayoutActionType.DrawArc:
+									localLocation =
+										DrawArc(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.DrawEllipse:
+									localLocation =
+										DrawEllipse(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.DrawLine:
+									localLocation =
+										DrawLine(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.DrawRectangle:
+									localLocation =
+										DrawRectangle(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.FillEllipse:
+									//	This shape is a non-kerf area preceded by a DrawEllipse
+									//	outline having a left-hand kerf as an outline, which
+									//	means that the outer ring of the shape has already been
+									//	drawn when this call is made.
+									localLocation =
+										FillEllipse(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.FillRectangle:
+									//	This shape is a non-kerf area preceded by a DrawRectangle
+									//	outline with a left-kerf as an outline, which means that
+									//	the outer ring of the shape has already been drawn.
+									localLocation =
+										FillRectangle(layoutItem, trackLayer, localLocation);
+									break;
+								case LayoutActionType.Move:
+								case LayoutActionType.None:
+								case LayoutActionType.Point:
+									//	These cases can be removed in final production.
+									//	Movements (transits) are implicit in this version.
+									//	Actions of type None are ignored.
+									//	Points (drills) are handled separately first.
+									break;
+							}
+						}
+					}
+					if(trackLayer != null && segments.Count > 0)
+					{
+						//	Every drill tool is on its own layer.
+						//	Add the plunges as a separate layer.
+						this.Add(trackLayer);
+					}
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* PrepareFills																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Prepare the filled shapes by creating a preceding outline for each one.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the layouts that might contain filled shapes.
+		/// </param>
+		/// <remarks>
+		/// The collection is updated inline.
+		/// </remarks>
+		private void PrepareFills(OperationLayoutCollection layouts)
+		{
+			int count = 0;
+			int index = 0;
+			OperationLayoutItem layout = null;
+			PatternOperationItem operation = null;
+
+			//	This item visits each entry in the list once so multiple passes
+			//	aren't necessary to repeatedly look up the index.
+			if(layouts?.Count > 0)
+			{
+				count = layouts.Count;
+				for(index = 0; index < count; index++)
+				{
+					layout = layouts[index];
+					if(layout.ActionType == LayoutActionType.FillEllipse ||
+						layout.ActionType == LayoutActionType.FillRectangle)
+					{
+						//	This item will receive an outline.
+						operation = PatternOperationItem.Clone(layout.Operation);
+						operation.Kerf = DirectionLeftRightEnum.Left;
+						layout = OperationLayoutItem.Clone(layout);
+						if(layout.ActionType == LayoutActionType.FillEllipse)
+						{
+							layout.ActionType = LayoutActionType.DrawEllipse;
+							layout.Operation = operation;
+							layouts.Insert(index, layout);
+							//	Skip past this item next time.
+							index++;
+							count++;
+						}
+					}
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ResolveToolPath																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Resolve the tool paths of each track.
+		/// </summary>
+		/// <param name="location">
+		/// The last known location of the tool.
+		/// </param>
+		/// <returns>
+		/// Reference to the last known location.
+		/// </returns>
+		private FPoint ResolveToolPath(FPoint location)
+		{
+			int count = 0;
+			float depth = 0f;
+			FPoint endOffset = null;
+			int index = 0;
+			TrackLayerItem lastLayer = null;
+			FPoint lastLocation = new FPoint(location);
+			TrackLayerItem layer = null;
+			float maxDepth = 0f;
+			float maxDepthPerPass = 0f;
+			TrackSegmentItem prevSegment = null;
+			TrackSegmentItem segment = null;
+			TrackSegmentCollection segments = null;
+			FPoint startOffset = null;
+			TrackLayerItem track = null;
+			int trackCount = 0;
+			int trackIndex = 0;
+
+			//	NOTE: At this point, there will only be different layers if
+			//	different tools are in use. If everything can be performed
+			//	with paths and a single tool, a single base layer will be
+			//	present.
+			//	If drills and plots of a single tool are present, the drills from
+			//	that action will be present on one layer and the plots will be
+			//	present on another layer.
+			//	All drills are skipped during this process because they are already
+			//	completed.
+			//	Because each layer represents a different tool at this stage,
+			//	each new layer for an incremental track will be inserted directly
+			//	behind the base.
+
+			//	Reversing paths until all layers are completed.
+			trackCount = this.Count;
+			for(trackIndex = 0; trackIndex < trackCount; trackIndex ++)
+			{
+				track = this[trackIndex];
+				if(track.BaseLayer)
+				{
+					//	This track can be resolved.
+					maxDepth = track.TargetDepth;
+					maxDepthPerPass = track.Tool.Diameter / 2f;
+					depth = Math.Min(maxDepth,
+						track.CurrentDepth + maxDepthPerPass);
 					startOffset = new FPoint();
 					endOffset = new FPoint();
+					lastLayer = track;
+					layer = new TrackLayerItem()
+					{
+						CurrentDepth = depth,
+						TargetDepth = maxDepth,
+						Tool = lastLayer.Tool
+					};
+					segments = layer.Segments;
 					while(depth <= maxDepth)
 					{
 						//	Repeat the layers in opposite directions until the maximum
 						//	required depth has been reached.
 						count = lastLayer.Segments.Count;
-						for(index = count - 1; index > -1; index --)
+						for(index = count - 1; index > -1; index--)
 						{
 							prevSegment = lastLayer.Segments[index];
 							if(prevSegment.SegmentType == TrackSegmentType.Plot &&
@@ -522,7 +1452,7 @@ namespace ShopTools
 								//	point.
 								FPoint.TransferValues(prevSegment.StartOffset, endOffset);
 								FPoint.TransferValues(prevSegment.EndOffset, startOffset);
-								if(!lastLocation.Equals(startOffset))
+								if(lastLocation != startOffset)
 								{
 									//	Create a transit.
 									segment = new TrackSegmentItem()
@@ -548,11 +1478,16 @@ namespace ShopTools
 						depth += maxDepthPerPass;
 						if(segments.Count > 0)
 						{
-							this.Add(layer);
+							this.Insert(trackIndex + 1, layer);
+							trackCount++;
+							trackIndex++;
 							lastLayer = layer;
-							layer = new TrackLayerItem();
-							layer.CurrentDepth = depth;
-							layer.TargetDepth = maxDepth;
+							layer = new TrackLayerItem()
+							{
+								CurrentDepth = depth,
+								TargetDepth = maxDepth,
+								Tool = lastLayer.Tool
+							};
 							segments = layer.Segments;
 						}
 						else
@@ -560,23 +1495,154 @@ namespace ShopTools
 							break;
 						}
 					}
-					//	*** DRAWING SPACE TO PHYSICAL SPACE ***
-					foreach(TrackLayerItem layerItem in this)
+				}
+			}
+			return lastLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* SetCurrentTargetDepths																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Set the current and target depths for the layer using requirements from
+		/// the selected tool and minimum / maximum required depths.
+		/// </summary>
+		/// <param name="layer">
+		/// Reference to the layer upon which the values will be set.
+		/// </param>
+		/// <param name="minMax">
+		/// Minimum and maximum depths requested on the layer.
+		/// </param>
+		/// <param name="tool">
+		/// The active tool assigned to the layer.
+		/// </param>
+		/// <param name="previousDepth">
+		/// The previous depth already reached.
+		/// </param>
+		/// <returns>
+		/// True if some goal has been set. Otherwise, false.
+		/// </returns>
+		/// <remarks>
+		/// This value is set inline on the caller's layer.
+		/// </remarks>
+		private bool SetCurrentTargetDepths(TrackLayerItem layer,
+			MinMaxItem minMax, TrackToolItem tool, float previousDepth = 0f)
+		{
+			float difference = 0f;
+			float increment = 0f;
+			bool result = false;
+
+			if(layer != null && tool != null && minMax != null)
+			{
+				if(minMax.Maximum > previousDepth)
+				{
+					if(tool != null)
 					{
-						foreach(TrackSegmentItem segmentItem in layerItem.Segments)
-						{
-							segmentItem.EndOffset =
-								TransformToAbsolute(segmentItem.EndOffset);
-							segmentItem.StartOffset =
-								TransformToAbsolute(segmentItem.StartOffset);
-						}
+						increment = tool.MaxDepthPerPass;
+					}
+					else
+					{
+						increment = mDefaultMaxDepthPerPass;
+					}
+					difference = minMax.Maximum - previousDepth;
+					layer.CurrentDepth = previousDepth + Math.Min(difference, increment);
+					layer.TargetDepth = minMax.Maximum;
+					result = true;
+				}
+				else
+				{
+					//	Target depth already achieved.
+					layer.CurrentDepth = layer.TargetDepth = previousDepth;
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*************************************************************************
+		//*	Protected																															*
+		//*************************************************************************
+		//*************************************************************************
+		//*	Public																																*
+		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//*	_Constructor																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Create a new instance of the TrackLayerCollection Item.
+		/// </summary>
+		public TrackLayerCollection()
+		{
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Create a new instance of the TrackLayerCollection Item.
+		/// </summary>
+		/// <param name="cutList">
+		/// Reference to to a collection of cuts from which to generate tracks.
+		/// </param>
+		public TrackLayerCollection(CutProfileCollection cutList)
+		{
+			GenerateTracks(cutList);
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GenerateTracks																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Process all of the cuts in the caller's cut profile collection to
+		/// generate the tracks for this collection.
+		/// </summary>
+		/// <param name="cutList">
+		/// Reference to the collection of cuts to process.
+		/// </param>
+		public void GenerateTracks(CutProfileCollection cutList)
+		{
+			FPoint lastLocation = null;
+			OperationLayoutCollection layouts = null;
+			FLine line1 = new FLine();
+			FLine line2 = new FLine();
+			List<FLine> lineList = null;
+			FPoint location = null;
+			TrackToolCollection toolSet = new TrackToolCollection();
+			WorkpieceInfoItem workpiece = SessionWorkpieceInfo;
+
+			if(cutList?.Count > 0 && workpiece != null)
+			{
+				layouts = OperationLayoutCollection.CloneLayout(cutList);
+				lineList = new List<FLine>();
+				toolSet = new TrackToolCollection();
+				toolSet.Initialize(layouts);
+
+				location = lastLocation =
+					TransformFromAbsolute(workpiece.RouterLocation);
+				//	*** FILL PREPARATION ***
+				PrepareFills(layouts);
+				//	*** DRILL HOLES ***
+				location = DrillHoles(layouts, toolSet, location);
+				//	*** LINES AND SHAPES ***
+				//	Get all direct plots, skipping plunges.
+				location = PlotLinesAndShapes(layouts, toolSet, location);
+				//	*** ADJUST KERF ***
+				location = AdjustKerf();
+				//	*** RESOLVE TOOL PATH ***
+				location = ResolveToolPath(location);
+				//	*** DRAWING SPACE TO PHYSICAL SPACE ***
+				foreach(TrackLayerItem layerItem in this)
+				{
+					foreach(TrackSegmentItem segmentItem in layerItem.Segments)
+					{
+						segmentItem.EndOffset =
+							TransformToAbsolute(segmentItem.EndOffset);
+						segmentItem.StartOffset =
+							TransformToAbsolute(segmentItem.StartOffset);
 					}
 				}
 			}
 		}
 		//*-----------------------------------------------------------------------*
-
-
 
 	}
 	//*-------------------------------------------------------------------------*
@@ -599,6 +1665,28 @@ namespace ShopTools
 		//*	Public																																*
 		//*************************************************************************
 		//*-----------------------------------------------------------------------*
+		//*	BaseLayer																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="BaseLayer">BaseLayer</see>.
+		/// </summary>
+		private bool mBaseLayer = false;
+		/// <summary>
+		/// Get/Set a value indicating whether this is a base layer, upon which
+		/// can be built multiple passes.
+		/// </summary>
+		/// <remarks>
+		/// A read access on this property is blended with the FinalLayer property.
+		/// If FinalLayer is true, BaseLayer will always return false.
+		/// </remarks>
+		public bool BaseLayer
+		{
+			get { return mBaseLayer && !mFinalLayer; }
+			set { mBaseLayer = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	CurrentDepth																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -612,6 +1700,24 @@ namespace ShopTools
 		{
 			get { return mCurrentDepth; }
 			set { mCurrentDepth = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	FinalLayer																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="FinalLayer">FinalLayer</see>.
+		/// </summary>
+		private bool mFinalLayer = false;
+		/// <summary>
+		/// Get/Set a value indicating whether this is a final layer onto which no
+		/// further layers should be stacked.
+		/// </summary>
+		public bool FinalLayer
+		{
+			get { return mFinalLayer; }
+			set { mFinalLayer = value; }
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -645,6 +1751,23 @@ namespace ShopTools
 		{
 			get { return mTargetDepth; }
 			set { mTargetDepth = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	Tool																																	*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Tool">Tool</see>.
+		/// </summary>
+		private TrackToolItem mTool = null;
+		/// <summary>
+		/// Get/Set a reference to the tool selected for this layer.
+		/// </summary>
+		public TrackToolItem Tool
+		{
+			get { return mTool; }
+			set { mTool = value; }
 		}
 		//*-----------------------------------------------------------------------*
 

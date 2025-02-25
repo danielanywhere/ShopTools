@@ -2,7 +2,7 @@
 
 Perform the following tasks when publishing a new version of *Dan's ShopTools Desktop*.
 
- - [ ] Update the ReadMe.docx, if necessary. Close the document and run Scripts/CreateReadMe.cmd to update README.md.
+ - [ ] Update **ReadMe.docx**, if necessary. Close the document and run Scripts/CreateReadMe.cmd to update README.md.
  - [ ] Make sure the project is in **Debug** mode.
  - [ ] Update the version number in **ShopTools.csproj**.
  - [ ] Compile and test all changes to the application.

@@ -235,7 +235,8 @@ namespace ShopTools
 
 			if(offset != null)
 			{
-				builder.Append($"G01 X{offset.X} Y{offset.Y} F{feedRate};");
+				builder.Append(
+					$"G01 X{offset.X:0.###} Y{offset.Y:0.###} F{feedRate};");
 			}
 			return builder.ToString();
 		}
@@ -269,7 +270,7 @@ namespace ShopTools
 		{
 			StringBuilder builder = new StringBuilder();
 
-			builder.Append($"G01 Z{plungeDepth} F{feedRate};");
+			builder.Append($"G01 Z{plungeDepth:0.###} F{feedRate};");
 
 			return builder.ToString();
 		}
@@ -316,7 +317,7 @@ namespace ShopTools
 			{
 				depth = 0f - plungeDepth;
 			}
-			builder.AppendLine($"G01 Z{depth} F{feedRate};");
+			builder.AppendLine($"G01 Z{depth:0.###} F{feedRate};");
 			//	Return to absolute.
 			builder.Append("G90;");
 
@@ -465,7 +466,7 @@ namespace ShopTools
 
 			if(offset != null)
 			{
-				builder.Append($"G00 X{offset.X} Y{offset.Y};");
+				builder.Append($"G00 X{offset.X:0.###} Y{offset.Y:0.###};");
 			}
 			return builder.ToString();
 		}
@@ -486,7 +487,7 @@ namespace ShopTools
 		/// </returns>
 		public static string TransitToPositionZAbs(TransitZEnum zPositionType)
 		{
-			return $"G00 Z{GetPositionZAbs(zPositionType)}";
+			return $"G00 Z{GetPositionZAbs(zPositionType):0.###}";
 		}
 		//*-----------------------------------------------------------------------*
 
