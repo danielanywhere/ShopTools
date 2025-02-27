@@ -57,10 +57,12 @@ namespace ShopTools
 			mnuFileSep1 = new System.Windows.Forms.ToolStripSeparator();
 			mnuFileImport = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileImportConfiguration = new System.Windows.Forms.ToolStripMenuItem();
+			mnuFileImportPatterns = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileExport = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileExportGCode = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileExportSep1 = new System.Windows.Forms.ToolStripSeparator();
 			mnuFileExportConfiguration = new System.Windows.Forms.ToolStripMenuItem();
+			mnuFileExportPatterns = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileSep2 = new System.Windows.Forms.ToolStripSeparator();
 			mnuFileExit = new System.Windows.Forms.ToolStripMenuItem();
 			mnuEdit = new System.Windows.Forms.ToolStripMenuItem();
@@ -111,8 +113,8 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
-			mnuFileImportPatterns = new System.Windows.Forms.ToolStripMenuItem();
-			mnuFileExportPatterns = new System.Windows.Forms.ToolStripMenuItem();
+			mnuView = new System.Windows.Forms.ToolStripMenuItem();
+			mnuViewGCode = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -125,14 +127,14 @@ namespace ShopTools
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(247, 70);
+			lblSuggestion.Size = new System.Drawing.Size(227, 70);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
 			// mnuMain
 			// 
 			mnuMain.ImageScalingSize = new System.Drawing.Size(20, 20);
-			mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFile, mnuEdit });
+			mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFile, mnuEdit, mnuView });
 			mnuMain.Location = new System.Drawing.Point(0, 0);
 			mnuMain.Name = "mnuMain";
 			mnuMain.Size = new System.Drawing.Size(925, 28);
@@ -184,6 +186,12 @@ namespace ShopTools
 			mnuFileImportConfiguration.Size = new System.Drawing.Size(224, 26);
 			mnuFileImportConfiguration.Text = "&Configuration";
 			// 
+			// mnuFileImportPatterns
+			// 
+			mnuFileImportPatterns.Name = "mnuFileImportPatterns";
+			mnuFileImportPatterns.Size = new System.Drawing.Size(224, 26);
+			mnuFileImportPatterns.Text = "&Patterns";
+			// 
 			// mnuFileExport
 			// 
 			mnuFileExport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileExportGCode, mnuFileExportSep1, mnuFileExportConfiguration, mnuFileExportPatterns });
@@ -207,6 +215,12 @@ namespace ShopTools
 			mnuFileExportConfiguration.Name = "mnuFileExportConfiguration";
 			mnuFileExportConfiguration.Size = new System.Drawing.Size(224, 26);
 			mnuFileExportConfiguration.Text = "&Configuration";
+			// 
+			// mnuFileExportPatterns
+			// 
+			mnuFileExportPatterns.Name = "mnuFileExportPatterns";
+			mnuFileExportPatterns.Size = new System.Drawing.Size(224, 26);
+			mnuFileExportPatterns.Text = "&Patterns";
 			// 
 			// mnuFileSep2
 			// 
@@ -413,7 +427,6 @@ namespace ShopTools
 			// 
 			// btnStop
 			// 
-			btnStop.Enabled = true;
 			btnStop.Location = new System.Drawing.Point(160, 783);
 			btnStop.Name = "btnStop";
 			btnStop.Size = new System.Drawing.Size(94, 29);
@@ -423,7 +436,6 @@ namespace ShopTools
 			// 
 			// btnGO
 			// 
-			btnGO.Enabled = true;
 			btnGO.Location = new System.Drawing.Point(160, 749);
 			btnGO.Name = "btnGO";
 			btnGO.Size = new System.Drawing.Size(94, 29);
@@ -667,17 +679,18 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
-			// mnuFileImportPatterns
+			// mnuView
 			// 
-			mnuFileImportPatterns.Name = "mnuFileImportPatterns";
-			mnuFileImportPatterns.Size = new System.Drawing.Size(224, 26);
-			mnuFileImportPatterns.Text = "&Patterns";
+			mnuView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuViewGCode });
+			mnuView.Name = "mnuView";
+			mnuView.Size = new System.Drawing.Size(55, 24);
+			mnuView.Text = "&View";
 			// 
-			// mnuFileExportPatterns
+			// mnuViewGCode
 			// 
-			mnuFileExportPatterns.Name = "mnuFileExportPatterns";
-			mnuFileExportPatterns.Size = new System.Drawing.Size(224, 26);
-			mnuFileExportPatterns.Text = "&Patterns";
+			mnuViewGCode.Name = "mnuViewGCode";
+			mnuViewGCode.Size = new System.Drawing.Size(224, 26);
+			mnuViewGCode.Text = "&G-code";
 			// 
 			// frmMain
 			// 
@@ -773,5 +786,7 @@ namespace ShopTools
 		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.ToolStripMenuItem mnuFileImportPatterns;
 		private System.Windows.Forms.ToolStripMenuItem mnuFileExportPatterns;
+		private System.Windows.Forms.ToolStripMenuItem mnuView;
+		private System.Windows.Forms.ToolStripMenuItem mnuViewGCode;
 	}
 }

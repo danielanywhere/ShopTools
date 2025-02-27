@@ -875,6 +875,33 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* mnuViewGCode_Click																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The View / G-code menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuViewGCode_Click(object sender, EventArgs e)
+		{
+			string content = GCode.RenderGCode();
+			frmTextView dialog = new frmTextView();
+
+			dialog.Text = content;
+			dialog.Title = "G-Code";
+
+			content = GCode.RenderGCode();
+			dialog.ShowDialog();
+
+		}
+		//*-----------------------------------------------------------------------*
+
+
 		////*-----------------------------------------------------------------------*
 		////* mPaintTimer_Tick																											*
 		////*-----------------------------------------------------------------------*
@@ -1939,6 +1966,7 @@ namespace ShopTools
 			mnuFileOpen.Click += mnuFileOpen_Click;
 			mnuFileSave.Click += mnuFileSave_Click;
 			mnuFileSaveAs.Click += mnuFileSaveAs_Click;
+			mnuViewGCode.Click += mnuViewGCode_Click;
 
 			mnuFileImportConfiguration.Enabled = false;
 			mnuFileExportConfiguration.Enabled = false;

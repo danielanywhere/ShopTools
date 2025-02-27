@@ -591,6 +591,16 @@
 		The main menu bar.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuView">
+	<summary>
+		The view menu.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuViewGCode">
+	<summary>
+		The View / G-code menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.pnlControl">
 	<summary>
 		The pattern controls panel for adding patterns to the session.
@@ -962,6 +972,21 @@
 <member name="F:ShopTools.frmSettings.txtZDimension">
 	<summary>
 		Z Dimension textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmTextView.btnCancel">
+	<summary>
+		Cancel/Close button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmTextView.btnOK">
+	<summary>
+		OK button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmTextView.txtText">
+	<summary>
+		The main content textbox.
 	</summary>
 </member>
 </members>

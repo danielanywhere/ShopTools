@@ -344,6 +344,8 @@ namespace ShopTools
 			int layerIndex = 0;
 			FPoint location = null;
 			TrackSegmentItem segment = null;
+			string toolName = "";
+			string toolNameLast = "";
 			TrackLayerCollection trackLayers = null;
 			WorkpieceInfoItem workpiece = SessionWorkpieceInfo;
 
@@ -362,6 +364,13 @@ namespace ShopTools
 				trackLayers = new TrackLayerCollection(workpiece.Cuts);
 				foreach(TrackLayerItem layerItem in trackLayers)
 				{
+					toolName =
+						(layerItem.Tool?.ToolName.Length > 0 ?
+						layerItem.Tool.ToolName : "");
+					if(toolName != toolNameLast)
+					{
+						builder.AppendLine($"M0 (Please attach tool: {toolName})");
+					}
 					if(layerIndex > 0 && layerItem.Segments.Count > 0)
 					{
 						segment = layerItem.Segments[0];
@@ -433,6 +442,7 @@ namespace ShopTools
 						}
 						lastSegment = segmentItem;
 					}
+					toolNameLast = toolName;
 					layerIndex++;
 				}
 				if(!bRetracted)
