@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  * 
  */
+
 #define NoInternalTest
 
 using System;
@@ -386,6 +387,10 @@ namespace ShopTools
 
 			ilPatterns.Images.Clear();
 			ilPatternsSmall.Images.Clear();
+			filenameOnly = "NoImageIcon.png";
+			icon = (Bitmap)Bitmap.FromFile(
+				Path.Combine(UserDataPath, filenameOnly));
+			ilPatterns.Images.Add(filenameOnly, icon);
 			lvPatterns.Items.Clear();
 			foreach(PatternTemplateItem templateItem in
 				ConfigProfile.PatternTemplates)
@@ -402,7 +407,25 @@ namespace ShopTools
 					icon = ResizeImage(icon, 24, 24);
 					ilPatternsSmall.Images.Add(filenameOnly, icon);
 					lvItem = new ListViewItem(templateItem.TemplateName, filenameOnly);
-					lvItem.Tag = templateItem;
+				}
+				else if(templateItem.IconFileData?.Length > 0)
+				{
+					//	Template has a DataURI image.
+					icon = GetBitmapFromDataUri(templateItem.IconFileData);
+					if(icon != null)
+					{
+						if(templateItem.IconFilename.Length == 0)
+						{
+							templateItem.IconFilename = templateItem.PatternTemplateId;
+						}
+						ilPatterns.Images.Add(templateItem.IconFilename, icon);
+						//	Draw the small version of the image.
+						icon = ResizeImage(icon, 24, 24);
+						ilPatternsSmall.Images.Add(templateItem.IconFilename,
+							icon);
+						lvItem = new ListViewItem(
+							templateItem.TemplateName, templateItem.IconFilename);
+					}
 				}
 				else
 				{
@@ -410,6 +433,7 @@ namespace ShopTools
 				}
 				if(lvItem != null)
 				{
+					lvItem.Tag = templateItem;
 					lvPatterns.Items.Add(lvItem);
 				}
 			}
@@ -535,6 +559,33 @@ namespace ShopTools
 				WriteConfiguration();
 				UpdateWorkpiece();
 				RefreshControls();
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuEditTemplates_Click																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The Edit / Templates menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuEditTemplates_Click(object sender, EventArgs e)
+		{
+			frmEditTemplates dialog = new frmEditTemplates();
+
+			dialog.Patterns = ConfigProfile.PatternTemplates;
+			if(dialog.ShowDialog() == DialogResult.OK)
+			{
+				PatternTemplateCollection.TransferValues(
+					dialog.Patterns, ConfigProfile.PatternTemplates);
+				WriteConfiguration();
+				InitializePatterns();
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -1957,6 +2008,7 @@ namespace ShopTools
 
 			//	Menu options.
 			mnuEditSettings.Click += mnuEditSettings_Click;
+			mnuEditTemplates.Click += mnuEditTemplates_Click;
 			mnuFileExit.Click += mnuFileExit_Click;
 			mnuFileExportConfiguration.Click += mnuFileExportConfiguration_Click;
 			mnuFileExportGCode.Click += mnuFileExportGCode_Click;

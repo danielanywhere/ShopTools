@@ -164,10 +164,10 @@ namespace ShopTools
 				this.IconFilename = pattern.IconFilename;
 				this.Operations.AddRange(
 					PatternOperationCollection.Clone(pattern.Operations));
-				this.Orientation = pattern.Orientation;
-				this.PatternLength = pattern.PatternLength;
+				//this.Orientation = pattern.Orientation;
+				//this.PatternLength = pattern.PatternLength;
 				this.PatternTemplateId = pattern.PatternTemplateId;
-				this.PatternWidth = pattern.PatternWidth;
+				//this.PatternWidth = pattern.PatternWidth;
 				foreach(string entryItem in pattern.Remarks)
 				{
 					this.Remarks.Add(entryItem);
@@ -177,7 +177,7 @@ namespace ShopTools
 					this.SharedVariables.Add(entryItem);
 				}
 				this.TemplateName = pattern.TemplateName;
-				this.ToolSequenceStrict = pattern.ToolSequenceStrict;
+				//this.ToolSequenceStrict = pattern.ToolSequenceStrict;
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -206,12 +206,12 @@ namespace ShopTools
 					IconFilename = item.IconFilename,
 					mEndLocation = FPoint.Clone(item.mEndLocation),
 					mStartLocation = FPoint.Clone(item.mStartLocation),
-					Orientation = item.Orientation,
-					PatternLength = item.PatternLength,
+					//Orientation = item.Orientation,
+					//PatternLength = item.PatternLength,
 					PatternTemplateId = item.PatternTemplateId,
-					PatternWidth = item.PatternWidth,
+					//PatternWidth = item.PatternWidth,
 					TemplateName = item.TemplateName,
-					ToolSequenceStrict = item.ToolSequenceStrict
+					//ToolSequenceStrict = item.ToolSequenceStrict
 				};
 				//foreach(string entryItem in item.AvailableProperties)
 				//{
@@ -340,12 +340,12 @@ namespace ShopTools
 				target.IconFilename = source.IconFilename;
 				FPoint.TransferValues(source.mEndLocation, target.mEndLocation);
 				FPoint.TransferValues(source.mStartLocation, target.mStartLocation);
-				target.Orientation = source.Orientation;
-				target.PatternLength = source.PatternLength;
+				//target.Orientation = source.Orientation;
+				//target.PatternLength = source.PatternLength;
 				target.PatternTemplateId = source.PatternTemplateId;
-				target.PatternWidth = source.PatternWidth;
+				//target.PatternWidth = source.PatternWidth;
 				target.TemplateName = source.TemplateName;
-				target.ToolSequenceStrict = source.ToolSequenceStrict;
+				//target.ToolSequenceStrict = source.ToolSequenceStrict;
 
 				target.Operations.Clear();
 				foreach(PatternOperationItem operationItem in source.Operations)

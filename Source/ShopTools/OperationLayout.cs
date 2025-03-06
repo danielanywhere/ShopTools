@@ -774,7 +774,7 @@ namespace ShopTools
 				{
 					//	Intersecting line to shape center found.
 					//	Get the nearest point on the line to the previous location.
-					intersection = GetClosestPoint(line, location);
+					intersection = FLine.GetClosestPoint(line, location);
 				}
 				if(intersection != null && intersection.X != float.NegativeInfinity)
 				{

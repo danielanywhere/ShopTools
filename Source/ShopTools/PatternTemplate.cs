@@ -77,6 +77,84 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* MoveDown																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item down in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="patternTemplate">
+		/// Reference to the item to be moved downward in the collection.
+		/// </param>
+		public void MoveDown(PatternTemplateItem patternTemplate)
+		{
+			int index = 0;
+
+			if(patternTemplate != null && this.Contains(patternTemplate))
+			{
+				index = this.IndexOf(patternTemplate);
+				if(index + 1 < this.Count)
+				{
+					this.Remove(patternTemplate);
+					this.Insert(index + 1, patternTemplate);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* MoveUp																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item up in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="patternTemplate">
+		/// Reference to the item to be moved upward in the collection.
+		/// </param>
+		public void MoveUp(PatternTemplateItem patternTemplate)
+		{
+			int index = 0;
+
+			if(patternTemplate != null && this.Contains(patternTemplate))
+			{
+				index = this.IndexOf(patternTemplate);
+				if(index > 0)
+				{
+					this.Remove(patternTemplate);
+					this.Insert(index - 1, patternTemplate);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* TransferValues																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Transfer clone all values from the source collection to the target.
+		/// </summary>
+		/// <param name="source">
+		/// Reference to the source collection to be cloned.
+		/// </param>
+		/// <param name="target">
+		/// Reference to the target collection to receive the new information.
+		/// </param>
+		public static void TransferValues(PatternTemplateCollection source,
+			PatternTemplateCollection target)
+		{
+			if(source != null && target != null)
+			{
+				target.Clear();
+				foreach(PatternTemplateItem templateItem in source)
+				{
+					target.Add(PatternTemplateItem.Clone(templateItem));
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
 	}
 	//*-------------------------------------------------------------------------*
 
@@ -163,14 +241,15 @@ namespace ShopTools
 				{
 					mDisplayFormat = item.mDisplayFormat,
 					mIconFilename = item.mIconFilename,
+					mIconFileData = item.mIconFileData,
 					mOperations = PatternOperationCollection.Clone(item.mOperations),
-					mOrientation = item.mOrientation,
-					mPatternLength = item.mPatternLength,
+					//mOrientation = item.mOrientation,
+					//mPatternLength = item.mPatternLength,
 					mPatternTemplateId = item.mPatternTemplateId,
-					mPatternWidth = item.mPatternWidth,
-					mTemplateName = item.mTemplateName,
+					//mPatternWidth = item.mPatternWidth,
+					mTemplateName = item.mTemplateName
 					//mToolPaths = ToolPathCollection.Clone(item.mToolPaths),
-					mToolSequenceStrict = item.mToolSequenceStrict
+					//mToolSequenceStrict = item.mToolSequenceStrict
 				};
 				//foreach(string entryItem in item.mAvailableProperties)
 				//{
@@ -478,6 +557,34 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//*	IconFileData																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="IconFileData">IconFileData</see>.
+		/// </summary>
+		private string mIconFileData = "";
+		/// <summary>
+		/// Get/Set the Base64 DataURL file data of the icon to load for the
+		/// specified pattern.
+		/// </summary>
+		[JsonProperty(Order = 7)]
+		public string IconFileData
+		{
+			get { return mIconFileData; }
+			set
+			{
+				bool bChanged = (mIconFileData != value);
+
+				mIconFileData = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	IconFilename																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -515,69 +622,69 @@ namespace ShopTools
 		/// Get a reference to the collection of operations defined for this
 		/// pattern.
 		/// </summary>
-		[JsonProperty(Order = 10)]
+		[JsonProperty(Order = 6)]
 		public PatternOperationCollection Operations
 		{
 			get { return mOperations; }
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//*	Orientation																														*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="Orientation">Orientation</see>.
-		/// </summary>
-		private TemplateOrientationEnum mOrientation =
-			TemplateOrientationEnum.Workpiece;
-		/// <summary>
-		/// Get/Set the orientation space used for measurements in the tool paths.
-		/// </summary>
-		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 6)]
-		public TemplateOrientationEnum Orientation
-		{
-			get { return mOrientation; }
-			set
-			{
-				bool bChanged = (mOrientation != value);
+		////*-----------------------------------------------------------------------*
+		////*	Orientation																														*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Private member for <see cref="Orientation">Orientation</see>.
+		///// </summary>
+		//private TemplateOrientationEnum mOrientation =
+		//	TemplateOrientationEnum.Workpiece;
+		///// <summary>
+		///// Get/Set the orientation space used for measurements in the tool paths.
+		///// </summary>
+		//[JsonConverter(typeof(StringEnumConverter))]
+		//[JsonProperty(Order = 6)]
+		//public TemplateOrientationEnum Orientation
+		//{
+		//	get { return mOrientation; }
+		//	set
+		//	{
+		//		bool bChanged = (mOrientation != value);
 
-				mOrientation = value;
-				if(bChanged)
-				{
-					OnPropertyChanged();
-				}
-			}
-		}
-		//*-----------------------------------------------------------------------*
+		//		mOrientation = value;
+		//		if(bChanged)
+		//		{
+		//			OnPropertyChanged();
+		//		}
+		//	}
+		//}
+		////*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//*	PatternLength																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="PatternLength">PatternLength</see>.
-		/// </summary>
-		private string mPatternLength = "";
-		/// <summary>
-		/// Get/Set the length dimension of the pattern, in the specified
-		/// orientation.
-		/// </summary>
-		[JsonProperty(Order = 8)]
-		public string PatternLength
-		{
-			get { return mPatternLength; }
-			set
-			{
-				bool bChanged = (mPatternLength != value);
+		////*-----------------------------------------------------------------------*
+		////*	PatternLength																													*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Private member for <see cref="PatternLength">PatternLength</see>.
+		///// </summary>
+		//private string mPatternLength = "";
+		///// <summary>
+		///// Get/Set the length dimension of the pattern, in the specified
+		///// orientation.
+		///// </summary>
+		//[JsonProperty(Order = 8)]
+		//public string PatternLength
+		//{
+		//	get { return mPatternLength; }
+		//	set
+		//	{
+		//		bool bChanged = (mPatternLength != value);
 
-				mPatternLength = value;
-				if(bChanged)
-				{
-					OnPropertyChanged();
-				}
-			}
-		}
-		//*-----------------------------------------------------------------------*
+		//		mPatternLength = value;
+		//		if(bChanged)
+		//		{
+		//			OnPropertyChanged();
+		//		}
+		//	}
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//*	PatternTemplateId																											*
@@ -607,33 +714,33 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//*	PatternWidth																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="PatternWidth">PatternWidth</see>.
-		/// </summary>
-		private string mPatternWidth = "";
-		/// <summary>
-		/// Get/Set the width dimension of the pattern, in the specified
-		/// orientation.
-		/// </summary>
-		[JsonProperty(Order = 7)]		
-		public string PatternWidth
-		{
-			get { return mPatternWidth; }
-			set
-			{
-				bool bChanged = (mPatternWidth != value);
+		////*-----------------------------------------------------------------------*
+		////*	PatternWidth																													*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Private member for <see cref="PatternWidth">PatternWidth</see>.
+		///// </summary>
+		//private string mPatternWidth = "";
+		///// <summary>
+		///// Get/Set the width dimension of the pattern, in the specified
+		///// orientation.
+		///// </summary>
+		//[JsonProperty(Order = 7)]		
+		//public string PatternWidth
+		//{
+		//	get { return mPatternWidth; }
+		//	set
+		//	{
+		//		bool bChanged = (mPatternWidth != value);
 
-				mPatternWidth = value;
-				if(bChanged)
-				{
-					OnPropertyChanged();
-				}
-			}
-		}
-		//*-----------------------------------------------------------------------*
+		//		mPatternWidth = value;
+		//		if(bChanged)
+		//		{
+		//			OnPropertyChanged();
+		//		}
+		//	}
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//*	Remarks																																*
@@ -664,7 +771,7 @@ namespace ShopTools
 		/// Get a reference to a list of variable names in this operation that are
 		/// shared for the entire pattern.
 		/// </summary>
-		[JsonProperty(Order = 9)]
+		[JsonProperty(Order = 5)]
 		public ChangeObjectCollection<string> SharedVariables
 		{
 			get { return mSharedVariables; }
@@ -684,6 +791,22 @@ namespace ShopTools
 		public bool ShouldSerializeDisplayFormat()
 		{
 			return mDisplayFormat?.Length > 0;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* ShouldSerializeIconFileData																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the IconFileData property will be
+		/// serialized.
+		/// </summary>
+		/// <returns>
+		/// A value indicating whether to serialize the property.
+		/// </returns>
+		public bool ShouldSerializeIconFileData()
+		{
+			return mIconFileData?.Length > 0;
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -719,37 +842,37 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//* ShouldSerializeOrientation																						*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the Orientation property will be
-		/// serialized.
-		/// </summary>
-		/// <returns>
-		/// A value indicating whether to serialize the property.
-		/// </returns>
-		public bool ShouldSerializeOrientation()
-		{
-			return mOrientation != TemplateOrientationEnum.None;
-		}
-		//*-----------------------------------------------------------------------*
+		////*-----------------------------------------------------------------------*
+		////* ShouldSerializeOrientation																						*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Return a value indicating whether the Orientation property will be
+		///// serialized.
+		///// </summary>
+		///// <returns>
+		///// A value indicating whether to serialize the property.
+		///// </returns>
+		//public bool ShouldSerializeOrientation()
+		//{
+		//	return mOrientation != TemplateOrientationEnum.None;
+		//}
+		////*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//* ShouldSerializePatternLength																					*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the PatternLength property will be
-		/// serialized.
-		/// </summary>
-		/// <returns>
-		/// A value indicating whether to serialize the property.
-		/// </returns>
-		public bool ShouldSerializePatternLength()
-		{
-			return mPatternLength?.Length > 0;
-		}
-		//*-----------------------------------------------------------------------*
+		////*-----------------------------------------------------------------------*
+		////* ShouldSerializePatternLength																					*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Return a value indicating whether the PatternLength property will be
+		///// serialized.
+		///// </summary>
+		///// <returns>
+		///// A value indicating whether to serialize the property.
+		///// </returns>
+		//public bool ShouldSerializePatternLength()
+		//{
+		//	return mPatternLength?.Length > 0;
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* ShouldSerializePatternTemplateId																			*
@@ -767,21 +890,21 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//* ShouldSerializePatternWidth																						*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the PatternWidth property will be
-		/// serialized.
-		/// </summary>
-		/// <returns>
-		/// A value indicating whether to serialize the property.
-		/// </returns>
-		public bool ShouldSerializePatternWidth()
-		{
-			return mPatternWidth?.Length > 0;
-		}
-		//*-----------------------------------------------------------------------*
+		////*-----------------------------------------------------------------------*
+		////* ShouldSerializePatternWidth																						*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Return a value indicating whether the PatternWidth property will be
+		///// serialized.
+		///// </summary>
+		///// <returns>
+		///// A value indicating whether to serialize the property.
+		///// </returns>
+		//public bool ShouldSerializePatternWidth()
+		//{
+		//	return mPatternWidth?.Length > 0;
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//* ShouldSerializeRemarks																								*
@@ -831,21 +954,21 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//* ShouldSerializeToolSequenceStrict																			*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the ToolSequenceStrict property will
-		/// be serialized.
-		/// </summary>
-		/// <returns>
-		/// A value indicating whether to serialize the property.
-		/// </returns>
-		public bool ShouldSerializeToolSequenceStrict()
-		{
-			return mToolSequenceStrict == false;
-		}
-		//*-----------------------------------------------------------------------*
+		////*-----------------------------------------------------------------------*
+		////* ShouldSerializeToolSequenceStrict																			*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Return a value indicating whether the ToolSequenceStrict property will
+		///// be serialized.
+		///// </summary>
+		///// <returns>
+		///// A value indicating whether to serialize the property.
+		///// </returns>
+		//public bool ShouldSerializeToolSequenceStrict()
+		//{
+		//	return mToolSequenceStrict == false;
+		//}
+		////*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
 		//*	TemplateName																													*
@@ -874,36 +997,36 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
-		//*-----------------------------------------------------------------------*
-		//*	ToolSequenceStrict																										*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for
-		/// <see cref="ToolSequenceStrict">ToolSequenceStrict</see>.
-		/// </summary>
-		private bool mToolSequenceStrict = true;
-		/// <summary>
-		/// Get/Set a value indicating whether the entries in the ToolPaths
-		/// collection must be followed in strict order. If false, items with the
-		/// same tool as the previous operation will be preferred over the sort
-		/// order of those entries.
-		/// </summary>
-		[JsonProperty(Order = 5)]
-		public bool ToolSequenceStrict
-		{
-			get { return mToolSequenceStrict; }
-			set
-			{
-				bool bChanged = (mToolSequenceStrict != value);
+		////*-----------------------------------------------------------------------*
+		////*	ToolSequenceStrict																										*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Private member for
+		///// <see cref="ToolSequenceStrict">ToolSequenceStrict</see>.
+		///// </summary>
+		//private bool mToolSequenceStrict = true;
+		///// <summary>
+		///// Get/Set a value indicating whether the entries in the ToolPaths
+		///// collection must be followed in strict order. If false, items with the
+		///// same tool as the previous operation will be preferred over the sort
+		///// order of those entries.
+		///// </summary>
+		//[JsonProperty(Order = 5)]
+		//public bool ToolSequenceStrict
+		//{
+		//	get { return mToolSequenceStrict; }
+		//	set
+		//	{
+		//		bool bChanged = (mToolSequenceStrict != value);
 
-				mToolSequenceStrict = value;
-				if(bChanged)
-				{
-					OnPropertyChanged();
-				}
-			}
-		}
-		//*-----------------------------------------------------------------------*
+		//		mToolSequenceStrict = value;
+		//		if(bChanged)
+		//		{
+		//			OnPropertyChanged();
+		//		}
+		//	}
+		//}
+		////*-----------------------------------------------------------------------*
 
 
 	}

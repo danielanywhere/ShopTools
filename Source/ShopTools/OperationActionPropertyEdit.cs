@@ -20,21 +20,20 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
-using Newtonsoft.Json;
 
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	OperationActionPropertyCollection																				*
+	//*	OperationActionPropertyEditCollection																		*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Collection of OperationActionPropertyItem Items.
+	/// Collection of OperationActionPropertyEditItem Items.
 	/// </summary>
-	public class OperationActionPropertyCollection :
-		List<OperationActionPropertyItem>
+	public class OperationActionPropertyEditCollection :
+		BindingList<OperationActionPropertyEditItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -51,13 +50,12 @@ namespace ShopTools
 	//*-------------------------------------------------------------------------*
 
 	//*-------------------------------------------------------------------------*
-	//*	OperationActionPropertyItem																							*
+	//*	OperationActionPropertyEditItem																					*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Information that helps to define the use and behavior of properties
-	/// found in pattern operation.
+	/// Information about an individual editable operation action property value.
 	/// </summary>
-	public class OperationActionPropertyItem
+	public class OperationActionPropertyEditItem : INotifyPropertyChanged
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -65,9 +63,82 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//* OnPropertyChanged																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Raises the PropertyChanged event when the value of a property has
+		/// changed.
+		/// </summary>
+		/// <param name="propertyName">
+		/// Name of the changed property.
+		/// </param>
+		protected virtual void OnPropertyChanged(
+			[CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this,
+				new PropertyChangedEventArgs(propertyName));
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*************************************************************************
 		//*	Public																																*
 		//*************************************************************************
+
+		//*-----------------------------------------------------------------------*
+		//*	BaseName																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="BaseName">BaseName</see>.
+		/// </summary>
+		private string mBaseName = "";
+		/// <summary>
+		/// Get/Set the base property name of this item.
+		/// </summary>
+		[Browsable(false)]
+		public string BaseName
+		{
+			get { return mBaseName; }
+			set
+			{
+				bool bChanged = (mBaseName != value);
+
+				mBaseName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	DisplayName																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="DisplayName">DisplayName</see>.
+		/// </summary>
+		private string mDisplayName = "";
+		/// <summary>
+		/// Get/Set the display name of the operation property.
+		/// </summary>
+		[DisplayName("Name")]
+		public string DisplayName
+		{
+			get { return mDisplayName; }
+			set
+			{
+				bool bChanged = (mDisplayName != value);
+
+				mDisplayName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*-----------------------------------------------------------------------*
 		//*	DataType																															*
 		//*-----------------------------------------------------------------------*
@@ -78,117 +149,57 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the data type associated with this property.
 		/// </summary>
-		[JsonProperty(Order = 1)]		
+		[Browsable(false)]
 		public string DataType
 		{
 			get { return mDataType; }
-			set { mDataType = value; }
+			set
+			{
+				bool bChanged = (mDataType != value);
+
+				mDataType = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//*	ExcludeOperationActions																								*
+		//* PropertyChanged																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for
-		/// <see cref="ExcludeOperationActions">ExcludeOperationActions</see>.
+		/// Fired when the value of a property has changed.
 		/// </summary>
-		private List<string> mExcludeOperationActions = new List<string>();
+		public event PropertyChangedEventHandler PropertyChanged;
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	Value																																	*
+		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Get a reference to the list of operation actions from which this
-		/// property name will be excluded.
+		/// Private member for <see cref="Value">Value</see>.
 		/// </summary>
-		/// <remarks>
-		/// The items in this list are removed from the list of all or included
-		/// actions. If only an excluded actions list is provided, it is assumed
-		/// that all of the actions except those listed will be associated with
-		/// this property.
-		/// </remarks>
-		[JsonProperty(Order = 5)]
-		public List<string> ExcludeOperationActions
+		private string mValue = "";
+		/// <summary>
+		/// Get/Set the value of this property.
+		/// </summary>
+		public string Value
 		{
-			get { return mExcludeOperationActions; }
+			get { return mValue; }
+			set
+			{
+				bool bChanged = (mValue != value);
+
+				mValue = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	IncludeOperationActions																								*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for
-		/// <see cref="IncludeOperationActions">IncludeOperationActions</see>.
-		/// </summary>
-		private List<string> mIncludeOperationActions = new List<string>();
-		/// <summary>
-		/// Get a reference to the list of operation actions into which this
-		/// property name will be included.
-		/// </summary>
-		/// <remarks>
-		/// If no entries are made here, then it is assumed the property will
-		/// be associated with all actions.
-		/// </remarks>
-		[JsonProperty(Order = 4)]
-		public List<string> IncludeOperationActions
-		{
-			get { return mIncludeOperationActions; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	Internal																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="Internal">Internal</see>.
-		/// </summary>
-		private bool mInternal = false;
-		/// <summary>
-		/// Get/Set a value indicating whether this property is only used for
-		/// internal processing.
-		/// </summary>
-		[JsonProperty(Order = 2)]		
-		public bool Internal
-		{
-			get { return mInternal; }
-			set { mInternal = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	PropertyName																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="PropertyName">PropertyName</see>.
-		/// </summary>
-		private string mPropertyName = "";
-		/// <summary>
-		/// Get/Set the name of the operation property.
-		/// </summary>
-		[JsonProperty(Order = 0)]
-		public string PropertyName
-		{
-			get { return mPropertyName; }
-			set { mPropertyName = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	SortIndex																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="SortIndex">SortIndex</see>.
-		/// </summary>
-		private int mSortIndex = 0;
-		/// <summary>
-		/// Get/Set the sorting index of this property within user interactions.
-		/// </summary>
-		[JsonProperty(Order = 3)]		
-		public int SortIndex
-		{
-			get { return mSortIndex; }
-			set { mSortIndex = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
 
 	}
 	//*-------------------------------------------------------------------------*

@@ -81,6 +81,58 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* MoveDown																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item down in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="patternOperation">
+		/// Reference to the item to be moved downward in the collection.
+		/// </param>
+		public void MoveDown(PatternOperationItem patternOperation)
+		{
+			int index = 0;
+
+			if(patternOperation != null && this.Contains(patternOperation))
+			{
+				index = this.IndexOf(patternOperation);
+				if(index + 1 < this.Count)
+				{
+					this.Remove(patternOperation);
+					this.Insert(index + 1, patternOperation);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* MoveUp																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item up in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="patternOperation">
+		/// Reference to the item to be moved upward in the collection.
+		/// </param>
+		public void MoveUp(PatternOperationItem patternOperation)
+		{
+			int index = 0;
+
+			if(patternOperation != null && this.Contains(patternOperation))
+			{
+				index = this.IndexOf(patternOperation);
+				if(index > 0)
+				{
+					this.Remove(patternOperation);
+					this.Insert(index - 1, patternOperation);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
 	}
 	//*-------------------------------------------------------------------------*
 
@@ -2217,6 +2269,65 @@ namespace ShopTools
 				if(bChanged)
 				{
 					OnPropertyChanged();
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* TransferValues																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a deep value transfer of the provided pattern operation items.
+		/// </summary>
+		/// <param name="source">
+		/// Reference to the item to clone.
+		/// </param>
+		/// <param name="target">
+		/// Reference to the item to receive the values.
+		/// </param>
+		public static void TransferValues(
+			PatternOperationItem source, PatternOperationItem target)
+		{
+		if(source != null && target != null)
+			{
+				target.mAction = source.mAction;
+				target.mAngle = source.mAngle;
+				target.mDepth = source.mDepth;
+				target.mDiameter = source.mDiameter;
+				target.mDiameterX = source.mDiameterX;
+				target.mDiameterY = source.mDiameterY;
+				target.mEndOffsetX = source.mEndOffsetX;
+				target.mEndOffsetXOrigin = source.mEndOffsetXOrigin;
+				target.mEndOffsetY = source.mEndOffsetY;
+				target.mEndOffsetYOrigin = source.mEndOffsetYOrigin;
+				target.mKerf = source.mKerf;
+				target.mLength = source.mLength;
+				target.mOffsetX = source.mOffsetX;
+				target.mOffsetXOrigin = source.mOffsetXOrigin;
+				target.mOffsetY = source.mOffsetY;
+				target.mOffsetYOrigin = source.mOffsetYOrigin;
+				target.mOperationName = source.mOperationName;
+				target.mRadius = source.mRadius;
+				target.mRadiusX = source.mRadiusX;
+				target.mRadiusY = source.mRadiusY;
+				target.mStartAngle = source.mStartAngle;
+				target.mStartOffsetX = source.mStartOffsetX;
+				target.mStartOffsetXOrigin = source.mStartOffsetXOrigin;
+				target.mStartOffsetY = source.mStartOffsetY;
+				target.mStartOffsetYOrigin = source.mStartOffsetYOrigin;
+				target.mSweepAngle = source.mSweepAngle;
+				target.mTool = source.mTool;
+				target.mWidth = source.mWidth;
+				target.mHiddenVariables.Clear();
+				foreach(string entryItem in source.mHiddenVariables)
+				{
+					target.mHiddenVariables.Add(entryItem);
+				}
+				target.mLayoutElements.Clear();
+				foreach(OperationLayoutItem layoutItem in source.mLayoutElements)
+				{
+					target.mLayoutElements.Add(OperationLayoutItem.Clone(layoutItem));
 				}
 			}
 		}

@@ -18,17 +18,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	CollectionChangeEventArgs																								*
+	//*	frmAbout																																*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// General collection change event arguments.
+	/// Dialog that displays information about the application.
 	/// </summary>
-	public class CollectionChangeEventArgs
+	public partial class frmAbout : Form
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -40,53 +46,14 @@ namespace ShopTools
 		//*	Public																																*
 		//*************************************************************************
 		//*-----------------------------------------------------------------------*
-		//*	ActionName																														*
+		//*	_Constructor																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for <see cref="ActionName">ActionName</see>.
+		/// Create a new instance of the frmAbout Item.
 		/// </summary>
-		private string mActionName = "";
-		/// <summary>
-		/// Get/Set the name of the action.
-		/// </summary>
-		public string ActionName
+		public frmAbout()
 		{
-			get { return mActionName; }
-			set { mActionName = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	Handled																																*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="Handled">Handled</see>.
-		/// </summary>
-		private bool mHandled = false;
-		/// <summary>
-		/// Get/Set a value indicating whether this change has been handled.
-		/// </summary>
-		public bool Handled
-		{
-			get { return mHandled; }
-			set { mHandled = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	PropertyName																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="PropertyName">PropertyName</see>.
-		/// </summary>
-		private string mPropertyName = "";
-		/// <summary>
-		/// Get/Set the name of the property affected on the item.
-		/// </summary>
-		public string PropertyName
-		{
-			get { return mPropertyName; }
-			set { mPropertyName = value; }
+			InitializeComponent();
 		}
 		//*-----------------------------------------------------------------------*
 

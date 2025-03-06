@@ -838,33 +838,6 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* Dot																																		*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return the dot product of two points.
-		/// </summary>
-		/// <param name="value1">
-		/// Reference to the first point to compare.
-		/// </param>
-		/// <param name="value2">
-		/// Reference to the second point to compare.
-		/// </param>
-		/// <returns>
-		/// The dot product of the two input points.
-		/// </returns>
-		public static float Dot(FPoint value1, FPoint value2)
-		{
-			float result = 0f;
-
-			if(value1 != null && value2 != null)
-			{
-				result = value1.X * value2.X + value1.Y * value2.Y;
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* DrawEllipseCenterDiameter																							*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2126,6 +2099,74 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* FromMultiLineString																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Convert a multiline string to a series of limited length lines.
+		/// </summary>
+		/// <param name="source">
+		/// Reference to the source string that might have a single line of
+		/// infinite length, or multiple lines.
+		/// </param>
+		/// <param name="maxLineLength">
+		/// Maximum length of any individual line.
+		/// </param>
+		/// <returns>
+		/// Collection of individual string segments, where one or more of those
+		/// entries can contribute to a single line of text by including a space
+		/// continuation at the end of the segment, or can be composed of multiple
+		/// lines, by ending each segment with a non-space character.
+		/// </returns>
+		public static List<string> FromMultiLineString(string source,
+			int maxLineLength = 60)
+		{
+			StringBuilder builder = new StringBuilder();
+			string lineEnd = "";
+			MatchCollection matches = null;
+			List<string> result = new List<string>();
+			string spaces = "";
+			string text = "";
+
+			if(source?.Length > 0)
+			{
+				matches = Regex.Matches(source, ResourceMain.rxWordSpace);
+				foreach(Match matchItem in matches)
+				{
+					text = GetValue(matchItem, "word");
+					spaces = GetValue(matchItem, "space");
+					lineEnd = GetValue(matchItem, "lineend");
+					if(text.Length > 0)
+					{
+						//	Text was found.
+						if(builder.Length > 0 &&
+							builder.Length + text.Length + spaces.Length > maxLineLength)
+						{
+							//	We can't add any more to this line. Create a new line.
+							result.Add(builder.ToString());
+							Clear(builder);
+						}
+						if(text.Length + spaces.Length > 0)
+						{
+							builder.Append(text + spaces);
+						}
+					}
+					else if(lineEnd.Length > 0)
+					{
+						//	A line end was found.
+						result.Add(builder.ToString());
+						Clear(builder);
+					}
+				}
+			}
+			if(builder.Length > 0)
+			{
+				result.Add(builder.ToString());
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* FromTitleCase																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2281,50 +2322,101 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* GetClosestPoint																												*
+		//* GetBitmapFromDataUri																									*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Return the closest point between the caller's line and an arbitrary
-		/// point.
+		/// Return a bitmap image from the specified Data URI.
 		/// </summary>
-		/// <param name="line">
-		/// Reference to the line to be checked.
-		/// </param>
-		/// <param name="point">
-		/// Reference to the point to test for proximity.
+		/// <param name="dataUri">
+		/// Reference to the Data URI to parse.
 		/// </param>
 		/// <returns>
-		/// Reference to the closest point between the caller's line and an
-		/// arbitrary external point, if valid. Otherwise, null.
+		/// Reference to a new Bitmap image representing the provided Data URI,
+		/// if valid. Otherwise, null.
 		/// </returns>
-		public static FPoint GetClosestPoint(FLine line, FPoint point)
+		public static Bitmap GetBitmapFromDataUri(string dataUri)
 		{
-			FPoint ab = null;
-			float abab = 0f;
-			FPoint ac = null;
-			float acab = 0f;
-			FPoint result = null;
-			float t = 0f;
+			byte[] bytes = null;
+			Match match = null;
+			string mimeType = "";
+			Bitmap result = null;
 
-			if(!FLine.IsEmpty(line) && point != null)
+			if(IsDataUri(dataUri))
 			{
-				ab = line.PointB - line.PointA;
-				ac = point - line.PointA;
-
-				abab = Dot(ab, ab);
-				acab = Dot(ac, ab);
-
-				if(abab != 0f)
+				match = Regex.Match(dataUri, ResourceMain.rxDataUriHeader);
+				if(match.Success)
 				{
-					t = acab / abab;
+					mimeType = GetValue(match, "mimeType");
+					if(mimeType.StartsWith("image/"))
+					{
+						//	This is image data.
+						//	The data starts at the end of the header.
+						bytes = Convert.FromBase64String(dataUri.Substring(match.Length));
+						using(MemoryStream stream = new MemoryStream(bytes))
+						{
+							result = new Bitmap(stream);
+						}
+					}
 				}
-
-				// Clamp t to ensure the closest point stays within the segment [A, B].
-				t = Math.Max(0, Math.Min(1, t));
-
-				result = line.PointA + ab * t;
 			}
 			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetDataUri																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a reference to a Data URI created from the specified binary
+		/// file.
+		/// </summary>
+		/// <param name="file">
+		/// Reference to a file to load.
+		/// </param>
+		/// <returns>
+		/// Fully prepared data URI.
+		/// </returns>
+		public static string GetDataUri(FileInfo file)
+		{
+			byte[] buffer = null;
+			StringBuilder builder = new StringBuilder();
+
+			if(file?.Exists == true)
+			{
+				buffer = File.ReadAllBytes(file.FullName);
+				builder.Append("data:");
+				builder.Append(MimeType(file.Extension));
+				builder.Append(";base64,");
+				builder.Append(Convert.ToBase64String(buffer));
+			}
+			return builder.ToString();
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Return a reference to a Data URI created from the provided binary data
+		/// loaded in association with a named file.
+		/// </summary>
+		/// <param name="extension">
+		/// File extension used to establish the MIME type.
+		/// </param>
+		/// <param name="data">
+		/// Binary data to convert.
+		/// </param>
+		/// <returns>
+		/// Fully prepared data URI.
+		/// </returns>
+		public static string GetDataUri(string extension, byte[] data)
+		{
+			StringBuilder builder = new StringBuilder();
+
+			if(data?.Length > 0)
+			{
+				builder.Append("data:");
+				builder.Append(MimeType(extension));
+				builder.Append(";base64,");
+				builder.Append(Convert.ToBase64String(data));
+			}
+			return builder.ToString();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -2359,6 +2451,61 @@ namespace ShopTools
 					workspaceArea.X + (int)(offset.X * scale),
 					workspaceArea.Y + (int)(offset.Y * scale));
 			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetFileExtension																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the file extension of the provided filename.
+		/// </summary>
+		/// <param name="filename">
+		/// The filename for which the extension will be returned.
+		/// </param>
+		/// <returns>
+		/// The extension portion of the provided filename, including the dot.
+		/// </returns>
+		/// <remarks>
+		/// This version of the method interprets all dots in the name as being
+		/// included in the file extension, providing for the multi-extension
+		/// concept.
+		/// </remarks>
+		public static string GetFileExtension(string filename)
+		{
+			int index = 0;
+			string result = "";
+
+			if(filename?.Length > 0 && filename.IndexOf('.') > -1)
+			{
+				index = filename.IndexOf('.');
+				result = filename.Substring(index);
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetFillBrush																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a solid brush used to fill the active area.
+		/// </summary>
+		/// <param name="selected">
+		/// Optional value indicating whether the area will be selected.
+		/// Default = false.
+		/// </param>
+		/// <returns>
+		/// Reference to the brush used to fill the active area.
+		/// </returns>
+		public static Brush GetFillBrush(bool selected = false)
+		{
+			Brush result = new SolidBrush(
+				(selected ?
+				ColorTranslator.FromHtml(mColorFillSelected) :
+				ColorTranslator.FromHtml(mColorFill)
+				));
 			return result;
 		}
 		//*-----------------------------------------------------------------------*
@@ -2576,148 +2723,6 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* GetFillBrush																													*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a solid brush used to fill the active area.
-		/// </summary>
-		/// <param name="selected">
-		/// Optional value indicating whether the area will be selected.
-		/// Default = false.
-		/// </param>
-		/// <returns>
-		/// Reference to the brush used to fill the active area.
-		/// </returns>
-		public static Brush GetFillBrush(bool selected = false)
-		{
-			Brush result = new SolidBrush(
-				(selected ?
-				ColorTranslator.FromHtml(mColorFillSelected) :
-				ColorTranslator.FromHtml(mColorFill)
-				));
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//* GetIntersectingLine																										*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a reference to the first line intersecting the caller's point
-		/// from the supplied list of lines.
-		/// </summary>
-		/// <param name="lines">
-		/// Reference to a list of lines, one or more of which might contain
-		/// the caller's point.
-		/// </param>
-		/// <param name="point">
-		/// Reference to the point to compare.
-		/// </param>
-		/// <returns>
-		/// Reference to the first line in the collection containing the caller's
-		/// point, if found. Otherwise, null.
-		/// </returns>
-		public static FLine GetIntersectingLine(List<FLine> lines, FPoint point)
-		{
-			FLine result = null;
-
-			if(lines?.Count > 0)
-			{
-				foreach(FLine lineItem in lines)
-				{
-					if(FLine.IsPointOnLine(lineItem, point))
-					{
-						result = lineItem;
-						break;
-					}
-				}
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//* GetIntersectingLines																									*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a list of lines intersecting the caller's point
-		/// within the supplied list of lines.
-		/// </summary>
-		/// <param name="lines">
-		/// Reference to a list of lines, one or more of which might contain
-		/// the caller's point.
-		/// </param>
-		/// <param name="point">
-		/// Reference to the point to compare.
-		/// </param>
-		/// <returns>
-		/// Reference to a list of lines in the collection containing the
-		/// caller's point, if found. Otherwise, an empty list.
-		/// </returns>
-		public static List<FLine> GetIntersectingLines(List<FLine> lines,
-			FPoint point)
-		{
-			List<FLine> result = new List<FLine>();
-
-			if(lines?.Count > 0)
-			{
-				foreach(FLine lineItem in lines)
-				{
-					if(FLine.IsPointOnLine(lineItem, point))
-					{
-						result.Add(lineItem);
-					}
-				}
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//* GetLines																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return four lines representing the bounding edge of the provided area.
-		/// </summary>
-		/// <param name="area">
-		/// Reference to the area for which the lines will be returned.
-		/// </param>
-		/// <returns>
-		/// Reference to a list of four lines, if the area was legitimate and
-		/// non-empty. Otherwise, an empty array.
-		/// </returns>
-		/// <remarks>
-		/// In drawing space, the lines from this method are arranged in a
-		/// counter-clockwise progression from top-right, including the top, left,
-		/// bottom, then right sides.
-		/// </remarks>
-		public static List<FLine> GetLines(FArea area)
-		{
-			List<FLine> result = new List<FLine>();
-
-			if(!FArea.IsEmpty(area))
-			{
-				result = new List<FLine>
-				{
-					new FLine(
-						new FPoint(area.Right, area.Top),
-						new FPoint(area.Left, area.Top)),
-					new FLine(
-						new FPoint(area.Left, area.Top),
-						new FPoint(area.Left, area.Bottom)),
-					new FLine(
-						new FPoint(area.Left, area.Bottom),
-						new FPoint(area.Right, area.Bottom)),
-					new FLine(
-						new FPoint(area.Right, area.Bottom),
-						new FPoint(area.Right, area.Top))
-				};
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* GetRawEndOffset																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2820,6 +2825,61 @@ namespace ShopTools
 				names = UserToolCollection.Clone(mConfigProfile.UserTools).
 					OrderBy(x => x.ToolName).Select(y => y.ToolName).ToList();
 				result = names.ToArray();
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetUniqueUserDataImageName																						*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the first unique variation of the suggested image name within
+		/// the user data folder.
+		/// </summary>
+		/// <param name="requestedName">
+		/// The desired name for the file, if the name is available.
+		/// </param>
+		/// <returns>
+		/// The first unique variation of the requested name requested.
+		/// </returns>
+		public static string GetUniqueUserDataImageName(string requestedName)
+		{
+			DirectoryInfo dir = null;
+			string extension = "";
+			List<FileInfo> files = null;
+			int index = 0;
+			string nameOnly = "";
+			string result = "";
+
+			if(requestedName?.Length > 0)
+			{
+				extension = GetFileExtension(requestedName);
+				if(extension.Length > 0 && extension.Length < requestedName.Length)
+				{
+					nameOnly = requestedName.Substring(0,
+						requestedName.Length - extension.Length);
+				}
+				else if(extension.Length == 0)
+				{
+					nameOnly = requestedName;
+				}
+				dir = new DirectoryInfo(UserDataPath);
+				if(dir.Exists)
+				{
+					files = dir.GetFiles().ToList();
+					if(files.Exists(x => x.Name == nameOnly + extension))
+					{
+						index = 1;
+						while(files.Exists(x =>
+							x.Name == nameOnly + $"-{index}" + extension))
+						{
+							index++;
+						}
+						nameOnly += $"-{index}";
+					}
+					result = nameOnly + extension;
+				}
 			}
 			return result;
 		}
@@ -3046,69 +3106,6 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//* IsPointAtCorner																												*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the provided point is at one of the
-		/// corners of the caller's rectangle.
-		/// </summary>
-		/// <param name="area">
-		/// Reference to the area to test for corner.
-		/// </param>
-		/// <param name="point">
-		/// Reference to the point to compare with corners.
-		/// </param>
-		/// <returns>
-		/// True if the caller's point is located at one of the corners of the
-		/// supplied area.
-		/// </returns>
-		public static bool IsPointAtCorner(FArea area, FPoint point)
-		{
-			bool result = false;
-
-			if(area != null && point != null)
-			{
-				result =
-					((area.Left == point.X && area.Top == point.Y) ||
-					(area.Right == point.X && area.Top == point.Y) ||
-					(area.Left == point.X && area.Bottom == point.Y) ||
-					(area.Right == point.X && area.Bottom == point.Y));
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//* IsPointAtCorner																												*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return a value indicating whether the provided point is at one of the
-		/// ends of the specified line.
-		/// </summary>
-		/// <param name="line">
-		/// Reference to the line to test.
-		/// </param>
-		/// <param name="point">
-		/// The point to compare.
-		/// </param>
-		/// <returns>
-		/// True if the specified point is at one of the ends of the line.
-		/// </returns>
-		public static bool IsPointAtCorner(FLine line, FPoint point)
-		{
-			bool result = false;
-
-			if(line != null && point != null)
-			{
-				result =
-					((line.PointA.X == point.X && line.PointA.Y == point.Y) ||
-					(line.PointB.X == point.X && line.PointB.Y == point.Y));
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* InitializeApplication																									*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -3117,6 +3114,24 @@ namespace ShopTools
 		public static void InitializeApplication()
 		{
 			UserDataInitialize();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* IsDataUri																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a value indicating whether the caller's string is a DataURI.
+		/// </summary>
+		/// <param name="dataUri">
+		/// String to test for DataURI.
+		/// </param>
+		/// <returns>
+		/// True if the value is a DataURI. Otherwise, false.
+		/// </returns>
+		public static bool IsDataUri(string dataUri)
+		{
+			return (dataUri?.Length > 0 && dataUri.StartsWith("data:"));
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -3169,6 +3184,267 @@ namespace ShopTools
 				GetMillimeters(mConfigProfile.YDimension)))
 			{
 				result = true;
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	MimeType																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the MIME-type associated with the specified extension.
+		/// </summary>
+		/// <param name="extension">
+		/// File extension to associate.
+		/// </param>
+		/// <returns>
+		/// MIME-type associated with the specified file extension.
+		/// </returns>
+		public static string MimeType(string extension)
+		{
+			string result = "";
+
+			if(extension?.Length > 0)
+			{
+				if(extension.StartsWith("."))
+				{
+					extension = extension.Substring(1);
+				}
+				extension = extension.ToLower();
+				switch(extension)
+				{
+					case "3g2": //	3GPP2 audio/video container.
+						result = "video/3gpp2";
+						//	also, audio/3gpp2 for audio only.
+						break;
+					case "3gp": //	3GPP audio/video container.
+						result = "video/3gpp";
+						//	also, audio/3gpp for audio only.
+						break;
+					case "7z":  //	7-zip archive.
+						result = "application/x-7z-compressed";
+						break;
+					case "aac": //	AAC audio.
+						result = "audio/aac";
+						break;
+					case "abw": //	AbiWord document.
+						result = "application/x-abiword";
+						break;
+					case "arc": //	Archive document (multiple files embedded).
+						result = "application/x-freearc";
+						break;
+					case "avi": //	AVI: Audio Video Interleave.
+						result = "video/x-msvideo";
+						break;
+					case "azw": //	Amazon Kindle eBook format.
+						result = "application/vnd.amazon.ebook";
+						break;
+					case "bin": //	Any kind of binary data.
+						result = "application/octet-stream";
+						break;
+					case "bmp": //	Windows OS/2 Bitmap Graphics.
+						result = "image/bmp";
+						break;
+					case "bz":  //	BZip archive.
+						result = "application/x-bzip";
+						break;
+					case "bz2": //	BZip2 archive.
+						result = "application/x-bzip2";
+						break;
+					case "csh": //	C-Shell script.
+						result = "application/x-csh";
+						break;
+					case "css": //	Cascading Style Sheets (CSS).
+						result = "text/css";
+						break;
+					case "csv": //	Comma-separated values (CSV).
+						result = "text/csv";
+						break;
+					case "doc": //	Microsoft Word (Legacy).
+						result = "application/msword";
+						break;
+					case "docx":  //	Microsoft Word (OpenXML).
+						result = "application/vnd.openxmlformats-officedocument." +
+							"wordprocessingml.document";
+						break;
+					case "eot": //	MS Embedded OpenType fonts.
+						result = "application/vnd.ms-fontobject";
+						break;
+					case "epub":  //	Electronic publication (EPUB).
+						result = "application/epub+zip";
+						break;
+					case "gz":  //	GZip Compressed Archive.
+						result = "application/gzip";
+						break;
+					case "gif": //	Graphics Interchange Format (GIF).
+						result = "image/gif";
+						break;
+					case "htm": //	HyperText Markup Language (HTML).
+					case "html":
+						result = "text/html";
+						break;
+					case "ico": //	Icon format.
+						result = "image/vnd.microsoft.icon";
+						break;
+					case "ics": //	iCalendar format.
+						result = "text/calendar";
+						break;
+					case "jar": //	Java Archive (JAR).
+						result = "application/java-archive";
+						break;
+					case "jpeg":  //	JPEG image.
+					case "jpg":
+						result = "image/jpeg";
+						break;
+					case "js":  //	JavaScript.
+						result = "text/javascript";
+						break;
+					case "json":  //	JSON format.
+						result = "application/json";
+						break;
+					case "jsonld":  //	JSON-LD format.
+						result = "application/ld+json";
+						break;
+					case "mid": //	Musical Instrument Digital Interface (MIDI).
+					case "midi":
+						result = "audio/midi";
+						//	also, audio/x-midi
+						break;
+					case "mjs": //	JavaScript module.
+						result = "text/javascript";
+						break;
+					case "mp3": //	MP3 audio.
+						result = "audio/mpeg";
+						break;
+					case "mp4": //	MP4 video.
+						result = "video/mp4";
+						break;
+					case "mpeg":  //	MPEG Video.
+						result = "video/mpeg";
+						break;
+					case "mpkg":  //	Apple Installer Package.
+						result = "application/vnd.apple.installer+xml";
+						break;
+					case "odp": //	OpenDocument presentation document.
+						result = "application/vnd.oasis.opendocument.presentation";
+						break;
+					case "ods": //	OpenDocument spreadsheet document.
+						result = "application/vnd.oasis.opendocument.spreadsheet";
+						break;
+					case "odt": //	OpenDocument text document.
+						result = "application/vnd.oasis.opendocument.text";
+						break;
+					case "oga": //	OGG audio.
+						result = "audio/ogg";
+						break;
+					case "ogv": //	OGG video.
+						result = "video/ogg";
+						break;
+					case "ogx": //	OGG.
+						result = "application/ogg";
+						break;
+					case "opus":  //	Opus audio.
+						result = "audio/opus";
+						break;
+					case "otf": //	OpenType font.
+						result = "font/otf";
+						break;
+					case "png": //	Portable Network Graphics.
+						result = "image/png";
+						break;
+					case "pdf": //	Adobe Portable Document Format (PDF).
+						result = "application/pdf";
+						break;
+					case "php": //	Hypertext Preprocessor (Personal Home Page).
+						result = "application/x-httpd-php";
+						break;
+					case "ppt": //	Microsoft PowerPoint (Legacy).
+						result = "application/vnd.ms-powerpoint";
+						break;
+					case "pptx":  //	Microsoft PowerPoint (OpenXML).
+						result = "application/vnd.openxmlformats-officedocument." +
+							"presentationml.presentation";
+						break;
+					case "rar": //	RAR archive.
+						result = "application/vnd.rar";
+						break;
+					case "rtf": //	Rich Text Format (RTF).
+						result = "application/rtf";
+						break;
+					case "sh":  //	Bourne shell script.
+						result = "application/x-sh";
+						break;
+					case "svg": //	Scalable Vector Graphics (SVG).
+						result = "image/svg+xml";
+						break;
+					case "swf": //	Small web format (SWF) or Adobe Flash document.
+						result = "application/x-shockwave-flash";
+						break;
+					case "tar": //	Tape Archive (TAR).
+						result = "application/x-tar";
+						break;
+					case "tif": //	Tagged Image File Format (TIFF).
+					case "tiff":
+						result = "image/tiff";
+						break;
+					//case "ts":  //	MPEG transport stream.
+					//	result = "video/mp2t";
+					//	break;
+					case "ts":  //	Typescript.
+						result = "application/x-typescript";
+						break;
+					case "ttf": //	TrueType Font.
+						result = "font/ttf";
+						break;
+					case "txt": //	Text, (generally ASCII or ISO 8859-n).
+						result = "text/plain";
+						break;
+					case "vsd": //	Microsoft Visio.
+						result = "application/vnd.visio";
+						break;
+					case "wav": //	Waveform Audio Format.
+						result = "audio/wav";
+						break;
+					case "weba":  //	WEBM audio.
+						result = "audio/webm";
+						break;
+					case "webm":  //	WEBM video.
+						result = "video/webm";
+						break;
+					case "webp":  //	WEBP image.
+						result = "image/webp";
+						break;
+					case "woff":  //	Web Open Font Format (WOFF).
+						result = "font/woff";
+						break;
+					case "woff2": //	Web Open Font Format (WOFF).
+						result = "font/woff2";
+						break;
+					case "xhtml": //	XHTML.
+						result = "application/xhtml+xml";
+						break;
+					case "xls": //	Microsoft Excel (Legacy).
+						result = "application/vnd.ms-excel";
+						break;
+					case "xlsx":  //	Microsoft Excel (OpenXML).
+						result = "application/vnd.openxmlformats-officedocument." +
+							"spreadsheetml.sheet";
+						break;
+					case "xml": //	XML.
+						result = "application/xml";
+						//	also, text/xml if readable by casual users
+						break;
+					case "xul": //	XUL.
+						result = "application/vnd.mozilla.xul+xml";
+						break;
+					case "zip": //	ZIP archive.
+						result = "application/zip";
+						break;
+					default:  //	Any unidentified format is binary data.
+						result = "application/octet-stream";
+						break;
+				}
 			}
 			return result;
 		}

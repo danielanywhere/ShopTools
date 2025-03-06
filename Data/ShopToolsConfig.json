@@ -167,6 +167,12 @@
 			"TemplateName": "2-Cut XY",
 			"IconFilename": "CutTwoLineIcon.png",
 			"DisplayFormat": "{TemplateName} - {SecondCutEndOffsetXOrigin:Abbreviation}{SecondCutEndOffsetX:+-}, {SecondCutEndOffsetYOrigin:Abbreviation}{SecondCutEndOffsetY:+-}",
+			"Remarks": [
+				"This pattern is two straight lines end to end.",
+				"The Depth, Kerf, and Tool properties are shared for both lines.",
+				"Since the second cut starts at the end of the first, the ",
+				"Start{X} values are hidden on the second cut."
+			],
 			"SharedVariables": [
 				"Depth", "Kerf", "Tool"
 			],

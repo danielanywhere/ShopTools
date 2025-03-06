@@ -592,7 +592,7 @@ namespace ShopTools
 				boundingBox = new FArea(
 					layoutItem.DisplayStartOffset,
 					layoutItem.DisplayEndOffset);
-				lines = GetLines(boundingBox);
+				lines = FArea.GetLines(boundingBox);
 				//	Transit to site, if applicable.
 				if(startOffset != localLocation)
 				{
@@ -605,13 +605,13 @@ namespace ShopTools
 					FPoint.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
 				}
-				if(IsPointAtCorner(boundingBox, layoutItem.ToolStartOffset))
+				if(FArea.IsPointAtCorner(boundingBox, layoutItem.ToolStartOffset))
 				{
 					//	If the tool is pre-positioned at a corner, then
 					//	lay all lines beginning with the line whose start
 					//	end matches that corner.
 					lineList.Clear();
-					linesMatching = GetIntersectingLines(lines,
+					linesMatching = FLine.GetIntersectingLines(lines,
 						layoutItem.ToolStartOffset);
 					startLine = linesMatching.FirstOrDefault(x =>
 						x.PointA == layoutItem.ToolStartOffset);
@@ -650,7 +650,7 @@ namespace ShopTools
 				{
 					//	The point is not at the corner. Find the intersecting
 					//	line and split it.
-					startLine = GetIntersectingLine(lines,
+					startLine = FLine.GetIntersectingLine(lines,
 						layoutItem.ToolStartOffset);
 					if(startLine != null)
 					{
@@ -1020,7 +1020,7 @@ namespace ShopTools
 				//	Reassign Start/End offsets to per-line usage.
 				startOffset = null;
 				endOffset = null;
-				lines = GetLines(boundingBox);
+				lines = FArea.GetLines(boundingBox);
 				startOffset = new FPoint(boxStartOffset);
 				endOffset = new FPoint(boundingBox.Right, boundingBox.Top);
 				//	Transit to site, if applicable.

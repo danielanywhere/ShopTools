@@ -61,11 +61,29 @@ namespace ShopTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CutEllipseIcon.png,CutLineIcon.png,CutRectangleIcon.png,CutTwoLineIcon.png,DrillHoleIcon.png,EuroHingeCupIcon01.png,MoveWithoutCuttingIcon.png,NoImageIcon.png.
+        /// </summary>
+        internal static string BuiltInPatternImageNames {
+            get {
+                return ResourceManager.GetString("BuiltInPatternImageNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (?i:\s*(?&lt;angle&gt;-{0,1}[0-9]+(\.[0-9]+){0,1})\s*(?&lt;unit&gt;[a-z]*)).
         /// </summary>
         internal static string rxAngleUnit {
             get {
                 return ResourceManager.GetString("rxAngleUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (?m:^(?&lt;data&gt;data\:)(?&lt;mimeType&gt;[^;]+);(?&lt;base&gt;base64,)).
+        /// </summary>
+        internal static string rxDataUriHeader {
+            get {
+                return ResourceManager.GetString("rxDataUriHeader", resourceCulture);
             }
         }
         
@@ -111,6 +129,15 @@ namespace ShopTools {
         internal static string rxNumericNonNumeric {
             get {
                 return ResourceManager.GetString("rxNumericNonNumeric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ((?&lt;word&gt;[^\s]+)(?&lt;space&gt;[ \t]*))|(?&lt;lineend&gt;\r{0,1}\n).
+        /// </summary>
+        internal static string rxWordSpace {
+            get {
+                return ResourceManager.GetString("rxWordSpace", resourceCulture);
             }
         }
     }
