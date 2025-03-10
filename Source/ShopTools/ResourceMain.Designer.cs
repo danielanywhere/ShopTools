@@ -70,6 +70,15 @@ namespace ShopTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copyright© 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
+        /// </summary>
+        internal static string CopyrightMessage {
+            get {
+                return ResourceManager.GetString("CopyrightMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (?i:\s*(?&lt;angle&gt;-{0,1}[0-9]+(\.[0-9]+){0,1})\s*(?&lt;unit&gt;[a-z]*)).
         /// </summary>
         internal static string rxAngleUnit {

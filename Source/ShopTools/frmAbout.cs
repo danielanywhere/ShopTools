@@ -20,11 +20,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using static ShopTools.ShopToolsUtil;
 
 namespace ShopTools
 {
@@ -39,6 +42,25 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Private																																*
 		//*************************************************************************
+		//*-----------------------------------------------------------------------*
+		//* btnClose_Click																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The Close button has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void btnClose_Click(object sender, EventArgs e)
+		{
+			this.DialogResult = DialogResult.OK;
+			this.Hide();
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*************************************************************************
 		//*	Protected																															*
 		//*************************************************************************
@@ -53,7 +75,38 @@ namespace ShopTools
 		/// </summary>
 		public frmAbout()
 		{
+			DateTime date = DateTime.MinValue;
+			string[] tuples = null;
+			string version = Application.ProductVersion;
+
 			InitializeComponent();
+
+			this.StartPosition = FormStartPosition.CenterScreen;
+
+			this.AcceptButton = btnClose;
+			this.CancelButton = btnClose;
+
+			btnClose.Click += btnClose_Click;
+
+			lblCopyright.Text = ResourceMain.CopyrightMessage;
+			lblVersionValue.Text = version;
+			tuples = version.Split('.');
+			lblDateCompiledValue.Text = new DateTime(
+				2000 + ToInt(tuples[0]),
+				ToInt(tuples[1].Substring(0, 2)) - 20,
+				ToInt(tuples[1].Substring(2, 2))).ToString("dddd, MMMM d, yyyy");
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Create a new instance of the frmAbout Item.
+		/// </summary>
+		/// <param name="callingForm">
+		/// The calling form.
+		/// </param>
+		public frmAbout(Form callingForm) : this()
+		{
+			this.StartPosition = FormStartPosition.CenterParent;
+			this.Owner = callingForm;
 		}
 		//*-----------------------------------------------------------------------*
 

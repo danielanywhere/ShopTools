@@ -116,6 +116,8 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
+			mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
+			mnuHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -128,14 +130,14 @@ namespace ShopTools
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(187, 70);
+			lblSuggestion.Size = new System.Drawing.Size(147, 70);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
 			// mnuMain
 			// 
 			mnuMain.ImageScalingSize = new System.Drawing.Size(20, 20);
-			mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFile, mnuEdit, mnuView });
+			mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFile, mnuEdit, mnuView, mnuHelp });
 			mnuMain.Location = new System.Drawing.Point(0, 0);
 			mnuMain.Name = "mnuMain";
 			mnuMain.Size = new System.Drawing.Size(925, 28);
@@ -244,13 +246,13 @@ namespace ShopTools
 			// mnuEditTemplates
 			// 
 			mnuEditTemplates.Name = "mnuEditTemplates";
-			mnuEditTemplates.Size = new System.Drawing.Size(224, 26);
+			mnuEditTemplates.Size = new System.Drawing.Size(160, 26);
 			mnuEditTemplates.Text = "&Templates";
 			// 
 			// mnuEditSettings
 			// 
 			mnuEditSettings.Name = "mnuEditSettings";
-			mnuEditSettings.Size = new System.Drawing.Size(224, 26);
+			mnuEditSettings.Size = new System.Drawing.Size(160, 26);
 			mnuEditSettings.Text = "&Settings";
 			// 
 			// mnuView
@@ -699,6 +701,19 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
+			// mnuHelp
+			// 
+			mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuHelpAbout });
+			mnuHelp.Name = "mnuHelp";
+			mnuHelp.Size = new System.Drawing.Size(55, 24);
+			mnuHelp.Text = "&Help";
+			// 
+			// mnuHelpAbout
+			// 
+			mnuHelpAbout.Name = "mnuHelpAbout";
+			mnuHelpAbout.Size = new System.Drawing.Size(224, 26);
+			mnuHelpAbout.Text = "&About";
+			// 
 			// frmMain
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -711,6 +726,7 @@ namespace ShopTools
 			Controls.Add(pnlControl);
 			Controls.Add(statusMain);
 			Controls.Add(mnuMain);
+			Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 			MainMenuStrip = mnuMain;
 			Name = "frmMain";
 			Text = "Dan's ShopTools";
@@ -796,5 +812,7 @@ namespace ShopTools
 		private System.Windows.Forms.ToolStripMenuItem mnuView;
 		private System.Windows.Forms.ToolStripMenuItem mnuViewGCode;
 		private System.Windows.Forms.ToolStripMenuItem mnuEditTemplates;
+		private System.Windows.Forms.ToolStripMenuItem mnuHelp;
+		private System.Windows.Forms.ToolStripMenuItem mnuHelpAbout;
 	}
 }

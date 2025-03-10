@@ -8,7 +8,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
 			 <GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
 				<Title>Dan's ShopTools Desktop</Title>
-				<Version>25.2306.4557</Version>
+				<Version>25.2310.3903</Version>
 				<Description>Dan's ShopTools desktop application for Windows.</Description>
 				<Copyright>Copyright(c) 2025. Daniel Patterson, MCSD (danielanywhere)</Copyright>
 				<PackageProjectUrl>https://github.com/danielanywhere/ShopTools</PackageProjectUrl>
@@ -17,6 +17,7 @@
 				<Authors>Daniel Patterson, MCSD (danielanywhere)</Authors>
 				<GenerateDocumentationFile>True</GenerateDocumentationFile>
 				<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+				<ApplicationIcon>ShopTools.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,11 +54,14 @@
     <Content Include="..\..\Images\NoImageIcon.png" Link="Configuration\NoImageIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ShopTools.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dans.ConversionCalc.Library" Version="25.1109.1402" />
-    <PackageReference Include="Dans.Geometry.Library" Version="25.1228.4607" />
+    <PackageReference Include="Dans.Geometry.Library" Version="25.2307.4248" />
     <PackageReference Include="Flee" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

@@ -957,6 +957,9 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 		//*	Operation																															*
 		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="Operation">Operation</see>.
+		/// </summary>
 		private PatternOperationItem mOperation = new PatternOperationItem();
 		/// <summary>
 		/// Get a reference to the operation being edited.

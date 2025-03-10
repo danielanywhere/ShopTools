@@ -927,6 +927,26 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* mnuHelpAbout_Click																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The Help / About menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuHelpAbout_Click(object sender, EventArgs e)
+		{
+			frmAbout dialog = new frmAbout(this);
+
+			dialog.ShowDialog();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* mnuViewGCode_Click																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -2018,6 +2038,7 @@ namespace ShopTools
 			mnuFileOpen.Click += mnuFileOpen_Click;
 			mnuFileSave.Click += mnuFileSave_Click;
 			mnuFileSaveAs.Click += mnuFileSaveAs_Click;
+			mnuHelpAbout.Click += mnuHelpAbout_Click;
 			mnuViewGCode.Click += mnuViewGCode_Click;
 
 			mnuFileImportConfiguration.Enabled = false;

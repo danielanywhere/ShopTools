@@ -93,7 +93,50 @@ Download ShopTools today and make your shop run smoother than ever.
 
 <p>&nbsp;</p>
 
+## Using ShopTools
+
+The general workflow of using ShopTools is easy.
+
+The following are the general steps for creating No-CAD / No-CAM cuts on
+your CNC router:
+
+-   Open ShopTools. If this is the first time opening the application,
+    choose the **Edit / Settings** menu option to configure your table.
+    This only needs to be done once.
+
+-   Set the Length, Width, and Depth of your workpiece. Optionally,
+    position the workpiece and router at known offsets.
+
+-   Double-click a pattern or drag and drop it onto your work area, and
+    set the properties like starting offset, length, angle, or whatever
+    is applicable for the operation.
+
+-   Repeat the above steps until all holes and cuts are defined.
+
+-   Save your cut-list file if you wish to refer back to it later.
+    Whenever you open a cut-list file you've saved earlier, you only
+    need to export it to g-code to use it, skipping all of the above
+    steps.
+
+-   Export your file to g-code and pass that file to your machine.
+
+<p>&nbsp;</p>
+
+NOTE: Although the feature is planned, ShopTools doesn't yet have a
+real-time 3D toolpath preview. If you like to review your toolpaths as a
+general rule before sending them to your machine, I would recommend
+using <https://ncviewer.com/> by ToolPath Labs.
+
+<p>&nbsp;</p>
+
 ## Developing With ShopTools
 
 You can see the full SDK documentation for ShopTools here on the GitHub
 site at <https://danielanywhere.github.io/ShopTools>.
+
+## Platform Independence, Anyone?
+
+If you would like to see a non-Windows (Linux UI) version of this
+application, please provide some feedback on the Issues page of this
+repository so I can get an indication of whether the effort might be
+worthwhile.

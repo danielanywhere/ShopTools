@@ -1,6 +1,41 @@
 <?xml version="1.0"?>
 <doc>
 <members>
+<member name="F:ShopTools.frmAbout.btnClose">
+	<summary>
+		Close button for the about box.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.lblCopyright">
+	<summary>
+		Copyright message label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.lblDateCompiled">
+	<summary>
+		Date Compiled title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.lblDateCompiledValue">
+	<summary>
+		Date Compiled value label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.lblVersion">
+	<summary>
+		Version title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.lblVersionValue">
+	<summary>
+		Version value label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmAbout.picBanner">
+	<summary>
+		Banner image.
+	</summary>
+</member>
 <member name="F:ShopTools.frmCutEdit.btnCancel">
 	<summary>
 	Cancel button. Click this button to cancel any changes you have made while
@@ -75,6 +110,317 @@
 <member name="F:ShopTools.frmCutEdit.statValue">
 	<summary>
 		Current user editing value alternate display on <see cref="statusCut">statusCut</see>.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.btnCancel">
+	<summary>
+		Cancel button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.btnOK">
+	<summary>
+		OK button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.cmboAction">
+	<summary>
+		Assigned action drop-down list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.dgVariables">
+	<summary>
+		Variables data grid containing all of the variables available for the
+		currently selected action.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblAction">
+	<summary>
+		Action label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblHiddenVariables">
+	<summary>
+		Hidden Variables label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblOperationName">
+	<summary>
+		Operation Name label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblOperationNameHint">
+	<summary>
+		Operation Name hint label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblStatValue">
+	<summary>
+		Current status message value.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lblVariables">
+	<summary>
+		Variables label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.lstHiddenVariables">
+	<summary>
+		Hidden Variables checked list control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditOperation.txtOperationName">
+	<summary>
+		Operation Name textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnCancel">
+	<summary>
+		Cancel button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnCreate">
+	<summary>
+		Create button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnDelete">
+	<summary>
+		Delete button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnIconFilename">
+	<summary>
+		Icon Filename helper button (ellipses).
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnMoveDown">
+	<summary>
+		Move selected pattern down button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnMoveUp">
+	<summary>
+		Move selected pattern up button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOK">
+	<summary>
+		OK button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOperationAdd">
+	<summary>
+		Add operation button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOperationDelete">
+	<summary>
+		Delete operation button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOperationDown">
+	<summary>
+		Move selected operation down button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOperationEdit">
+	<summary>
+		Edit selected operation button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnOperationUp">
+	<summary>
+		Move selected operation up button.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.btnTemplateID">
+	<summary>
+		General new globally unique template ID helper button (ellipses).
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.ilTemplateControls">
+	<summary>
+		Template controls image list, containing button images, etc.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.ilTemplateIcons">
+	<summary>
+		Template icons image list, containing list view icons.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.ilTemplates">
+	<summary>
+		Templates image list, containing the custom pattern thumbnail icons.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblDisplayFormat">
+	<summary>
+		Display Format title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblIconFilename">
+	<summary>
+		Icon Filename title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblOperations">
+	<summary>
+		Operations title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblSharedVariables">
+	<summary>
+		Shared Variables title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblTemplateID">
+	<summary>
+		Template ID title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lblTemplateName">
+	<summary>
+		Template Name title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lstSharedVariables">
+	<summary>
+		Shared variables checked list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lvOperations">
+	<summary>
+		Operations list view.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.lvTemplates">
+	<summary>
+		Pattern templates list view.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.menuEditTemplates">
+	<summary>
+		The main menu strip for frmEditTemplates.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuEdit">
+	<summary>
+		Edit menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuEditRestoreFactoryTemplates">
+	<summary>
+		Edit / Restore Factory Templates menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuFile">
+	<summary>
+		File menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuFileExportSelectedPatterns">
+	<summary>
+		File / Export Selected Patterns menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuFileImportPatterns">
+	<summary>
+		File / Import Patterns menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuView">
+	<summary>
+		View menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuViewTab">
+	<summary>
+		View / Tab menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuViewTabDisplay">
+	<summary>
+		View / Tab / Display menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuViewTabGeneral">
+	<summary>
+		View / Tab / General menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.mnuViewTabRemarks">
+	<summary>
+		View / Tab / Remarks menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.pnlControls">
+	<summary>
+		The panel upon which the general controls are placed.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.pnlTemplates">
+	<summary>
+		The panel containing the templates list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.splitterTemplates">
+	<summary>
+		Splitter between templates list and user controls.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.statMessage">
+	<summary>
+		Status message text.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.statusEditTemplates">
+	<summary>
+		The status strip for the frmEditTemplates form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.tctlEditTemplates">
+	<summary>
+		The main tab control for the frmEditTemplates form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.tpgDisplay">
+	<summary>
+		The Display tab page.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.tpgGeneral">
+	<summary>
+		The General tab page.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.tpgRemarks">
+	<summary>
+		The Remarks tab page.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.txtDisplayFormat">
+	<summary>
+		The Display Format textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.txtIconFilename">
+	<summary>
+		The Icon Filename textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.txtRemarks">
+	<summary>
+		Remarks textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.txtTemplateID">
+	<summary>
+		Globally unique template ID textbox.
+	</summary>
+</member>
+<member name="F:ShopTools.frmEditTemplates.txtTemplateName">
+	<summary>
+		Template Name textbox.
 	</summary>
 </member>
 <member name="F:ShopTools.frmEditTools.btnAdd">
@@ -511,6 +857,11 @@
 		The Edit / Settings menu option.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuEditTemplates">
+	<summary>
+		The Edit / Templates menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.mnuFile">
 	<summary>
 		The main File menu option.
@@ -584,6 +935,16 @@
 <member name="F:ShopTools.frmMain.mnuFileSep2">
 	<summary>
 		File menu separator 2.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuHelp">
+	<summary>
+		The Help menu option.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.mnuHelpAbout">
+	<summary>
+		The Help / About menu option.
 	</summary>
 </member>
 <member name="F:ShopTools.frmMain.mnuMain">

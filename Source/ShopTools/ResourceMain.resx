@@ -121,6 +121,10 @@
     <value>CutEllipseIcon.png,CutLineIcon.png,CutRectangleIcon.png,CutTwoLineIcon.png,DrillHoleIcon.png,EuroHingeCupIcon01.png,MoveWithoutCuttingIcon.png,NoImageIcon.png</value>
     <comment>List of built-in pattern image names.</comment>
   </data>
+  <data name="CopyrightMessage" xml:space="preserve">
+    <value>Copyright© 2024 - 2025 Daniel Patterson, MCSD (danielanywhere)</value>
+    <comment>The current copyright message of this application.</comment>
+  </data>
   <data name="rxAngleUnit" xml:space="preserve">
     <value>(?i:\s*(?&lt;angle&gt;-{0,1}[0-9]+(\.[0-9]+){0,1})\s*(?&lt;unit&gt;[a-z]*))</value>
     <comment>Regular expression pattern to extract the angle and associated unit from an angular expression.</comment>
