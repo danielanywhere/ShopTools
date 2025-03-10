@@ -134,6 +134,8 @@ using <https://ncviewer.com/> by ToolPath Labs.
 You can see the full SDK documentation for ShopTools here on the GitHub
 site at <https://danielanywhere.github.io/ShopTools>.
 
+<p>&nbsp;</p>
+
 ## Platform Independence, Anyone?
 
 If you would like to see a non-Windows (Linux UI) version of this
