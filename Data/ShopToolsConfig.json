@@ -61,6 +61,28 @@
 			"Value": "Up"
 		}
 	],
+	"MaterialTypes": [
+		{
+			"MaterialTypeName": "Particle Board",
+			"UserFeedRate": "19",
+			"FeedRate": "19in"
+		},
+		{
+			"MaterialTypeName": "Plywood",
+			"UserFeedRate": "8",
+			"FeedRate": "8in"
+		},
+		{
+			"MaterialTypeName": "Masonite",
+			"UserFeedRate": "4",
+			"FeedRate": "4in"
+		},
+		{
+			"MaterialTypeName": "Solid Oak",
+			"UserFeedRate": "1",
+			"FeedRate": "1in"
+		}
+	],
 	"UserTools": [
 		{
 			"ToolId": "b0be5beb-6063-4161-a3f0-12b8a9c9238b",
@@ -113,6 +135,111 @@
 				{
 					"Name": "ShaftLength",
 					"Value": "1in"
+				}
+			]
+		},
+		{
+			"ToolId": "0b41f65c-dd7a-46a5-80f3-54c22cc7549f",
+			"ToolName": "1/16 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "1/16"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.063in"
+				}
+			]
+		},
+		{
+			"ToolId": "7e6294e5-9815-44f9-9449-f7ae90c85db5",
+			"ToolName": "3/32 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "3/32"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.094in"
+				}
+			]
+		},
+		{
+			"ToolId": "2430182c-e8eb-4c7b-99ed-e60eee424816",
+			"ToolName": "1/8 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "1/8"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.125in"
+				}
+			]
+		},
+		{
+			"ToolId": "30094900-dd3f-4043-a928-3bbcd8a8d4b1",
+			"ToolName": "5/32 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "5/32"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.156in"
+				}
+			]
+		},
+		{
+			"ToolId": "89d4bd0f-71c4-4249-b396-2aa438c99f0c",
+			"ToolName": "3/16 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "3/16"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.188in"
+				}
+			]
+		},
+		{
+			"ToolId": "24c7d2a5-1a33-40cf-95fc-d748fe879d54",
+			"ToolName": "7/32 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "7/32"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.219in"
+				}
+			]
+		},
+		{
+			"ToolId": "a2a38950-82c0-4e34-bacb-f86984b9e187",
+			"ToolName": "1/4 Drill Bit",
+			"ToolType": "Drill Bit",
+			"Properties": [
+				{
+					"Name": "UserDiameter",
+					"Value": "1/4"
+				},
+				{
+					"Name": "Diameter",
+					"Value": "0.25in"
 				}
 			]
 		}
