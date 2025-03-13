@@ -100,13 +100,13 @@ namespace ShopTools
 		/// <summary>
 		/// Create a new instance of the frmAbout Item.
 		/// </summary>
-		/// <param name="callingForm">
+		/// <param name="owner">
 		/// The calling form.
 		/// </param>
-		public frmAbout(Form callingForm) : this()
+		public frmAbout(Form owner) : this()
 		{
 			this.StartPosition = FormStartPosition.CenterParent;
-			this.Owner = callingForm;
+			this.Owner = owner;
 		}
 		//*-----------------------------------------------------------------------*
 

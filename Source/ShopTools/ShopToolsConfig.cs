@@ -114,26 +114,29 @@ namespace ShopTools
 		/// </returns>
 		public static ShopToolsConfigItem Clone(ShopToolsConfigItem item)
 		{
-			ShopToolsConfigItem result = new ShopToolsConfigItem();
+			ShopToolsConfigItem result = null;
 
 			if(item != null)
 			{
-				result.mPatternTemplates =
-					PatternTemplateCollection.Clone(item.mPatternTemplates);
-				result.mProperties =
-					PropertyCollection.Clone(item.mProperties);
-				//result.mPropertyDefinitions =
-				//	PropertyDefinitionCollection.Clone(item.mPropertyDefinitions);
-				result.mUserTools =
-					UserToolCollection.Clone(item.mUserTools);
-
-
+				result = new ShopToolsConfigItem()
+				{
+					mMaterialTypes =
+						MaterialTypeCollection.Clone(item.mMaterialTypes),
+					mPatternTemplates =
+						PatternTemplateCollection.Clone(item.mPatternTemplates),
+					mProperties = PropertyCollection.Clone(item.mProperties),
+					mUserTools = UserToolCollection.Clone(item.mUserTools)
+				};
 				//	Unchanging members.
 				//	Since the action properties and tool type definitions are
 				//	static, we can just assign the references.
 				result.mOperationActionProperties = item.mOperationActionProperties;
 				result.mToolTypeDefinitions = item.mToolTypeDefinitions;
 
+			}
+			if(result == null)
+			{
+				result = new ShopToolsConfigItem();
 			}
 			return result;
 		}
@@ -211,6 +214,24 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//*	MaterialTypes																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="MaterialTypes">MaterialTypes</see>.
+		/// </summary>
+		private MaterialTypeCollection mMaterialTypes =
+			new MaterialTypeCollection();
+		/// <summary>
+		/// Get a reference to the collection of material types defined in this
+		/// session.
+		/// </summary>
+		public MaterialTypeCollection MaterialTypes
+		{
+			get { return mMaterialTypes; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//*	OperationActionProperties																							*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -223,6 +244,7 @@ namespace ShopTools
 		/// Get a reference to the collection of operation action property
 		/// definitions for this session.
 		/// </summary>
+		[JsonIgnore]
 		public OperationActionPropertyCollection OperationActionProperties
 		{
 			get { return mOperationActionProperties; }

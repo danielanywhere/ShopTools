@@ -161,25 +161,25 @@ namespace ShopTools
 			// 
 			mnuViewTab.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuViewTabGeneral, mnuViewTabDisplay, mnuViewTabRemarks });
 			mnuViewTab.Name = "mnuViewTab";
-			mnuViewTab.Size = new System.Drawing.Size(115, 26);
+			mnuViewTab.Size = new System.Drawing.Size(224, 26);
 			mnuViewTab.Text = "&Tab";
 			// 
 			// mnuViewTabGeneral
 			// 
 			mnuViewTabGeneral.Name = "mnuViewTabGeneral";
-			mnuViewTabGeneral.Size = new System.Drawing.Size(148, 26);
+			mnuViewTabGeneral.Size = new System.Drawing.Size(224, 26);
 			mnuViewTabGeneral.Text = "&General";
 			// 
 			// mnuViewTabDisplay
 			// 
 			mnuViewTabDisplay.Name = "mnuViewTabDisplay";
-			mnuViewTabDisplay.Size = new System.Drawing.Size(148, 26);
+			mnuViewTabDisplay.Size = new System.Drawing.Size(224, 26);
 			mnuViewTabDisplay.Text = "&Display";
 			// 
 			// mnuViewTabRemarks
 			// 
 			mnuViewTabRemarks.Name = "mnuViewTabRemarks";
-			mnuViewTabRemarks.Size = new System.Drawing.Size(148, 26);
+			mnuViewTabRemarks.Size = new System.Drawing.Size(224, 26);
 			mnuViewTabRemarks.Text = "&Remarks";
 			// 
 			// statusEditTemplates

@@ -93,6 +93,111 @@ Download ShopTools today and make your shop run smoother than ever.
 
 <p>&nbsp;</p>
 
+## Installing ShopTools
+
+For the best results, follow these steps to download and install the
+current version of ShopTools.
+
+-   In the right-hand column of this page, locate and click the
+    **Latest** entry in the **Releases** section.
+
+-   Read the release notes and scroll to the bottom of the section.
+
+-   In the **Assets** section, click **ShopToolsSetup.exe**.
+
+-   If you see a Downloads warning message stating that
+    **ShopToolsSetup.exe isn't commonly downloaded, make sure you trust
+    ShopToolsSetup.exe before you open it**, click the meatball menu
+    next to the filename and click **Keep**.
+
+    -   In the **Make sure you trust ShopToolsSetup.exe before you open
+        it** dialog, click **Show more**, then click **Keep anyway**.
+
+-   Open Windows File Explorer in your Downloads folder, and right-click
+    **ShopToolsSetup.exe**.
+
+-   From the context menu, select **Properties**.
+
+-   Check **Unblock**.
+
+-   Click **OK**.
+
+-   Double-click ShopToolsSetup.exe to run the installat*on.*
+
+<p>&nbsp;</p>
+
+### More Information
+
+Since ShopTools Desktop is just a young application, it doesn't yet have
+much of a world-wide reputation. As a result, Microsoft products like
+Edge and Teams might warn you that since this application isn't
+downloaded very much, you should make sure you trust it before
+installing it. They will likely also cause you to take several
+additional unnecessary steps to get the software installed to make sure
+you really intend to place it on your PC.
+
+<p>&nbsp;</p>
+
+### Reporting the Setup File as Safe
+
+If you have already learned to trust ShopTools and want to help build
+its reputation so other users don't have to perform additional
+installation steps, you can select the option to **Report this file as
+safe** on the meatball menu next to the warning **ShopToolsSetup.exe
+isn't commonly downloaded, make sure you trust ShopToolsSetup.exe before
+you open it**.
+
+When you select **Report this file as safe**, you are directed to the
+Microsoft SmartScreen website where you can check **I think this is a
+safe website**.
+
+<p>&nbsp;</p>
+
+## Our Commitment to Security, Privacy, and Transparency
+
+With ShopTools, our mission is to provide users with a powerful and
+efficient tool to enhance their productivity - nothing more, nothing
+less. We understand the importance of trust when it comes to using
+third-party software, and we take this responsibility seriously.
+
+### Security and Integrity
+
+When we compile and distribute ShopTools Desktop, we follow rigorous
+security protocols to ensure that our application does not pose any risk
+to your computer. We are committed to delivering a product that is safe,
+stable, and free of malicious components. To guarantee the authenticity
+of our software, every official release is securely code-signed by
+**Daniel Eric Patterson**. This authentic digital signature, issued by
+SSL.com, ensures that the version you install is an unaltered, original
+copy, free from any unauthorized modifications.
+
+### Your Privacy Matters
+
+We firmly believe that your data is yours alone. ShopTools **<u>does
+not</u>** collect, store, or transmit any personal information - period.
+Any data you generate, process, or exchange using our application
+remains entirely under your control. We have no access to it, nor do we
+ever attempt to monitor or retrieve it in any way. Our software is
+designed to work locally on your machine, ensuring complete privacy and
+peace of mind.
+
+### Open Source for Transparency
+
+To further reinforce our commitment to security and user trust,
+ShopTools is proudly open source. Our code is available for review on
+the GitHub **DanielAnywhere/ShopTools** repository. We encourage anyone
+in the community to inspect, audit, and verify that our software is
+exactly what we claim it to be - safe, transparent, and trustworthy. By
+making our source code publicly accessible, we aim to foster an open
+dialogue with users and developers alike, ensuring that ShopTools
+remains a reliable tool for all.
+
+Thank you for choosing ShopTools. Your trust and security are our top
+priorities, and we are dedicated to maintaining the highest standards of
+integrity in everything we do.
+
+<p>&nbsp;</p>
+
 ## Using ShopTools
 
 The general workflow of using ShopTools is easy.

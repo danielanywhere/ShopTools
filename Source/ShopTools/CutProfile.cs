@@ -73,6 +73,58 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* MoveDown																															*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item down in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="cutProfile">
+		/// Reference to the item to be moved downward in the collection.
+		/// </param>
+		public void MoveDown(CutProfileItem cutProfile)
+		{
+			int index = 0;
+
+			if(cutProfile != null && this.Contains(cutProfile))
+			{
+				index = this.IndexOf(cutProfile);
+				if(index + 1 < this.Count)
+				{
+					this.Remove(cutProfile);
+					this.Insert(index + 1, cutProfile);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* MoveUp																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the specified item up in the collection by one space, if
+		/// possible.
+		/// </summary>
+		/// <param name="cutProfile">
+		/// Reference to the item to be moved upward in the collection.
+		/// </param>
+		public void MoveUp(CutProfileItem cutProfile)
+		{
+			int index = 0;
+
+			if(cutProfile != null && this.Contains(cutProfile))
+			{
+				index = this.IndexOf(cutProfile);
+				if(index > 0)
+				{
+					this.Remove(cutProfile);
+					this.Insert(index - 1, cutProfile);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
 	}
 	//*-------------------------------------------------------------------------*
 

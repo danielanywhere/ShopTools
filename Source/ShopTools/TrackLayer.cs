@@ -786,8 +786,8 @@ namespace ShopTools
 										Operation = layoutItem.Operation,
 										SegmentType = TrackSegmentType.Transit
 									};
-									FPoint.TransferValues(startOffset, segment.StartOffset);
-									FPoint.TransferValues(endOffset, segment.EndOffset);
+									FPoint.TransferValues(localLocation, segment.StartOffset);
+									FPoint.TransferValues(startOffset, segment.EndOffset);
 									segments.Add(segment);
 									//	Drill the site.
 									segment = new TrackSegmentItem()
@@ -808,6 +808,7 @@ namespace ShopTools
 							//	Every drill tool is on its own layer.
 							//	Add the plunges as a separate layer.
 							this.Add(trackLayer);
+							trackLayer = null;
 						}
 					}
 				}

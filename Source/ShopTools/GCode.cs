@@ -338,12 +338,19 @@ namespace ShopTools
 		/// </returns>
 		public static string RenderGCode()
 		{
+			bool bFeed = false;
 			bool bRetracted = false;
 			StringBuilder builder = new StringBuilder();
+			float feedRate = 100f;
+			int index = 0;
 			TrackSegmentItem lastSegment = null;
 			int layerIndex = 0;
 			FPoint location = null;
+			float min = 0f;
+			MaterialTypeItem material = null;
+			float number = 0f;
 			TrackSegmentItem segment = null;
+			int selectedIndex = 0;
 			string toolName = "";
 			string toolNameLast = "";
 			TrackLayerCollection trackLayers = null;
@@ -359,6 +366,50 @@ namespace ShopTools
 				builder.AppendLine("G90;");
 				builder.AppendLine(TransitToPositionZAbs(TransitZEnum.FullyRetracted));
 				bRetracted = true;
+
+				//	Configure the feed rate.
+				if(workpiece.MaterialTypeName?.Length > 0)
+				{
+					//	A material type has been defined. Set the feed rate.
+					material = ConfigProfile.MaterialTypes.FirstOrDefault(x =>
+						x.MaterialTypeName.ToLower() ==
+							workpiece.MaterialTypeName.ToLower());
+					if(material?.FeedRate?.Length > 0)
+					{
+						number = GetMillimeters(material.FeedRate);
+						if(number > 0f)
+						{
+							feedRate = number;
+							bFeed = true;
+						}
+					}
+				}
+				if(!bFeed && ConfigProfile.MaterialTypes.Count > 0)
+				{
+					//	If material types are defined, but none have been selected,
+					//	we want the slowest one for safety.
+					min = float.MaxValue;
+					index = 0;
+					foreach(MaterialTypeItem typeItem in ConfigProfile.MaterialTypes)
+					{
+						if(typeItem.FeedRate?.Length > 0)
+						{
+							number = GetMillimeters(typeItem.FeedRate);
+							if(number > 0f && number < min)
+							{
+								min = number;
+								selectedIndex = index;
+							}
+						}
+						index++;
+					}
+					if(min > 0f && min < float.MaxValue)
+					{
+						feedRate = min;
+						bFeed = true;
+					}
+				}
+				//	... otherwise, use the accepted minimum feed rate.
 
 				location = new FPoint();
 				trackLayers = new TrackLayerCollection(workpiece.Cuts);
@@ -381,7 +432,7 @@ namespace ShopTools
 									GetPositionZAbs(
 										TransitZEnum.TopOfMaterial,
 										segment.Depth),
-									segment.FeedRate));
+									feedRate));
 						}
 					}
 					foreach(TrackSegmentItem segmentItem in layerItem.Segments)
@@ -403,11 +454,11 @@ namespace ShopTools
 											GetPositionZAbs(
 												TransitZEnum.TopOfMaterial,
 												segmentItem.Depth),
-											segmentItem.FeedRate));
+											feedRate));
 								}
 								builder.AppendLine(
 									PlotToPositionXYAbs(segmentItem.EndOffset,
-										segmentItem.FeedRate));
+										feedRate));
 								FPoint.TransferValues(segmentItem.EndOffset, location);
 								bRetracted = false;
 								break;
@@ -419,11 +470,14 @@ namespace ShopTools
 									FPoint.TransferValues(segmentItem.StartOffset, location);
 								}
 								builder.AppendLine(
+									TransitToPositionZAbs(TransitZEnum.TopOfMaterial)
+									);
+								builder.AppendLine(
 									PlungeZAbs(
 										GetPositionZAbs(
 											TransitZEnum.TopOfMaterial,
 											segmentItem.Depth),
-										segmentItem.FeedRate));
+										feedRate));
 								builder.AppendLine(
 									TransitToPositionZAbs(TransitZEnum.FullyRetracted));
 								bRetracted = true;

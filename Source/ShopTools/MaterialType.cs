@@ -22,19 +22,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Geometry;
-
-using static ShopTools.ShopToolsUtil;
-
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	TrackSegmentCollection																									*
+	//*	MaterialTypeCollection																									*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Collection of TrackSegmentItem Items.
+	/// Collection of MaterialTypeItem Items.
 	/// </summary>
-	public class TrackSegmentCollection : List<TrackSegmentItem>
+	public class MaterialTypeCollection : List<MaterialTypeItem>
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -45,17 +41,45 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Public																																*
 		//*************************************************************************
+
+		//*-----------------------------------------------------------------------*
+		//* Clone																																	*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a deep clone of the provided collection of material type items.
+		/// </summary>
+		/// <param name="items">
+		/// Reference to the collection of items to clone.
+		/// </param>
+		/// <returns>
+		/// Reference to a newly cloned collection of material type items.
+		/// </returns>
+		public static MaterialTypeCollection Clone(MaterialTypeCollection items)
+		{
+			MaterialTypeCollection result = new MaterialTypeCollection();
+
+			if(items?.Count > 0)
+			{
+				foreach(MaterialTypeItem typeItem in items)
+				{
+					result.Add(MaterialTypeItem.Clone(typeItem));
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
 
 	}
 	//*-------------------------------------------------------------------------*
 
 	//*-------------------------------------------------------------------------*
-	//*	TrackSegmentItem																												*
+	//*	MaterialTypeItem																												*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Individual segment within a tool track.
+	/// Information about an individual material type.
 	/// </summary>
-	public class TrackSegmentItem
+	public class MaterialTypeItem
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -67,126 +91,86 @@ namespace ShopTools
 		//*	Public																																*
 		//*************************************************************************
 		//*-----------------------------------------------------------------------*
-		//*	Depth																																	*
+		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for <see cref="Depth">Depth</see>.
+		/// Return a deep clone of the provided material type item.
 		/// </summary>
-		private float mDepth = 0f;
-		/// <summary>
-		/// Get/Set the depth of this segment.
-		/// </summary>
-		public float Depth
+		/// <param name="item">
+		/// Reference to the item to clone.
+		/// </param>
+		/// <returns>
+		/// Reference to a newly cloned material type item.
+		/// </returns>
+		public static MaterialTypeItem Clone(MaterialTypeItem item)
 		{
-			get { return mDepth; }
-			set { mDepth = value; }
+			MaterialTypeItem result = null;
+
+			if(item != null)
+			{
+				result = new MaterialTypeItem()
+				{
+					mFeedRate = item.mFeedRate,
+					mMaterialTypeName = item.mMaterialTypeName,
+					mUserFeedRate = item.mUserFeedRate
+				};
+			}
+			if(result == null)
+			{
+				result = new MaterialTypeItem();
+			}
+			return result;
 		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//*	EndOffset																															*
+		//*	FeedRate																															*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for <see cref="EndOffset">EndOffset</see>.
+		/// Private member for <see cref="FeedRate">FeedRate</see>.
 		/// </summary>
-		private FPoint mEndOffset = new FPoint();
+		private string mFeedRate = "";
 		/// <summary>
-		/// Get/Set a reference to the ending offset.
+		/// Get/Set the formal feed rate, in the currently selected display format.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
-		public FPoint EndOffset
+		public string FeedRate
 		{
-			get { return mEndOffset; }
-			set { mEndOffset = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		////*-----------------------------------------------------------------------*
-		////*	FeedRate																															*
-		////*-----------------------------------------------------------------------*
-		///// <summary>
-		///// Private member for <see cref="FeedRate">FeedRate</see>.
-		///// </summary>
-		//private float mFeedRate = 500f;
-		///// <summary>
-		///// Get/Set the feed rate to be applied to the segment, if applicable.
-		///// </summary>
-		//public float FeedRate
-		//{
-		//	get { return mFeedRate; }
-		//	set { mFeedRate = value; }
-		//}
-		////*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	Operation																															*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="Operation">Operation</see>.
-		/// </summary>
-		private PatternOperationItem mOperation = null;
-		/// <summary>
-		/// Get/Set a reference to the pattern operation from which this segment
-		/// was created.
-		/// </summary>
-		public PatternOperationItem Operation
-		{
-			get { return mOperation; }
-			set { mOperation = value; }
+			get { return mFeedRate; }
+			set { mFeedRate = value; }
 		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//*	SegmentType																														*
+		//*	MaterialTypeName																											*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for <see cref="SegmentType">SegmentType</see>.
+		/// Private member for <see cref="MaterialTypeName">MaterialTypeName</see>.
 		/// </summary>
-		private TrackSegmentType mSegmentType = TrackSegmentType.None;
+		private string mMaterialTypeName = "";
 		/// <summary>
-		/// Get/Set the type of path assigned to this segment.
+		/// Get/Set the name of the material type.
 		/// </summary>
-		public TrackSegmentType SegmentType
+		public string MaterialTypeName
 		{
-			get { return mSegmentType; }
-			set { mSegmentType = value; }
+			get { return mMaterialTypeName; }
+			set { mMaterialTypeName = value; }
 		}
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
-		//*	StartOffset																														*
+		//*	UserFeedRate																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Private member for <see cref="StartOffset">StartOffset</see>.
+		/// Private member for <see cref="UserFeedRate">UserFeedRate</see>.
 		/// </summary>
-		private FPoint mStartOffset = new FPoint();
+		private string mUserFeedRate = "";
 		/// <summary>
-		/// Get/Set a reference to the starting offset.
+		/// Get/Set the feed rate entered directly by the user.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
-		public FPoint StartOffset
+		public string UserFeedRate
 		{
-			get { return mStartOffset; }
-			set { mStartOffset = value; }
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
-		//*	TargetDepth																														*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Private member for <see cref="TargetDepth">TargetDepth</see>.
-		/// </summary>
-		private float mTargetDepth = 0f;
-		/// <summary>
-		/// Get/Set the target depth of this segment.
-		/// </summary>
-		public float TargetDepth
-		{
-			get { return mTargetDepth; }
-			set { mTargetDepth = value; }
+			get { return mUserFeedRate; }
+			set { mUserFeedRate = value; }
 		}
 		//*-----------------------------------------------------------------------*
 

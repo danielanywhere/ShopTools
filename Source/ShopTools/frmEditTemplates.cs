@@ -483,7 +483,8 @@ namespace ShopTools
 		private void btnTemplateID_Click(object sender, EventArgs e)
 		{
 			if(mEntry != null &&
-				MessageBox.Show("Generate a new unique ID?", "Generate Unique ID",
+				frmMessage.Show(this,
+				"Generate a new unique ID?", "Generate Unique ID",
 					MessageBoxButtons.YesNo) == DialogResult.Yes)
 			{
 				mEntry.PatternTemplateId =
@@ -780,6 +781,99 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* mnuViewTabDisplay_Click																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The View / Tab / Display menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuViewTabDisplay_Click(object sender, EventArgs e)
+		{
+			tctlEditTemplates.SelectedTab = tpgDisplay;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuViewTabGeneral_Click																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The View / Tab / General menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuViewTabGeneral_Click(object sender, EventArgs e)
+		{
+			tctlEditTemplates.SelectedTab = tpgGeneral;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuViewTabRemarks_Click																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The View / Tab / Remarks menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuViewTabRemarks_Click(object sender, EventArgs e)
+		{
+			tctlEditTemplates.SelectedTab = tpgRemarks;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* tctlEditTemplates_SelectedIndexChanged																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The selected tab page index has changed on the tab control.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void tctlEditTemplates_SelectedIndexChanged(object sender,
+			EventArgs e)
+		{
+			switch(tctlEditTemplates.SelectedIndex)
+			{
+				case 0:
+					//	General.
+					mnuViewTabDisplay.Checked = false;
+					mnuViewTabGeneral.Checked = true;
+					mnuViewTabRemarks.Checked = false;
+					break;
+				case 1:
+					//	Display.
+					mnuViewTabDisplay.Checked = true;
+					mnuViewTabGeneral.Checked = false;
+					mnuViewTabRemarks.Checked = false;
+					break;
+				case 2:
+					//	Remarks.
+					mnuViewTabDisplay.Checked = false;
+					mnuViewTabGeneral.Checked = false;
+					mnuViewTabRemarks.Checked = true;
+					break;
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* txtDisplayFormat_TextChanged																					*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -991,6 +1085,19 @@ namespace ShopTools
 			txtIconFilename.TextChanged += txtIconFilename_TextChanged;
 			txtRemarks.TextChanged += txtRemarks_TextChanged;
 			txtTemplateName.TextChanged += txtTemplateName_TextChanged;
+
+			//	Menus.
+			mnuEditRestoreFactoryTemplates.Enabled = false;
+			mnuFileExportSelectedPatterns.Enabled = false;
+			mnuFileImportPatterns.Enabled = false;
+			mnuViewTabDisplay.Click += mnuViewTabDisplay_Click;
+			mnuViewTabGeneral.Checked = true;
+			mnuViewTabGeneral.Click += mnuViewTabGeneral_Click;
+			mnuViewTabRemarks.Click += mnuViewTabRemarks_Click;
+
+			//	Tab Control.
+			tctlEditTemplates.SelectedIndexChanged +=
+				tctlEditTemplates_SelectedIndexChanged;
 		}
 		//*-----------------------------------------------------------------------*
 

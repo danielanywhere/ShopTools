@@ -189,7 +189,7 @@ namespace ShopTools
 		//* btnGO_Click																														*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// The GO button has been clicked.
+		/// The GO button has been clicked. Run the procedure.
 		/// </summary>
 		/// <param name="sender">
 		/// The object raising this event.
@@ -199,6 +199,114 @@ namespace ShopTools
 		/// </param>
 		private void btnGO_Click(object sender, EventArgs e)
 		{
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* btnMoveCutDown_Click																									*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the selected cut down in the cut-list one space.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void btnMoveCutDown_Click(object sender, EventArgs e)
+		{
+			int index = 0;
+			ListViewItem lvItem = null;
+
+			if(lvCutList.SelectedIndices.Count == 1 &&
+				lvCutList.SelectedIndices[0] + 1 < lvCutList.Items.Count)
+			{
+				index = lvCutList.SelectedIndices[0] + 1;
+				lvItem = lvCutList.SelectedItems[0];
+				lvCutList.Items.Remove(lvItem);
+				lvCutList.Items.Insert(index, lvItem);
+				if(lvItem.Tag is CutProfileItem @cutProfileItem)
+				{
+					SessionWorkpieceInfo.Cuts.MoveDown(cutProfileItem);
+				}
+				mCutListChanged = true;
+				CalculateLayout();
+				UpdateForm();
+				this.Refresh();
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* btnMoveCutUp_Click																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the selected cut up in the cut-list one space.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void btnMoveCutUp_Click(object sender, EventArgs e)
+		{
+			int index = 0;
+			ListViewItem lvItem = null;
+
+			if(lvCutList.SelectedIndices.Count == 1 &&
+				lvCutList.SelectedIndices[0] - 1 > -1)
+			{
+				index = lvCutList.SelectedIndices[0] - 1;
+				lvItem = lvCutList.SelectedItems[0];
+				lvCutList.Items.Remove(lvItem);
+				lvCutList.Items.Insert(index, lvItem);
+				if(lvItem.Tag is CutProfileItem @cutProfileItem)
+				{
+					SessionWorkpieceInfo.Cuts.MoveUp(cutProfileItem);
+				}
+				mCutListChanged = true;
+				CalculateLayout();
+				UpdateForm();
+				this.Refresh();
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* btnStop_Click																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The Stop button has been clicked. Stop all motors.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void btnStop_Click(object sender, EventArgs e)
+		{
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* cmboMaterialType_SelectedIndexChanged																	*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The selected index has changed on the Material Type combo box.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void cmboMaterialType_SelectedIndexChanged(object sender,
+			EventArgs e)
+		{
+			UpdateWorkpiece();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -287,6 +395,8 @@ namespace ShopTools
 					//	Cut was stored.
 					SessionWorkpieceInfo.Cuts.Add(dialog.CutProfile);
 					UpdateCutList();
+					mCutListChanged = true;
+					UpdateForm();
 				}
 			}
 		}
@@ -316,6 +426,8 @@ namespace ShopTools
 				if(bChanged)
 				{
 					UpdateCutList();
+					mCutListChanged = true;
+					UpdateForm();
 				}
 			}
 		}
@@ -342,6 +454,8 @@ namespace ShopTools
 						//	During editing, the original item's values were cloned.
 						//	Transfer those values back to the original.
 						CutProfileItem.TransferValues(dialog.CutProfile, cutItem);
+						mCutListChanged = true;
+						UpdateForm();
 						this.Refresh();
 					}
 				}
@@ -475,14 +589,19 @@ namespace ShopTools
 			//btnGO.Enabled = (lvCutList.Items.Count != 0);
 			if(lvCutList.SelectedItems.Count > 0)
 			{
-				btnEditCut.Enabled = (lvCutList.SelectedItems.Count == 1);
+				btnEditCut.Enabled =
+					btnMoveCutDown.Enabled =
+					btnMoveCutUp.Enabled =
+					(lvCutList.SelectedItems.Count == 1);
 				btnDeleteCut.Enabled = btnDuplicateCut.Enabled = true;
 			}
 			else
 			{
 				btnEditCut.Enabled =
 					btnDeleteCut.Enabled =
-						btnDuplicateCut.Enabled = false;
+					btnDuplicateCut.Enabled =
+					btnMoveCutDown.Enabled =
+					btnMoveCutUp.Enabled = false;
 			}
 			this.Refresh();
 		}
@@ -739,9 +858,10 @@ namespace ShopTools
 						}
 						catch(Exception ex)
 						{
-							MessageBox.Show($"Error opening pattern file: {ex.Message}",
+							frmMessage.Show(this,
+								$"Error opening pattern file: {ex.Message}",
 								$"Open Pattern Files - {Path.GetFileName(filenameItem)}",
-								MessageBoxButtons.OK, MessageBoxIcon.Error);
+								MessageBoxButtons.OK);
 						}
 					}
 					if(count > 0)
@@ -789,6 +909,35 @@ namespace ShopTools
 		/// </param>
 		private void mnuFileImportConfiguration_Click(object sender, EventArgs e)
 		{
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* mnuFileNewCutList_Click																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The File / New Cut-List menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuFileNewCutList_Click(object sender, EventArgs e)
+		{
+			if(PromptSave() != DialogResult.Cancel)
+			{
+				mCutListFilename = "";
+				SessionWorkpieceInfo = new WorkpieceInfoItem();
+				SessionWorkpieceInfo.PropertyChanged +=
+					sessionWorkpieceInfo_PropertyChanged;
+				WorkpieceInfoItem.ConfigureFromUserValues(SessionWorkpieceInfo);
+				UpdateWorkpieceUI();
+				mCutListChanged = false;
+				statMessage.Text = "File opened...";
+				UpdateForm();
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -873,7 +1022,7 @@ namespace ShopTools
 			}
 			else
 			{
-				mnuFileSaveAs_Click(sender, e);
+				SaveCutListAs();
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -892,37 +1041,7 @@ namespace ShopTools
 		/// </param>
 		private void mnuFileSaveAs_Click(object sender, EventArgs e)
 		{
-			SaveFileDialog dialog = null;
-
-			if(SessionWorkpieceInfo != null)
-			{
-				dialog = new SaveFileDialog();
-				dialog.AddExtension = true;
-				dialog.AutoUpgradeEnabled = true;
-				dialog.CheckFileExists = false;
-				dialog.CheckPathExists = true;
-				dialog.CreatePrompt = false;
-				dialog.DefaultExt = ".cutlist.json";
-				dialog.DereferenceLinks = true;
-				dialog.Filter =
-					"ShopTools CutList Files " +
-					"(*.cutlist.json)|" +
-					"*.cutlist.json;|" +
-					"Text Files " +
-					"(*.txt)|" +
-					"*.txt;|" +
-					"All Files (*.*)|*.*";
-				dialog.FilterIndex = 0;
-				dialog.OverwritePrompt = true;
-				dialog.SupportMultiDottedExtensions = true;
-				dialog.Title = "Save Cut-List File";
-				dialog.ValidateNames = true;
-				if(dialog.ShowDialog() == DialogResult.OK)
-				{
-					mCutListFilename = dialog.FileName;
-					SaveCutList(mCutListFilename);
-				}
-			}
+			SaveCutListAs();
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1121,11 +1240,11 @@ namespace ShopTools
 			Size workspaceSize = Size.Empty;
 			float workspaceRatio = GetWorkspaceRatio();
 
-			if(mCutListFilename.Length > 0)
-			{
-				//	If a file is open, check the layout.
-				Trace.WriteLine("pnlWorkspace_Paint - Break here...");
-			}
+			//if(mCutListFilename.Length > 0)
+			//{
+			//	//	If a file is open, check the layout.
+			//	Trace.WriteLine("pnlWorkspace_Paint - Break here...");
+			//}
 			workspaceSize = ResizeArea(
 				pnlWorkspace.Width - 16, pnlWorkspace.Height - 16, workspaceRatio);
 			scale = (float)workspaceSize.Width / systemSize.Width;
@@ -1144,9 +1263,11 @@ namespace ShopTools
 			if(lvCutList.Items.Count > 0)
 			{
 				//	Draw all operations from the cut list.
+				//Trace.WriteLine("pnlWorkspace_Paint");
 				foreach(ListViewItem lvItem in lvCutList.Items)
 				{
 					profile = (CutProfileItem)lvItem.Tag;
+					//Trace.WriteLine($" Drawing {profile.TemplateName}");
 					profile.StartLocation = TransformToAbsolute(location);
 					foreach(PatternOperationItem operationItem in profile.Operations)
 					{
@@ -1203,9 +1324,21 @@ namespace ShopTools
 				{
 					btnEditCut.Enabled = false;
 				}
+				if(btnMoveCutDown.Enabled)
+				{
+					btnMoveCutDown.Enabled = false;
+				}
+				if(btnMoveCutUp.Enabled)
+				{
+					btnMoveCutUp.Enabled = false;
+				}
 				//if(btnGO.Enabled)
 				//{
 				//	btnGO.Enabled = false;
+				//}
+				//if(btnStop.Enabled)
+				//{
+				//	btnStop.Enabled = false;
 				//}
 			}
 		}
@@ -1226,6 +1359,47 @@ namespace ShopTools
 		private void pnlWorkspace_Resize(object sender, EventArgs e)
 		{
 			pnlWorkspace.Refresh();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* PromptSave																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// If a file is open, prompt the user as to whether it should be saved.
+		/// </summary>
+		/// <returns>
+		/// Continue if the file was either unchanged or successfully saved.
+		/// Otherwise, Cancel.
+		/// </returns>
+		private DialogResult PromptSave()
+		{
+			DialogResult result = DialogResult.Continue;
+
+			if(mCutListChanged)
+			{
+				result = frmMessage.Show(this,
+					"Do you wish to save your changes?", "Exit",
+					MessageBoxButtons.YesNoCancel);
+				switch(result)
+				{
+					case DialogResult.Yes:
+						if(mCutListFilename?.Length > 0)
+						{
+							SaveCutList(mCutListFilename);
+						}
+						else
+						{
+							SaveCutListAs();
+						}
+						result = DialogResult.Continue;
+						break;
+					case DialogResult.Cancel:
+						result = DialogResult.Cancel;
+						break;
+				}
+			}
+			return result;
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1280,6 +1454,48 @@ namespace ShopTools
 			}
 			mCutListChanged = false;
 			UpdateForm();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* SaveCutListAs																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Give the cut-list a filename and save that file.
+		/// </summary>
+		private void SaveCutListAs()
+		{
+			SaveFileDialog dialog = null;
+
+			if(SessionWorkpieceInfo != null)
+			{
+				dialog = new SaveFileDialog();
+				dialog.AddExtension = true;
+				dialog.AutoUpgradeEnabled = true;
+				dialog.CheckFileExists = false;
+				dialog.CheckPathExists = true;
+				dialog.CreatePrompt = false;
+				dialog.DefaultExt = ".cutlist.json";
+				dialog.DereferenceLinks = true;
+				dialog.Filter =
+					"ShopTools CutList Files " +
+					"(*.cutlist.json)|" +
+					"*.cutlist.json;|" +
+					"Text Files " +
+					"(*.txt)|" +
+					"*.txt;|" +
+					"All Files (*.*)|*.*";
+				dialog.FilterIndex = 0;
+				dialog.OverwritePrompt = true;
+				dialog.SupportMultiDottedExtensions = true;
+				dialog.Title = "Save Cut-List File";
+				dialog.ValidateNames = true;
+				if(dialog.ShowDialog() == DialogResult.OK)
+				{
+					mCutListFilename = dialog.FileName;
+					SaveCutList(mCutListFilename);
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1638,7 +1854,9 @@ namespace ShopTools
 
 			btnDeleteCut.Enabled =
 				btnDuplicateCut.Enabled =
-					btnEditCut.Enabled = false;
+				btnEditCut.Enabled =
+				btnMoveCutDown.Enabled =
+				btnMoveCutUp.Enabled = false;
 			lvCutList.Items.Clear();
 			foreach(CutProfileItem cutItem in SessionWorkpieceInfo.Cuts)
 			{
@@ -1691,10 +1909,10 @@ namespace ShopTools
 			{
 				builder.Append(" - ");
 				builder.Append(Path.GetFileName(mCutListFilename));
-				if(mCutListChanged)
-				{
-					builder.Append(" *");
-				}
+			}
+			if(mCutListChanged)
+			{
+				builder.Append(" *");
 			}
 			this.Text = builder.ToString();
 		}
@@ -1714,6 +1932,16 @@ namespace ShopTools
 			if(!mWorkpieceBusy)
 			{
 				mWorkpieceBusy = true;
+				//	Material Type.
+				if(cmboMaterialType.SelectedIndex > -1)
+				{
+					SessionWorkpieceInfo.MaterialTypeName =
+						(string)cmboMaterialType.SelectedItem;
+				}
+				else
+				{
+					SessionWorkpieceInfo.MaterialTypeName = "";
+				}
 				//	Length.
 				SessionWorkpieceInfo.UserLength = txtWorkpieceLength.Text;
 				//	Width.
@@ -1772,7 +2000,6 @@ namespace ShopTools
 				SessionWorkpieceInfo.UserRouterLocationX = txtRouterPositionX.Text;
 				//	Router location Y.
 				SessionWorkpieceInfo.UserRouterLocationY = txtRouterPositionY.Text;
-
 				//	Update the binary working values.
 				WorkpieceInfoItem.ConfigureFromUserValues(SessionWorkpieceInfo);
 
@@ -1787,9 +2014,9 @@ namespace ShopTools
 				//	Y.
 				lblWorkpieceYUnit.Text = SessionWorkpieceInfo.AltOffsetY;
 				//	Router Location X.
-				lblWorkpieceXUnit.Text = SessionWorkpieceInfo.AltRouterLocationX;
+				lblRouterPositionXUnit.Text = SessionWorkpieceInfo.AltRouterLocationX;
 				//	Router Location Y.
-				lblWorkpieceYUnit.Text = SessionWorkpieceInfo.AltRouterLocationY;
+				lblRouterPositionYUnit.Text = SessionWorkpieceInfo.AltRouterLocationY;
 
 				CalculateLayout();
 
@@ -1811,6 +2038,8 @@ namespace ShopTools
 			if(!mWorkpieceBusy)
 			{
 				mWorkpieceBusy = true;
+				cmboMaterialType.SelectedItem =
+					SessionWorkpieceInfo.MaterialTypeName;
 				//	Length.
 				txtWorkpieceLength.Text = SessionWorkpieceInfo.UserLength;
 				lblWorkpieceLengthUnit.Text = SessionWorkpieceInfo.AltLength;
@@ -1898,7 +2127,7 @@ namespace ShopTools
 		/// </param>
 		protected override void OnActivated(EventArgs e)
 		{
-			Debug.WriteLine("Form activated...");
+			//Debug.WriteLine("Form activated...");
 			//mPaintEnabled = true;
 			this.Refresh();
 			base.OnActivated(e);
@@ -1918,20 +2147,11 @@ namespace ShopTools
 		{
 			DialogResult result = DialogResult.Continue;
 
-			if(mCutListFilename?.Length > 0 && mCutListChanged)
+			result = PromptSave();
+			if(result == DialogResult.Cancel)
 			{
-				result = MessageBox.Show("Do you wish to save your changes?", "Exit",
-					MessageBoxButtons.YesNoCancel);
-				switch(result)
-				{
-					case DialogResult.Yes:
-						SaveCutList(mCutListFilename);
-						break;
-					case DialogResult.Cancel:
-						e.Cancel = true;
-						statMessage.Text = "Exit cancelled...";
-						break;
-				}
+				e.Cancel = true;
+				statMessage.Text = "Exit cancelled...";
 			}
 			base.OnClosing(e);
 		}
@@ -1979,6 +2199,9 @@ namespace ShopTools
 			pnlWorkspace.AllowDrop = true;
 			btnDeleteCut.Enabled = false;
 			btnEditCut.Enabled = false;
+			btnMoveCutDown.Enabled = false;
+			btnMoveCutUp.Enabled = false;
+
 			btnGO.Enabled = false;
 			btnStop.Enabled = false;
 
@@ -2025,6 +2248,8 @@ namespace ShopTools
 				cmboWorkpieceLeft_SelectedIndexChanged;
 			cmboWorkpieceY.SelectedIndexChanged +=
 				cmboWorkpieceTop_SelectedIndexChanged;
+			cmboMaterialType.SelectedIndexChanged +=
+				cmboMaterialType_SelectedIndexChanged;
 
 			//	Menu options.
 			mnuEditSettings.Click += mnuEditSettings_Click;
@@ -2035,6 +2260,7 @@ namespace ShopTools
 			mnuFileExportPatterns.Click += mnuFileExportPatterns_Click;
 			mnuFileImportConfiguration.Click += mnuFileImportConfiguration_Click;
 			mnuFileImportPatterns.Click += mnuFileImportPatterns_Click;
+			mnuFileNewCutList.Click += mnuFileNewCutList_Click;
 			mnuFileOpen.Click += mnuFileOpen_Click;
 			mnuFileSave.Click += mnuFileSave_Click;
 			mnuFileSaveAs.Click += mnuFileSaveAs_Click;
@@ -2051,6 +2277,9 @@ namespace ShopTools
 			btnDuplicateCut.Click += btnDuplicateCut_Click;
 			btnEditCut.Click += btnEditCut_Click;
 			btnGO.Click += btnGO_Click;
+			btnMoveCutDown.Click += btnMoveCutDown_Click;
+			btnMoveCutUp.Click += btnMoveCutUp_Click;
+			btnStop.Click += btnStop_Click;
 
 			lvCutList.DoubleClick += lvCutList_DoubleClick;
 			lvCutList.SelectedIndexChanged += lvCutList_SelectedIndexChanged;
@@ -2078,10 +2307,16 @@ namespace ShopTools
 
 			//InitializeDefaultProfile();
 			ReadConfiguration();
+			foreach(MaterialTypeItem typeItem in ConfigProfile.MaterialTypes)
+			{
+				cmboMaterialType.Items.Add(typeItem.MaterialTypeName);
+			}
 			InitializePatterns();
 			UpdateWorkpiece();
 			RefreshControls();
 
+			SessionWorkpieceInfo.PropertyChanged +=
+				sessionWorkpieceInfo_PropertyChanged;
 			//mPaintTimer.Enabled = true;
 
 		}

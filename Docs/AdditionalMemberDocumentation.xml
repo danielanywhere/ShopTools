@@ -650,6 +650,16 @@
 		</para>
 	</remarks>
 </member>
+<member name="F:ShopTools.frmMain.btnMoveCutDown">
+	<summary>
+		Button to move the selected cut down one space in the cut-list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.btnMoveCutUp">
+	<summary>
+		Button to move the selected cut up one space in the cut-list.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.btnStop">
 	<summary>
 		Stop bottom. Not yet implemented.
@@ -661,6 +671,19 @@
 		</para>
 		<para>
 			However, this button is currently disabled until communications ports have been implemented.
+		</para>
+	</remarks>
+</member>
+<member name="F:ShopTools.frmMain.cmboMaterialType">
+	<summary>
+		Drop down list containing the available types of material for the currently
+		defined workpiece.
+	</summary>
+	<remarks>
+		<para>
+			In this version, if you want to add, edit, or delete material types, please
+			edit the MaterialTypes collection of the ShopToolsConfig.json configuration
+			file in your C:\Users\{Username}\AppData\Roaming\ShopTools folder.
 		</para>
 	</remarks>
 </member>
@@ -719,6 +742,11 @@
 		</list>
 	</remarks>
 </member>
+<member name="F:ShopTools.frmMain.ilIcons">
+	<summary>
+		Image list containing general control icons.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.ilPatterns">
 	<summary>
 		Image list containing icons for the patterns list.
@@ -733,6 +761,11 @@
 <member name="F:ShopTools.frmMain.lblCutList">
 	<summary>
 		Cut List title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMain.lblMaterialType">
+	<summary>
+		Material Type title label.
 	</summary>
 </member>
 <member name="F:ShopTools.frmMain.lblPatterns">
@@ -912,6 +945,11 @@
 		The File / Import / Patterns menu option.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuFileNewCutList">
+	<summary>
+		The File / New Cut-List menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.mnuFileOpen">
 	<summary>
 		The File / Open menu option.
@@ -1041,6 +1079,26 @@
 <member name="F:ShopTools.frmMain.txtWorkpieceY">
 	<summary>
 		Textbox containing the Workpiece Y Offset.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMessage.btn1">
+	<summary>
+		Configurable button #1.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMessage.btn2">
+	<summary>
+		Configurable button #2.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMessage.btn3">
+	<summary>
+		Configurable button #3.
+	</summary>
+</member>
+<member name="F:ShopTools.frmMessage.lblMessage">
+	<summary>
+		The label containing the caller-specified text message.
 	</summary>
 </member>
 <member name="F:ShopTools.frmSettings.btnCancel">

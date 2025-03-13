@@ -455,12 +455,33 @@ namespace ShopTools
 			{
 				result = new WorkpieceInfoItem()
 				{
+					mAltDepth = item.mAltDepth,
+					mAltLength = item.mAltLength,
+					mAltOffsetX = item.mAltOffsetX,
+					mAltOffsetY = item.mAltOffsetY,
+					mAltRouterLocationX = item.mAltRouterLocationX,
+					mAltRouterLocationY = item.mAltRouterLocationY,
+					mAltWidth = item.mAltWidth,
 					mArea = FArea.Clone(item.mArea),
 					mCuts = CutProfileCollection.Clone(item.mCuts),
+					mMaterialTypeName = item.mMaterialTypeName,
 					mRouterLocation = FPoint.Clone(item.mRouterLocation),
 					mThickness = item.mThickness,
+					mUserDepth = item.mUserDepth,
+					mUserLength = item.mUserLength,
+					mUserOffsetX = item.mUserOffsetX,
+					mUserOffsetXOrigin = item.mUserOffsetXOrigin,
+					mUserOffsetY = item.mUserOffsetY,
+					mUserOffsetYOrigin = item.mUserOffsetYOrigin,
+					mUserRouterLocationX = item.mUserRouterLocationX,
+					mUserRouterLocationY = item.mUserRouterLocationY,
+					mUserWidth = item.mUserWidth,
 					mWorkspaceArea = FArea.Clone(item.mWorkspaceArea)
 				};
+			}
+			if(result == null)
+			{
+				result = new WorkpieceInfoItem();
 			}
 			return result;
 		}
@@ -534,6 +555,7 @@ namespace ShopTools
 					GetAltValue(measurement, workpiece.mUserRouterLocationY);
 				workpiece.mRouterLocation.Y =
 					GetMillimeters(workpiece.mUserRouterLocationY);
+				//	Material Type Name.
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -548,10 +570,37 @@ namespace ShopTools
 		/// <summary>
 		/// Get a reference to the list of cuts on this job.
 		/// </summary>
-		[JsonProperty(Order = 19)]
+		[JsonProperty(Order = 10)]
 		public CutProfileCollection Cuts
 		{
 			get { return mCuts; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	MaterialTypeName																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Private member for <see cref="MaterialTypeName">MaterialTypeName</see>.
+		/// </summary>
+		private string mMaterialTypeName = "";
+		/// <summary>
+		/// Get/Set the material selected for this cut.
+		/// </summary>
+		[JsonProperty(Order = 9)]
+		public string MaterialTypeName
+		{
+			get { return mMaterialTypeName; }
+			set
+			{
+				bool bChanged = (mMaterialTypeName != value);
+
+				mMaterialTypeName = value;
+				if(bChanged)
+				{
+					OnPropertyChanged();
+				}
+			}
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -634,7 +683,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user depth specified for the workpiece.
 		/// </summary>
-		[JsonProperty(Order = 12)]
+		[JsonProperty(Order = 2)]
 		public string UserDepth
 		{
 			get { return mUserDepth; }
@@ -661,7 +710,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user length specified for the workpiece.
 		/// </summary>
-		[JsonProperty(Order = 10)]		
+		[JsonProperty(Order = 0)]		
 		public string UserLength
 		{
 			get { return mUserLength; }
@@ -688,7 +737,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user-specified X offset of the workpiece.
 		/// </summary>
-		[JsonProperty(Order = 13)]
+		[JsonProperty(Order = 3)]
 		public string UserOffsetX
 		{
 			get { return mUserOffsetX; }
@@ -717,7 +766,7 @@ namespace ShopTools
 		/// Get/Set the user-specified X offset of the workpiece from the canvas.
 		/// </summary>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 14)]		
+		[JsonProperty(Order = 4)]		
 		public OffsetLeftRightEnum UserOffsetXOrigin
 		{
 			get { return mUserOffsetXOrigin; }
@@ -745,7 +794,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user-specified Y workpiece offset.
 		/// </summary>
-		[JsonProperty(Order = 15)]
+		[JsonProperty(Order = 5)]
 		public string UserOffsetY
 		{
 			get { return mUserOffsetY; }
@@ -774,7 +823,7 @@ namespace ShopTools
 		/// Get/Set the user-specified Y workpiece offset.
 		/// </summary>
 		[JsonConverter(typeof(StringEnumConverter))]
-		[JsonProperty(Order = 16)]
+		[JsonProperty(Order = 6)]
 		public OffsetTopBottomEnum UserOffsetYOrigin
 		{
 			get { return mUserOffsetYOrigin; }
@@ -802,7 +851,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user-specified absolute starting X router location.
 		/// </summary>
-		[JsonProperty(Order = 17)]
+		[JsonProperty(Order = 7)]
 		public string UserRouterLocationX
 		{
 			get { return mUserRouterLocationX; }
@@ -830,7 +879,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user-specified absolute starting Y router location.
 		/// </summary>
-		[JsonProperty(Order = 18)]
+		[JsonProperty(Order = 8)]
 		public string UserRouterLocationY
 		{
 			get { return mUserRouterLocationY; }
@@ -857,7 +906,7 @@ namespace ShopTools
 		/// <summary>
 		/// Get/Set the user width specified for the workpiece.
 		/// </summary>
-		[JsonProperty(Order = 11)]
+		[JsonProperty(Order = 1)]
 		public string UserWidth
 		{
 			get { return mUserWidth; }

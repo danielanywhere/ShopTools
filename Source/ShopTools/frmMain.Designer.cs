@@ -54,6 +54,7 @@ namespace ShopTools
 			mnuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileSave = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+			mnuFileNewCutList = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileSep1 = new System.Windows.Forms.ToolStripSeparator();
 			mnuFileImport = new System.Windows.Forms.ToolStripMenuItem();
 			mnuFileImportConfiguration = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +71,8 @@ namespace ShopTools
 			mnuEditSettings = new System.Windows.Forms.ToolStripMenuItem();
 			mnuView = new System.Windows.Forms.ToolStripMenuItem();
 			mnuViewGCode = new System.Windows.Forms.ToolStripMenuItem();
+			mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
+			mnuHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
 			statusMain = new System.Windows.Forms.StatusStrip();
 			statMessage = new System.Windows.Forms.ToolStripStatusLabel();
 			statFill = new System.Windows.Forms.ToolStripStatusLabel();
@@ -81,11 +84,16 @@ namespace ShopTools
 			splitControl = new System.Windows.Forms.Splitter();
 			pnlWorkspace = new System.Windows.Forms.Panel();
 			pnlWorkpiece = new System.Windows.Forms.Panel();
+			cmboMaterialType = new System.Windows.Forms.ComboBox();
+			lblMaterialType = new System.Windows.Forms.Label();
 			lvCutList = new System.Windows.Forms.ListView();
 			lvCutListUnusedHeader = new System.Windows.Forms.ColumnHeader();
 			ilPatternsSmall = new System.Windows.Forms.ImageList(components);
 			btnDeleteCut = new System.Windows.Forms.Button();
 			btnDuplicateCut = new System.Windows.Forms.Button();
+			btnMoveCutDown = new System.Windows.Forms.Button();
+			ilIcons = new System.Windows.Forms.ImageList(components);
+			btnMoveCutUp = new System.Windows.Forms.Button();
 			btnEditCut = new System.Windows.Forms.Button();
 			btnStop = new System.Windows.Forms.Button();
 			btnGO = new System.Windows.Forms.Button();
@@ -116,8 +124,6 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
-			mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
-			mnuHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -126,11 +132,10 @@ namespace ShopTools
 			// 
 			// lblSuggestion
 			// 
-			lblSuggestion.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 			lblSuggestion.ForeColor = System.Drawing.SystemColors.ButtonShadow;
 			lblSuggestion.Location = new System.Drawing.Point(0, 0);
 			lblSuggestion.Name = "lblSuggestion";
-			lblSuggestion.Size = new System.Drawing.Size(147, 70);
+			lblSuggestion.Size = new System.Drawing.Size(267, 58);
 			lblSuggestion.TabIndex = 0;
 			lblSuggestion.Text = "Use your CNC router to perform REGULAR everyday power tool tasks.";
 			// 
@@ -146,7 +151,7 @@ namespace ShopTools
 			// 
 			// mnuFile
 			// 
-			mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileOpen, mnuFileSave, mnuFileSaveAs, mnuFileSep1, mnuFileImport, mnuFileExport, mnuFileSep2, mnuFileExit });
+			mnuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileOpen, mnuFileSave, mnuFileSaveAs, mnuFileNewCutList, mnuFileSep1, mnuFileImport, mnuFileExport, mnuFileSep2, mnuFileExit });
 			mnuFile.Name = "mnuFile";
 			mnuFile.Size = new System.Drawing.Size(46, 24);
 			mnuFile.Text = "&File";
@@ -170,6 +175,13 @@ namespace ShopTools
 			mnuFileSaveAs.Name = "mnuFileSaveAs";
 			mnuFileSaveAs.Size = new System.Drawing.Size(235, 26);
 			mnuFileSaveAs.Text = "Save Cut-List &As";
+			// 
+			// mnuFileNewCutList
+			// 
+			mnuFileNewCutList.Name = "mnuFileNewCutList";
+			mnuFileNewCutList.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N;
+			mnuFileNewCutList.Size = new System.Drawing.Size(235, 26);
+			mnuFileNewCutList.Text = "&New Cut-List";
 			// 
 			// mnuFileSep1
 			// 
@@ -268,6 +280,19 @@ namespace ShopTools
 			mnuViewGCode.Size = new System.Drawing.Size(141, 26);
 			mnuViewGCode.Text = "&G-code";
 			// 
+			// mnuHelp
+			// 
+			mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuHelpAbout });
+			mnuHelp.Name = "mnuHelp";
+			mnuHelp.Size = new System.Drawing.Size(55, 24);
+			mnuHelp.Text = "&Help";
+			// 
+			// mnuHelpAbout
+			// 
+			mnuHelpAbout.Name = "mnuHelpAbout";
+			mnuHelpAbout.Size = new System.Drawing.Size(133, 26);
+			mnuHelpAbout.Text = "&About";
+			// 
 			// statusMain
 			// 
 			statusMain.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -358,9 +383,13 @@ namespace ShopTools
 			pnlWorkpiece.AutoScroll = true;
 			pnlWorkpiece.AutoScrollMargin = new System.Drawing.Size(16, 16);
 			pnlWorkpiece.BackColor = System.Drawing.Color.White;
+			pnlWorkpiece.Controls.Add(cmboMaterialType);
+			pnlWorkpiece.Controls.Add(lblMaterialType);
 			pnlWorkpiece.Controls.Add(lvCutList);
 			pnlWorkpiece.Controls.Add(btnDeleteCut);
 			pnlWorkpiece.Controls.Add(btnDuplicateCut);
+			pnlWorkpiece.Controls.Add(btnMoveCutDown);
+			pnlWorkpiece.Controls.Add(btnMoveCutUp);
 			pnlWorkpiece.Controls.Add(btnEditCut);
 			pnlWorkpiece.Controls.Add(btnStop);
 			pnlWorkpiece.Controls.Add(btnGO);
@@ -397,16 +426,33 @@ namespace ShopTools
 			pnlWorkpiece.Size = new System.Drawing.Size(290, 396);
 			pnlWorkpiece.TabIndex = 6;
 			// 
+			// cmboMaterialType
+			// 
+			cmboMaterialType.FormattingEnabled = true;
+			cmboMaterialType.Location = new System.Drawing.Point(83, 95);
+			cmboMaterialType.Name = "cmboMaterialType";
+			cmboMaterialType.Size = new System.Drawing.Size(151, 28);
+			cmboMaterialType.TabIndex = 3;
+			// 
+			// lblMaterialType
+			// 
+			lblMaterialType.AutoSize = true;
+			lblMaterialType.Location = new System.Drawing.Point(14, 100);
+			lblMaterialType.Name = "lblMaterialType";
+			lblMaterialType.Size = new System.Drawing.Size(67, 20);
+			lblMaterialType.TabIndex = 2;
+			lblMaterialType.Text = "Material:";
+			// 
 			// lvCutList
 			// 
 			lvCutList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { lvCutListUnusedHeader });
 			lvCutList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			lvCutList.LargeImageList = ilPatterns;
-			lvCutList.Location = new System.Drawing.Point(6, 522);
+			lvCutList.Location = new System.Drawing.Point(6, 557);
 			lvCutList.Name = "lvCutList";
 			lvCutList.Size = new System.Drawing.Size(248, 186);
 			lvCutList.SmallImageList = ilPatternsSmall;
-			lvCutList.TabIndex = 27;
+			lvCutList.TabIndex = 29;
 			lvCutList.UseCompatibleStateImageBehavior = false;
 			lvCutList.View = System.Windows.Forms.View.Details;
 			// 
@@ -422,46 +468,74 @@ namespace ShopTools
 			// 
 			// btnDeleteCut
 			// 
-			btnDeleteCut.Location = new System.Drawing.Point(6, 749);
+			btnDeleteCut.Location = new System.Drawing.Point(6, 784);
 			btnDeleteCut.Name = "btnDeleteCut";
 			btnDeleteCut.Size = new System.Drawing.Size(94, 29);
-			btnDeleteCut.TabIndex = 30;
+			btnDeleteCut.TabIndex = 31;
 			btnDeleteCut.Text = "De&lete Cut";
 			btnDeleteCut.UseVisualStyleBackColor = true;
 			// 
 			// btnDuplicateCut
 			// 
-			btnDuplicateCut.Location = new System.Drawing.Point(160, 714);
+			btnDuplicateCut.Location = new System.Drawing.Point(160, 749);
 			btnDuplicateCut.Name = "btnDuplicateCut";
 			btnDuplicateCut.Size = new System.Drawing.Size(94, 29);
-			btnDuplicateCut.TabIndex = 29;
+			btnDuplicateCut.TabIndex = 34;
 			btnDuplicateCut.Text = "&Duplicate";
 			btnDuplicateCut.UseVisualStyleBackColor = true;
 			// 
+			// btnMoveCutDown
+			// 
+			btnMoveCutDown.ImageIndex = 1;
+			btnMoveCutDown.ImageList = ilIcons;
+			btnMoveCutDown.Location = new System.Drawing.Point(110, 795);
+			btnMoveCutDown.Name = "btnMoveCutDown";
+			btnMoveCutDown.Size = new System.Drawing.Size(40, 40);
+			btnMoveCutDown.TabIndex = 33;
+			btnMoveCutDown.UseVisualStyleBackColor = true;
+			// 
+			// ilIcons
+			// 
+			ilIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			ilIcons.ImageStream = (System.Windows.Forms.ImageListStreamer)resources.GetObject("ilIcons.ImageStream");
+			ilIcons.TransparentColor = System.Drawing.Color.Transparent;
+			ilIcons.Images.SetKeyName(0, "MoveUp.png");
+			ilIcons.Images.SetKeyName(1, "MoveDown.png");
+			// 
+			// btnMoveCutUp
+			// 
+			btnMoveCutUp.ImageIndex = 0;
+			btnMoveCutUp.ImageList = ilIcons;
+			btnMoveCutUp.Location = new System.Drawing.Point(110, 749);
+			btnMoveCutUp.Name = "btnMoveCutUp";
+			btnMoveCutUp.Size = new System.Drawing.Size(40, 40);
+			btnMoveCutUp.TabIndex = 32;
+			btnMoveCutUp.UseVisualStyleBackColor = true;
+			// 
 			// btnEditCut
 			// 
-			btnEditCut.Location = new System.Drawing.Point(6, 714);
+			btnEditCut.Location = new System.Drawing.Point(6, 749);
 			btnEditCut.Name = "btnEditCut";
 			btnEditCut.Size = new System.Drawing.Size(94, 29);
-			btnEditCut.TabIndex = 28;
+			btnEditCut.TabIndex = 30;
 			btnEditCut.Text = "Edit &Cut";
 			btnEditCut.UseVisualStyleBackColor = true;
 			// 
 			// btnStop
 			// 
-			btnStop.Location = new System.Drawing.Point(160, 783);
+			btnStop.Location = new System.Drawing.Point(160, 818);
 			btnStop.Name = "btnStop";
 			btnStop.Size = new System.Drawing.Size(94, 29);
-			btnStop.TabIndex = 32;
+			btnStop.TabIndex = 36;
 			btnStop.Text = "&Stop";
 			btnStop.UseVisualStyleBackColor = true;
 			// 
 			// btnGO
 			// 
-			btnGO.Location = new System.Drawing.Point(160, 749);
+			btnGO.Location = new System.Drawing.Point(160, 784);
 			btnGO.Name = "btnGO";
 			btnGO.Size = new System.Drawing.Size(94, 29);
-			btnGO.TabIndex = 31;
+			btnGO.TabIndex = 35;
 			btnGO.Text = "&GO";
 			btnGO.UseVisualStyleBackColor = true;
 			// 
@@ -470,214 +544,214 @@ namespace ShopTools
 			cmboWorkpieceY.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 			cmboWorkpieceY.FormattingEnabled = true;
 			cmboWorkpieceY.Items.AddRange(new object[] { "From Top", "Top Edge To Center", "Center To Center", "Bottom Edge To Center", "From Bottom" });
-			cmboWorkpieceY.Location = new System.Drawing.Point(77, 312);
+			cmboWorkpieceY.Location = new System.Drawing.Point(83, 347);
 			cmboWorkpieceY.Name = "cmboWorkpieceY";
 			cmboWorkpieceY.Size = new System.Drawing.Size(151, 28);
-			cmboWorkpieceY.TabIndex = 18;
+			cmboWorkpieceY.TabIndex = 20;
 			// 
 			// cmboWorkpieceX
 			// 
 			cmboWorkpieceX.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 			cmboWorkpieceX.FormattingEnabled = true;
 			cmboWorkpieceX.Items.AddRange(new object[] { "From Left", "Left Edge To Center", "Center To Center", "Right Edge To Center", "From Right" });
-			cmboWorkpieceX.Location = new System.Drawing.Point(77, 245);
+			cmboWorkpieceX.Location = new System.Drawing.Point(83, 280);
 			cmboWorkpieceX.Name = "cmboWorkpieceX";
 			cmboWorkpieceX.Size = new System.Drawing.Size(151, 28);
-			cmboWorkpieceX.TabIndex = 14;
+			cmboWorkpieceX.TabIndex = 16;
 			// 
 			// txtWorkpieceDepth
 			// 
-			txtWorkpieceDepth.Location = new System.Drawing.Point(77, 161);
+			txtWorkpieceDepth.Location = new System.Drawing.Point(83, 196);
 			txtWorkpieceDepth.Name = "txtWorkpieceDepth";
 			txtWorkpieceDepth.Size = new System.Drawing.Size(113, 27);
-			txtWorkpieceDepth.TabIndex = 9;
+			txtWorkpieceDepth.TabIndex = 11;
 			// 
 			// lblWorkpieceDepthUnit
 			// 
 			lblWorkpieceDepthUnit.AutoSize = true;
-			lblWorkpieceDepthUnit.Location = new System.Drawing.Point(196, 164);
+			lblWorkpieceDepthUnit.Location = new System.Drawing.Point(202, 199);
 			lblWorkpieceDepthUnit.Name = "lblWorkpieceDepthUnit";
 			lblWorkpieceDepthUnit.Size = new System.Drawing.Size(18, 20);
-			lblWorkpieceDepthUnit.TabIndex = 10;
+			lblWorkpieceDepthUnit.TabIndex = 12;
 			lblWorkpieceDepthUnit.Text = "...";
 			// 
 			// txtWorkpieceWidth
 			// 
-			txtWorkpieceWidth.Location = new System.Drawing.Point(77, 128);
+			txtWorkpieceWidth.Location = new System.Drawing.Point(83, 163);
 			txtWorkpieceWidth.Name = "txtWorkpieceWidth";
 			txtWorkpieceWidth.Size = new System.Drawing.Size(113, 27);
-			txtWorkpieceWidth.TabIndex = 6;
+			txtWorkpieceWidth.TabIndex = 8;
 			// 
 			// lblWorkpieceWidthUnit
 			// 
 			lblWorkpieceWidthUnit.AutoSize = true;
-			lblWorkpieceWidthUnit.Location = new System.Drawing.Point(196, 131);
+			lblWorkpieceWidthUnit.Location = new System.Drawing.Point(202, 166);
 			lblWorkpieceWidthUnit.Name = "lblWorkpieceWidthUnit";
 			lblWorkpieceWidthUnit.Size = new System.Drawing.Size(18, 20);
-			lblWorkpieceWidthUnit.TabIndex = 7;
+			lblWorkpieceWidthUnit.TabIndex = 9;
 			lblWorkpieceWidthUnit.Text = "...";
 			// 
 			// txtRouterPositionY
 			// 
-			txtRouterPositionY.Location = new System.Drawing.Point(77, 428);
+			txtRouterPositionY.Location = new System.Drawing.Point(83, 463);
 			txtRouterPositionY.Name = "txtRouterPositionY";
 			txtRouterPositionY.Size = new System.Drawing.Size(113, 27);
-			txtRouterPositionY.TabIndex = 24;
+			txtRouterPositionY.TabIndex = 26;
 			// 
 			// txtWorkpieceY
 			// 
-			txtWorkpieceY.Location = new System.Drawing.Point(77, 279);
+			txtWorkpieceY.Location = new System.Drawing.Point(83, 314);
 			txtWorkpieceY.Name = "txtWorkpieceY";
 			txtWorkpieceY.Size = new System.Drawing.Size(113, 27);
-			txtWorkpieceY.TabIndex = 16;
+			txtWorkpieceY.TabIndex = 18;
 			// 
 			// txtRouterPositionX
 			// 
-			txtRouterPositionX.Location = new System.Drawing.Point(77, 395);
+			txtRouterPositionX.Location = new System.Drawing.Point(83, 430);
 			txtRouterPositionX.Name = "txtRouterPositionX";
 			txtRouterPositionX.Size = new System.Drawing.Size(113, 27);
-			txtRouterPositionX.TabIndex = 21;
+			txtRouterPositionX.TabIndex = 23;
 			// 
 			// txtWorkpieceX
 			// 
-			txtWorkpieceX.Location = new System.Drawing.Point(77, 212);
+			txtWorkpieceX.Location = new System.Drawing.Point(83, 247);
 			txtWorkpieceX.Name = "txtWorkpieceX";
 			txtWorkpieceX.Size = new System.Drawing.Size(113, 27);
-			txtWorkpieceX.TabIndex = 12;
+			txtWorkpieceX.TabIndex = 14;
 			// 
 			// lblRouterPositionYUnit
 			// 
 			lblRouterPositionYUnit.AutoSize = true;
-			lblRouterPositionYUnit.Location = new System.Drawing.Point(196, 431);
+			lblRouterPositionYUnit.Location = new System.Drawing.Point(202, 466);
 			lblRouterPositionYUnit.Name = "lblRouterPositionYUnit";
 			lblRouterPositionYUnit.Size = new System.Drawing.Size(18, 20);
-			lblRouterPositionYUnit.TabIndex = 25;
+			lblRouterPositionYUnit.TabIndex = 27;
 			lblRouterPositionYUnit.Text = "...";
 			// 
 			// txtWorkpieceLength
 			// 
-			txtWorkpieceLength.Location = new System.Drawing.Point(77, 95);
+			txtWorkpieceLength.Location = new System.Drawing.Point(83, 130);
 			txtWorkpieceLength.Name = "txtWorkpieceLength";
 			txtWorkpieceLength.Size = new System.Drawing.Size(113, 27);
-			txtWorkpieceLength.TabIndex = 3;
+			txtWorkpieceLength.TabIndex = 5;
 			// 
 			// lblWorkpieceYUnit
 			// 
 			lblWorkpieceYUnit.AutoSize = true;
-			lblWorkpieceYUnit.Location = new System.Drawing.Point(196, 282);
+			lblWorkpieceYUnit.Location = new System.Drawing.Point(202, 317);
 			lblWorkpieceYUnit.Name = "lblWorkpieceYUnit";
 			lblWorkpieceYUnit.Size = new System.Drawing.Size(18, 20);
-			lblWorkpieceYUnit.TabIndex = 17;
+			lblWorkpieceYUnit.TabIndex = 19;
 			lblWorkpieceYUnit.Text = "...";
 			// 
 			// lblWorkpieceDepth
 			// 
 			lblWorkpieceDepth.AutoSize = true;
-			lblWorkpieceDepth.Location = new System.Drawing.Point(14, 164);
+			lblWorkpieceDepth.Location = new System.Drawing.Point(14, 199);
 			lblWorkpieceDepth.Name = "lblWorkpieceDepth";
 			lblWorkpieceDepth.Size = new System.Drawing.Size(53, 20);
-			lblWorkpieceDepth.TabIndex = 8;
+			lblWorkpieceDepth.TabIndex = 10;
 			lblWorkpieceDepth.Text = "Depth:";
 			// 
 			// lblRouterPositionXUnit
 			// 
 			lblRouterPositionXUnit.AutoSize = true;
-			lblRouterPositionXUnit.Location = new System.Drawing.Point(196, 398);
+			lblRouterPositionXUnit.Location = new System.Drawing.Point(202, 433);
 			lblRouterPositionXUnit.Name = "lblRouterPositionXUnit";
 			lblRouterPositionXUnit.Size = new System.Drawing.Size(18, 20);
-			lblRouterPositionXUnit.TabIndex = 22;
+			lblRouterPositionXUnit.TabIndex = 24;
 			lblRouterPositionXUnit.Text = "...";
 			// 
 			// lblWorkpieceWidth
 			// 
 			lblWorkpieceWidth.AutoSize = true;
-			lblWorkpieceWidth.Location = new System.Drawing.Point(14, 131);
+			lblWorkpieceWidth.Location = new System.Drawing.Point(14, 166);
 			lblWorkpieceWidth.Name = "lblWorkpieceWidth";
 			lblWorkpieceWidth.Size = new System.Drawing.Size(52, 20);
-			lblWorkpieceWidth.TabIndex = 5;
+			lblWorkpieceWidth.TabIndex = 7;
 			lblWorkpieceWidth.Text = "Width:";
 			// 
 			// lblRouterPositionY
 			// 
 			lblRouterPositionY.AutoSize = true;
-			lblRouterPositionY.Location = new System.Drawing.Point(51, 431);
+			lblRouterPositionY.Location = new System.Drawing.Point(51, 466);
 			lblRouterPositionY.Name = "lblRouterPositionY";
 			lblRouterPositionY.Size = new System.Drawing.Size(20, 20);
-			lblRouterPositionY.TabIndex = 23;
+			lblRouterPositionY.TabIndex = 25;
 			lblRouterPositionY.Text = "Y:";
 			// 
 			// lblWorkpieceXUnit
 			// 
 			lblWorkpieceXUnit.AutoSize = true;
-			lblWorkpieceXUnit.Location = new System.Drawing.Point(196, 215);
+			lblWorkpieceXUnit.Location = new System.Drawing.Point(202, 250);
 			lblWorkpieceXUnit.Name = "lblWorkpieceXUnit";
 			lblWorkpieceXUnit.Size = new System.Drawing.Size(18, 20);
-			lblWorkpieceXUnit.TabIndex = 13;
+			lblWorkpieceXUnit.TabIndex = 15;
 			lblWorkpieceXUnit.Text = "...";
 			// 
 			// lblWorkpieceY
 			// 
 			lblWorkpieceY.AutoSize = true;
-			lblWorkpieceY.Location = new System.Drawing.Point(14, 282);
+			lblWorkpieceY.Location = new System.Drawing.Point(14, 317);
 			lblWorkpieceY.Name = "lblWorkpieceY";
 			lblWorkpieceY.Size = new System.Drawing.Size(64, 20);
-			lblWorkpieceY.TabIndex = 15;
+			lblWorkpieceY.TabIndex = 17;
 			lblWorkpieceY.Text = "Y Offset:";
 			// 
 			// lblRouterPositionX
 			// 
 			lblRouterPositionX.AutoSize = true;
-			lblRouterPositionX.Location = new System.Drawing.Point(51, 398);
+			lblRouterPositionX.Location = new System.Drawing.Point(51, 433);
 			lblRouterPositionX.Name = "lblRouterPositionX";
 			lblRouterPositionX.Size = new System.Drawing.Size(21, 20);
-			lblRouterPositionX.TabIndex = 20;
+			lblRouterPositionX.TabIndex = 22;
 			lblRouterPositionX.Text = "X:";
 			// 
 			// lblWorkpieceLengthUnit
 			// 
 			lblWorkpieceLengthUnit.AutoSize = true;
-			lblWorkpieceLengthUnit.Location = new System.Drawing.Point(196, 98);
+			lblWorkpieceLengthUnit.Location = new System.Drawing.Point(202, 133);
 			lblWorkpieceLengthUnit.Name = "lblWorkpieceLengthUnit";
 			lblWorkpieceLengthUnit.Size = new System.Drawing.Size(18, 20);
-			lblWorkpieceLengthUnit.TabIndex = 4;
+			lblWorkpieceLengthUnit.TabIndex = 6;
 			lblWorkpieceLengthUnit.Text = "...";
 			// 
 			// lblWorkpieceX
 			// 
 			lblWorkpieceX.AutoSize = true;
-			lblWorkpieceX.Location = new System.Drawing.Point(14, 215);
+			lblWorkpieceX.Location = new System.Drawing.Point(14, 250);
 			lblWorkpieceX.Name = "lblWorkpieceX";
 			lblWorkpieceX.Size = new System.Drawing.Size(65, 20);
-			lblWorkpieceX.TabIndex = 11;
+			lblWorkpieceX.TabIndex = 13;
 			lblWorkpieceX.Text = "X Offset:";
 			// 
 			// lblWorkpieceLength
 			// 
 			lblWorkpieceLength.AutoSize = true;
-			lblWorkpieceLength.Location = new System.Drawing.Point(14, 98);
+			lblWorkpieceLength.Location = new System.Drawing.Point(14, 133);
 			lblWorkpieceLength.Name = "lblWorkpieceLength";
 			lblWorkpieceLength.Size = new System.Drawing.Size(57, 20);
-			lblWorkpieceLength.TabIndex = 2;
+			lblWorkpieceLength.TabIndex = 4;
 			lblWorkpieceLength.Text = "Length:";
 			// 
 			// lblCutList
 			// 
 			lblCutList.AutoSize = true;
 			lblCutList.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-			lblCutList.Location = new System.Drawing.Point(6, 496);
+			lblCutList.Location = new System.Drawing.Point(6, 531);
 			lblCutList.Name = "lblCutList";
 			lblCutList.Size = new System.Drawing.Size(71, 23);
-			lblCutList.TabIndex = 26;
+			lblCutList.TabIndex = 28;
 			lblCutList.Text = "Cut List";
 			// 
 			// lblRouterPosition
 			// 
 			lblRouterPosition.AutoSize = true;
 			lblRouterPosition.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-			lblRouterPosition.Location = new System.Drawing.Point(6, 369);
+			lblRouterPosition.Location = new System.Drawing.Point(6, 404);
 			lblRouterPosition.Name = "lblRouterPosition";
 			lblRouterPosition.Size = new System.Drawing.Size(203, 23);
-			lblRouterPosition.TabIndex = 19;
+			lblRouterPosition.TabIndex = 21;
 			lblRouterPosition.Text = "Starting Router Position";
 			// 
 			// lblWorkpiece
@@ -700,19 +774,6 @@ namespace ShopTools
 			splitWorkpiece.Size = new System.Drawing.Size(8, 396);
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
-			// 
-			// mnuHelp
-			// 
-			mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuHelpAbout });
-			mnuHelp.Name = "mnuHelp";
-			mnuHelp.Size = new System.Drawing.Size(55, 24);
-			mnuHelp.Text = "&Help";
-			// 
-			// mnuHelpAbout
-			// 
-			mnuHelpAbout.Name = "mnuHelpAbout";
-			mnuHelpAbout.Size = new System.Drawing.Size(224, 26);
-			mnuHelpAbout.Text = "&About";
 			// 
 			// frmMain
 			// 
@@ -814,5 +875,11 @@ namespace ShopTools
 		private System.Windows.Forms.ToolStripMenuItem mnuEditTemplates;
 		private System.Windows.Forms.ToolStripMenuItem mnuHelp;
 		private System.Windows.Forms.ToolStripMenuItem mnuHelpAbout;
+		private System.Windows.Forms.ToolStripMenuItem mnuFileNewCutList;
+		private System.Windows.Forms.Button btnMoveCutUp;
+		private System.Windows.Forms.Button btnMoveCutDown;
+		private System.Windows.Forms.ImageList ilIcons;
+		private System.Windows.Forms.ComboBox cmboMaterialType;
+		private System.Windows.Forms.Label lblMaterialType;
 	}
 }
