@@ -115,6 +115,15 @@ namespace ShopTools {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to \(Filename:(?&lt;filename&gt;[^\)]+)\).
+        /// </summary>
+        internal static string rxGCodeRemarkEmbeddedFilename {
+            get {
+                return ResourceManager.GetString("rxGCodeRemarkEmbeddedFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to \{(?&lt;variable&gt;[^\:\}]+)(\:(?&lt;format&gt;[^\}]*)){0,1}\}.
         /// </summary>
         internal static string rxInterpolatedVariableAndFormat {

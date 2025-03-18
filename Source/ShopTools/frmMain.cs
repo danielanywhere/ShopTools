@@ -26,6 +26,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -455,6 +456,7 @@ namespace ShopTools
 						//	Transfer those values back to the original.
 						CutProfileItem.TransferValues(dialog.CutProfile, cutItem);
 						mCutListChanged = true;
+						CalculateLayout();
 						UpdateForm();
 						this.Refresh();
 					}
@@ -474,14 +476,49 @@ namespace ShopTools
 		/// </param>
 		private void ExportGCode(string filename)
 		{
-			string content = "";
+			List<string> contents = null;
+			int count = 0;
+			string extension = "";
+			FileInfo fileInfo = null;
+			string filenameOnly = "";
+			string localFilename = "";
+			string path = "";
+			string s = "";
 
 			if(SessionWorkpieceInfo != null)
 			{
-				content = GCode.RenderGCode();
-				File.WriteAllText(filename, content);
+				fileInfo = new FileInfo(filename);
+				filenameOnly = fileInfo.Name;
+				path = fileInfo.DirectoryName;
+				extension = fileInfo.Extension;
+				if(extension.Length > 0)
+				{
+					filenameOnly =
+						filenameOnly.Substring(0, filenameOnly.Length - extension.Length);
+				}
+				contents = GCode.RenderGCode(filenameOnly, extension);
+				count = contents.Count;
+				if(count == 1)
+				{
+					localFilename = filename;
+					File.WriteAllText(localFilename, contents[0]);
+				}
+				else
+				{
+					foreach(string contentItem in contents)
+					{
+						localFilename =
+							GetValue(contentItem,
+							ResourceMain.rxGCodeRemarkEmbeddedFilename,
+							"filename");
+						File.WriteAllText(
+							Path.Combine(path, localFilename) + extension, contentItem);
+					}
+				}
+				s = (count == 1 ? "" : "s");
 				statMessage.Text =
-					$"G-code exported to {Path.GetFileName(filename)}...";
+					$"G-code exported to {Path.GetFileName(filename)} as " +
+					$"{count} file{s}...";
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -1079,13 +1116,12 @@ namespace ShopTools
 		/// </param>
 		private void mnuViewGCode_Click(object sender, EventArgs e)
 		{
-			string content = GCode.RenderGCode();
+			string content = String.Join("\r\n", GCode.RenderGCode());
 			frmTextView dialog = new frmTextView();
 
 			dialog.Text = content;
 			dialog.Title = "G-Code";
 
-			content = GCode.RenderGCode();
 			dialog.ShowDialog();
 
 		}

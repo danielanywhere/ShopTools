@@ -2487,6 +2487,42 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* GetFilenameFriendly																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a filename friendly version of the caller's freeform text.
+		/// </summary>
+		/// <param name="text">
+		/// Freeform text, as used to name a tool or write a remark.
+		/// </param>
+		/// <returns>
+		/// The filename-friendly version of the caller's text.
+		/// </returns>
+		public static string GetFilenameFriendly(string text)
+		{
+			string[] charRemove = new string[] { " ", "\n", "\r", "\t" };
+			string[] charUnderscore = new string[]
+			{ "!", "\"", "#", "$", "%", "&", "'", "*", "+", "/", ":", ";",
+				"<", "=", ">", "?", "@", "\\", "^", "`", "{", "|", "}", "~" };
+			string result = "";
+
+			if(text?.Length > 0)
+			{
+				result = text;
+				foreach(string c in charRemove)
+				{
+					result = result.Replace(c, "");
+				}
+				foreach(string c in charUnderscore)
+				{
+					result = result.Replace(c, "_");
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* GetFillBrush																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -4557,9 +4593,12 @@ namespace ShopTools
 			bool bCopyAll = false;
 			bool bDestExists = false;
 			bool bSourceNewer = false;
+			string content = "";
 			FileInfo destFile = null;
 			DirectoryInfo directory = null;
 			FileInfo[] files = null;
+			ShopToolsConfigItem shopToolsConfigSource = null;
+			ShopToolsConfigItem shopToolsConfigTarget = null;
 
 			mUserDataPath =
 				Path.Combine(
@@ -4591,7 +4630,43 @@ namespace ShopTools
 							destFile.LastWriteTimeUtc) > 0)
 						{
 							//	Source is newer.
-							bSourceNewer = true;
+							if(fileItem.Name == "ShopToolsConfig.json")
+							{
+								//	When updating ShopTools configuration, make sure to
+								//	only update the target properties that have not yet been
+								//	set.
+								content = File.ReadAllText(fileItem.FullName);
+								shopToolsConfigSource =
+									JsonConvert.DeserializeObject<ShopToolsConfigItem>(content);
+								content = File.ReadAllText(destFile.FullName);
+								shopToolsConfigTarget =
+									JsonConvert.DeserializeObject<ShopToolsConfigItem>(content);
+								//	Skip pattern templates.
+								//	Process properties.
+								foreach(PropertyItem propertyItem in
+									shopToolsConfigSource.Properties)
+								{
+									if(!shopToolsConfigSource.Properties.Exists(x =>
+										x.Name == propertyItem.Name))
+									{
+										shopToolsConfigTarget.Properties.Add(propertyItem);
+										bSourceNewer = true;
+									}
+								}
+								//	Tool type definitions are sourced elsewhere.
+								//	Skip user tools.
+								if(bSourceNewer)
+								{
+									//	Save the changes to the target file.
+									content = JsonConvert.SerializeObject(shopToolsConfigTarget);
+									File.WriteAllText(destFile.FullName, content);
+									bSourceNewer = false;
+								}
+							}
+							else
+							{
+								bSourceNewer = true;
+							}
 						}
 					}
 					if(bCopyAll || bSourceNewer)

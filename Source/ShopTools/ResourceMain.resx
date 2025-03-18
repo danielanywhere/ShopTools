@@ -141,6 +141,10 @@
     <value>(?&lt;fractional&gt;(((?&lt;number&gt;-{0,1}[0-9]+\s+){0,1}(?&lt;fraction&gt;(?&lt;numerator&gt;[0-9]+)\s*/\s*(?&lt;denominator&gt;[0-9]+)))|(?&lt;number&gt;-{0,1}[0-9]+(\.{0,1}[0-9]+){0,1})))</value>
     <comment>Regular expression pattern to find fractional numbers.</comment>
   </data>
+  <data name="rxGCodeRemarkEmbeddedFilename" xml:space="preserve">
+    <value>\(Filename:(?&lt;filename&gt;[^\)]+)\)</value>
+    <comment>Regular expression pattern to extract an embedded filename from a remark in g-code.</comment>
+  </data>
   <data name="rxInterpolatedVariableAndFormat" xml:space="preserve">
     <value>\{(?&lt;variable&gt;[^\:\}]+)(\:(?&lt;format&gt;[^\}]*)){0,1}\}</value>
     <comment>Regular expression pattern to find and separate an interpolated string variable and its optional format specifier.</comment>

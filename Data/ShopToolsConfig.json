@@ -65,22 +65,22 @@
 		{
 			"MaterialTypeName": "Particle Board",
 			"UserFeedRate": "19",
-			"FeedRate": "19in"
+			"FeedRate": "32in"
 		},
 		{
 			"MaterialTypeName": "Plywood",
 			"UserFeedRate": "8",
-			"FeedRate": "8in"
+			"FeedRate": "16in"
 		},
 		{
 			"MaterialTypeName": "Masonite",
 			"UserFeedRate": "4",
-			"FeedRate": "4in"
+			"FeedRate": "8in"
 		},
 		{
 			"MaterialTypeName": "Solid Oak",
 			"UserFeedRate": "1",
-			"FeedRate": "1in"
+			"FeedRate": "4in"
 		}
 	],
 	"UserTools": [
