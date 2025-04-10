@@ -1093,16 +1093,11 @@ namespace ShopTools
 		/// </summary>
 		private CutProfileItem mCutProfile = null;
 		/// <summary>
-		/// Get/Set a reference to the cut profile to be edited in this session.
+		/// Get a reference to the cut profile to be edited in this session.
 		/// </summary>
 		public CutProfileItem CutProfile
 		{
 			get { return mCutProfile; }
-			//set
-			//{
-			//	mCutProfile = value;
-			//	EditMode = OperationEditModeEnum.EditSelected;
-			//}
 		}
 		//*-----------------------------------------------------------------------*
 

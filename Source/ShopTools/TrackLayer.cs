@@ -16,13 +16,14 @@
  * 
  */
 
-using Geometry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
+using Geometry;
 using static ShopTools.ShopToolsUtil;
 
 namespace ShopTools
@@ -44,8 +45,70 @@ namespace ShopTools
 		/// </summary>
 		private const float mDefaultMaxDepthPerPass = 1.5875f;
 
-		//	TODO: !1 - Stopped here...
-		//	TODO: Test this version of the track layer processor.
+		//*-----------------------------------------------------------------------*
+		//* AddPrecedingExplicitMoves																							*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Add explicit moves that directly precede the current layout item.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the collection of layouts being processed.
+		/// </param>
+		/// <param name="layoutIndex">
+		/// Index of the current layout within the collection.
+		/// </param>
+		/// <param name="moveIndices">
+		/// Collection of explicit move element ranges within the layout
+		/// collection.
+		/// </param>
+		/// <param name="tool">
+		/// Reference to the currently selected tool for the operation.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location.
+		/// </param>
+		/// <returns>
+		/// Reference to the last-known current location.
+		/// </returns>
+		private FPoint AddPrecedingExplicitMoves(OperationLayoutCollection layouts,
+			int layoutIndex, IntRangeCollection moveIndices, TrackToolItem tool,
+			FPoint location)
+		{
+			int index = 0;
+			OperationLayoutItem layout = null;
+			FPoint localLocation = FPoint.Clone(location);
+			IntRangeItem moveIndex = null;
+			TrackLayerItem trackLayer = null;
+
+			if(layouts?.Count > 0 && layoutIndex > -1 &&
+				layoutIndex < layouts.Count && moveIndices?.Count > 0 &&
+				tool != null)
+			{
+				//	Another item precedes this set.
+				moveIndex = moveIndices.FirstOrDefault(x => x.End == layoutIndex - 1);
+				if(moveIndex != null)
+				{
+					//	One or more moves directly preceded this set.
+					trackLayer = new TrackLayerItem()
+					{
+						BaseLayer = true,
+						Tool = tool
+					};
+					for(index = moveIndex.Start; index <= moveIndex.End; index++)
+					{
+						layout = layouts[index];
+						localLocation = MoveExplicit(layout, trackLayer, localLocation);
+						//	When the move action has been allocated, make sure not to
+						//	reprocess it.
+						layout.ActionType = LayoutActionType.None;
+					}
+					this.Add(trackLayer);
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*-----------------------------------------------------------------------*
 		//* AdjustKerf																														*
 		//*-----------------------------------------------------------------------*
@@ -726,9 +789,13 @@ namespace ShopTools
 		{
 			string defaultToolName = "";
 			FPoint endOffset = null;
-			List<OperationLayoutItem> layoutsMatching = null;
+			int layoutIndex = 0;
+			List<List<OperationLayoutItem>> layoutSetsMatching = null;
+			//List<OperationLayoutItem> layoutsMatching = null;
 			FPoint localLocation = new FPoint(location);
 			MinMaxItem minMax = null;
+			IntRangeCollection moveIndices = null;
+			List<List<OperationLayoutItem>> moveSets = null;
 			FPoint newLocation = null;
 			FPoint startOffset = null;
 			TrackToolItem tool = null;
@@ -754,61 +821,80 @@ namespace ShopTools
 				}
 				if(toolNames.Count > 0)
 				{
+					moveSets = layouts.FindAllContiguous(x =>
+						x.ActionType == LayoutActionType.MoveExplicit);
+					moveIndices = layouts.GetIndexRanges(moveSets);
+
 					foreach(string toolNameItem in toolNames)
 					{
 						tool = tools.SelectTool(toolNameItem);
-						layoutsMatching = layouts.FindAll(x =>
-							x.ActionType == LayoutActionType.Point &&
+
+						layoutSetsMatching = layouts.FindAllContiguous(x =>
+							(x.ActionType == LayoutActionType.Point ||
+							x.ActionType == LayoutActionType.MoveImplicit) &&
 							x.Operation?.Tool == toolNameItem);
-						if(layoutsMatching.Count > 0)
+
+						foreach(List<OperationLayoutItem> layoutsMatching in
+							layoutSetsMatching)
 						{
-							minMax = GetMinMaxDepth(layoutsMatching);
-							trackLayer = new TrackLayerItem()
+							layoutsMatching.RemoveAll(x =>
+								x.ActionType == LayoutActionType.MoveImplicit);
+							if(layoutsMatching.Count > 0)
 							{
-								BaseLayer = true,
-								FinalLayer = true,
-								Tool = tool
-							};
-							trackLayer.CurrentDepth = minMax.Maximum;
-							trackLayer.TargetDepth = minMax.Maximum;
-							segments = trackLayer.Segments;
-							foreach(OperationLayoutItem layoutItem in layoutsMatching)
-							{
-								startOffset = layoutItem.ToolStartOffset;
-								endOffset = layoutItem.ToolEndOffset;
-								newLocation = endOffset;
-								//	Plunge point found.
-								if(localLocation != newLocation)
+								//	Transits before the current set.
+								layoutIndex = layouts.IndexOf(layoutsMatching[0]);
+								localLocation = AddPrecedingExplicitMoves(layouts,
+									layoutIndex, moveIndices, tool, localLocation);
+
+								//	Process the current set.
+								minMax = GetMinMaxDepth(layoutsMatching);
+								trackLayer = new TrackLayerItem()
 								{
-									//	Transit to the site.
-									segment = new TrackSegmentItem()
+									BaseLayer = true,
+									FinalLayer = true,
+									Tool = tool
+								};
+								trackLayer.CurrentDepth = minMax.Maximum;
+								trackLayer.TargetDepth = minMax.Maximum;
+								segments = trackLayer.Segments;
+								foreach(OperationLayoutItem layoutItem in layoutsMatching)
+								{
+									startOffset = layoutItem.ToolStartOffset;
+									endOffset = layoutItem.ToolEndOffset;
+									newLocation = endOffset;
+									//	Plunge point found.
+									if(localLocation != newLocation)
 									{
-										Operation = layoutItem.Operation,
-										SegmentType = TrackSegmentType.Transit
-									};
-									FPoint.TransferValues(localLocation, segment.StartOffset);
-									FPoint.TransferValues(startOffset, segment.EndOffset);
-									segments.Add(segment);
-									//	Drill the site.
-									segment = new TrackSegmentItem()
-									{
-										Operation = layoutItem.Operation,
-										SegmentType = TrackSegmentType.Plunge,
-										Depth = ResolveDepth(layoutItem.Operation)
-									};
-									FPoint.TransferValues(startOffset, segment.StartOffset);
-									FPoint.TransferValues(endOffset, segment.EndOffset);
-									segments.Add(segment);
+										//	Transit to the site.
+										segment = new TrackSegmentItem()
+										{
+											Operation = layoutItem.Operation,
+											SegmentType = TrackSegmentType.Transit
+										};
+										FPoint.TransferValues(localLocation, segment.StartOffset);
+										FPoint.TransferValues(startOffset, segment.EndOffset);
+										segments.Add(segment);
+										//	Drill the site.
+										segment = new TrackSegmentItem()
+										{
+											Operation = layoutItem.Operation,
+											SegmentType = TrackSegmentType.Plunge,
+											Depth = ResolveDepth(layoutItem.Operation)
+										};
+										FPoint.TransferValues(startOffset, segment.StartOffset);
+										FPoint.TransferValues(endOffset, segment.EndOffset);
+										segments.Add(segment);
+									}
+									FPoint.TransferValues(newLocation, localLocation);
 								}
-								FPoint.TransferValues(newLocation, localLocation);
+								if(segments.Count > 0)
+								{
+									//	Every drill tool is on its own layer.
+									//	Add the plunges as a separate layer.
+									this.Add(trackLayer);
+									trackLayer = null;
+								}
 							}
-						}
-						if(trackLayer != null && segments.Count > 0)
-						{
-							//	Every drill tool is on its own layer.
-							//	Add the plunges as a separate layer.
-							this.Add(trackLayer);
-							trackLayer = null;
 						}
 					}
 				}
@@ -1201,6 +1287,114 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* MoveExplicit																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Move the tool to another location on the board.
+		/// </summary>
+		/// <param name="layoutItem">
+		/// Reference to the layout item being processed.
+		/// </param>
+		/// <param name="trackLayer">
+		/// Reference to the track layer into which the actions will be placed.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the active location from which the move is starting.
+		/// </param>
+		/// <returns>
+		/// Reference to the updated current location.
+		/// </returns>
+		private FPoint MoveExplicit(OperationLayoutItem layoutItem,
+			TrackLayerItem trackLayer, FPoint location)
+		{
+			FPoint endOffset = null;
+			FPoint localLocation = FPoint.Clone(location);
+			TrackSegmentItem segment = null;
+			FPoint startOffset = null;
+
+			if(layoutItem != null && trackLayer != null)
+			{
+				startOffset = layoutItem.ToolStartOffset;
+				endOffset = layoutItem.ToolEndOffset;
+				//	Transit to the line.
+				segment = new TrackSegmentItem()
+				{
+					Operation = layoutItem.Operation,
+					SegmentType = TrackSegmentType.Transit
+				};
+				FPoint.TransferValues(startOffset, segment.StartOffset);
+				FPoint.TransferValues(endOffset, segment.EndOffset);
+				trackLayer.Segments.Add(segment);
+				FPoint.TransferValues(endOffset, localLocation);
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* PlotEndingMovements																										*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Plot the set of transit that occur after the end of all of the cutting
+		/// actions.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the full collection of layouts beeing processed in this
+		/// session.
+		/// </param>
+		/// <param name="trackTools">
+		/// Reference to the collection of tools found in this session.
+		/// </param>
+		/// <param name="location">
+		/// Reference to the starting location.
+		/// </param>
+		/// <returns>
+		/// Reference to the last-known current location after the movements have
+		/// been applied.
+		/// </returns>
+		private FPoint PlotEndingMovements(OperationLayoutCollection layouts,
+			TrackToolCollection trackTools, FPoint location)
+		{
+			bool bToolSet = false;
+			List<OperationLayoutItem> layoutsMatching = null;
+			FPoint localLocation = FPoint.Clone(location);
+			TrackLayerItem trackLayer = null;
+
+			if(layouts?.Count > 0 && trackTools != null)
+			{
+				layoutsMatching = layouts.FindAllEnding(x =>
+					x.ActionType == LayoutActionType.MoveExplicit);
+				if(layoutsMatching.Count > 0)
+				{
+					//	One or more moves directly preceded this set.
+					trackLayer = new TrackLayerItem()
+					{
+						BaseLayer = true
+					};
+					foreach(OperationLayoutItem layoutItem in layoutsMatching)
+					{
+						if(!bToolSet &&
+							layoutItem.Operation != null)
+						{
+							trackLayer.Tool = trackTools.FirstOrDefault(x =>
+								x.ToolName == layoutItem.Operation.Tool);
+							bToolSet = true;
+						}
+						localLocation = MoveExplicit(layoutItem, trackLayer,
+							localLocation);
+						//	When the move action has been allocated, make sure not to
+						//	reprocess it.
+						layoutItem.ActionType = LayoutActionType.None;
+					}
+					this.Add(trackLayer);
+
+				}
+			}
+			return localLocation;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* PlotLinesAndShapes																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1224,9 +1418,15 @@ namespace ShopTools
 			TrackToolCollection tools, FPoint location)
 		{
 			string defaultToolName = "";
-			List<OperationLayoutItem> layoutsMatching = null;
+			//OperationLayoutItem last = null;
+			int layoutIndex = 0;
+			List<List<OperationLayoutItem>> layoutSetsMatching = null;
+			//List<OperationLayoutItem> layoutsMatching = null;
 			FPoint localLocation = new FPoint(location);
 			MinMaxItem minMax = null;
+			IntRangeCollection moveIndices = null;
+			//List<OperationLayoutItem> moveSet = null;
+			List<List<OperationLayoutItem>> moveSets = null;
 			TrackSegmentCollection segments = null;
 			TrackToolItem tool = null;
 			List<string> toolNames = null;
@@ -1234,6 +1434,10 @@ namespace ShopTools
 
 			if(layouts?.Count > 0 && tools?.Count > 0)
 			{
+				moveSets = layouts.FindAllContiguous(x =>
+					x.ActionType == LayoutActionType.MoveExplicit);
+				moveIndices = layouts.GetIndexRanges(moveSets);
+
 				tool = tools.FirstOrDefault(x => x.IsDefault);
 				if(tool != null)
 				{
@@ -1250,72 +1454,88 @@ namespace ShopTools
 				foreach(string toolNameItem in toolNames)
 				{
 					tool = tools.SelectTool(toolNameItem);
-					layoutsMatching = layouts.FindAll(x =>
+
+					layoutSetsMatching = layouts.FindAllContiguous(x =>
 						x.ActionType != LayoutActionType.Point &&
+						x.ActionType != LayoutActionType.MoveExplicit &&
+						x.ActionType != LayoutActionType.MoveImplicit &&
 						x.Operation?.Tool == toolNameItem);
-					if(layoutsMatching.Count > 0)
+					foreach(List<OperationLayoutItem> layoutsMatching in
+						layoutSetsMatching)
 					{
-						minMax = GetMinMaxDepth(layoutsMatching);
-						trackLayer = new TrackLayerItem()
+						//layoutsMatching.RemoveAll(x =>
+						//	x.ActionType == LayoutActionType.MoveImplicit);
+						if(layoutsMatching.Count > 0)
 						{
-							BaseLayer = true,
-							Tool = tool
-						};
-						SetCurrentTargetDepths(trackLayer, minMax, tool);
-						segments = trackLayer.Segments;
-						foreach(OperationLayoutItem layoutItem in layoutsMatching)
-						{
-							//startOffset = layoutItem.ToolStartOffset;
-							//endOffset = layoutItem.ToolEndOffset;
-							switch(layoutItem.ActionType)
+							//	Transits before the current set.
+							layoutIndex = layouts.IndexOf(layoutsMatching[0]);
+							localLocation = AddPrecedingExplicitMoves(layouts,
+								layoutIndex, moveIndices, tool, localLocation);
+
+							//	Process the current set.
+							minMax = GetMinMaxDepth(layoutsMatching);
+							trackLayer = new TrackLayerItem()
 							{
-								case LayoutActionType.DrawArc:
-									localLocation =
-										DrawArc(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.DrawEllipse:
-									localLocation =
-										DrawEllipse(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.DrawLine:
-									localLocation =
-										DrawLine(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.DrawRectangle:
-									localLocation =
-										DrawRectangle(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.FillEllipse:
-									//	This shape is a non-kerf area preceded by a DrawEllipse
-									//	outline having a left-hand kerf as an outline, which
-									//	means that the outer ring of the shape has already been
-									//	drawn when this call is made.
-									localLocation =
-										FillEllipse(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.FillRectangle:
-									//	This shape is a non-kerf area preceded by a DrawRectangle
-									//	outline with a left-kerf as an outline, which means that
-									//	the outer ring of the shape has already been drawn.
-									localLocation =
-										FillRectangle(layoutItem, trackLayer, localLocation);
-									break;
-								case LayoutActionType.Move:
-								case LayoutActionType.None:
-								case LayoutActionType.Point:
-									//	These cases can be removed in final production.
-									//	Movements (transits) are implicit in this version.
-									//	Actions of type None are ignored.
-									//	Points (drills) are handled separately first.
-									break;
+								BaseLayer = true,
+								Tool = tool
+							};
+							SetCurrentTargetDepths(trackLayer, minMax, tool);
+							segments = trackLayer.Segments;
+							foreach(OperationLayoutItem layoutItem in layoutsMatching)
+							{
+								//startOffset = layoutItem.ToolStartOffset;
+								//endOffset = layoutItem.ToolEndOffset;
+								switch(layoutItem.ActionType)
+								{
+									case LayoutActionType.DrawArc:
+										localLocation =
+											DrawArc(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.DrawEllipse:
+										localLocation =
+											DrawEllipse(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.DrawLine:
+										localLocation =
+											DrawLine(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.DrawRectangle:
+										localLocation =
+											DrawRectangle(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.FillEllipse:
+										//	This shape is a non-kerf area preceded by a DrawEllipse
+										//	outline having a left-hand kerf as an outline, which
+										//	means that the outer ring of the shape has already been
+										//	drawn when this call is made.
+										localLocation =
+											FillEllipse(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.FillRectangle:
+										//	This shape is a non-kerf area preceded by a
+										//	DrawRectangle outline with a left-kerf as an outline,
+										//	which means that the outer ring of the shape has
+										//	already been drawn.
+										localLocation =
+											FillRectangle(layoutItem, trackLayer, localLocation);
+										break;
+									case LayoutActionType.MoveExplicit:
+									case LayoutActionType.MoveImplicit:
+									case LayoutActionType.None:
+									case LayoutActionType.Point:
+										//	These cases can be removed in final production.
+										//	Movements are processed separately in this version.
+										//	Actions of type None are ignored.
+										//	Points (drills) are handled separately first.
+										break;
+								}
+								//last = layoutItem;
+							}
+							if(segments.Count > 0)
+							{
+								this.Add(trackLayer);
 							}
 						}
-					}
-					if(trackLayer != null && segments.Count > 0)
-					{
-						//	Every drill tool is on its own layer.
-						//	Add the plunges as a separate layer.
-						this.Add(trackLayer);
 					}
 				}
 			}
@@ -1373,6 +1593,77 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* RelateExplicitMovements																								*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Relate the explicitly defined movements in the list to the actions they
+		/// directly precede or follow.
+		/// </summary>
+		/// <param name="layouts">
+		/// Reference to the operational layouts currently being processed.
+		/// </param>
+		/// <remarks>
+		/// High-speed movement commands are not naturally associated with a tool,
+		/// but giving them the same tool as their closest tool-bearing neighbor
+		/// has the effect of grouping them with those tool-based actions.
+		/// </remarks>
+		private static void RelateExplicitMovements(
+			OperationLayoutCollection layouts)
+		{
+			int count = 0;
+			int index = 0;
+			OperationLayoutItem last = null;
+			OperationLayoutItem layout = null;
+			OperationLayoutItem next = null;
+
+			if(layouts?.Count > 0)
+			{
+				count = layouts.Count;
+				for(index = 0; index < count; index ++)
+				{
+					layout = layouts[index];
+					if(layout.ActionType == LayoutActionType.MoveExplicit)
+					{
+						next = layouts.NextMatchAfter(layout,
+							x => x.ActionType != LayoutActionType.MoveExplicit &&
+								x.ActionType != LayoutActionType.MoveImplicit &&
+								x.Operation != null);
+						if(next != null)
+						{
+							//	Next match was found.
+							if(layout.Operation == null)
+							{
+								layout.Operation = next.Operation;
+							}
+							else
+							{
+								layout.Operation.Tool = next.Operation.Tool;
+							}
+						}
+						else if(last != null)
+						{
+							//	No next match was found, but a previous operation was
+							//	visited.
+							if(layout.Operation == null)
+							{
+								layout.Operation = last.Operation;
+							}
+							else
+							{
+								layout.Operation.Tool = last.Operation.Tool;
+							}
+						}
+					}
+					else if(layout.Operation != null)
+					{
+						last = layout;
+					}
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* ResolveToolPath																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1421,7 +1712,9 @@ namespace ShopTools
 			for(trackIndex = 0; trackIndex < trackCount; trackIndex ++)
 			{
 				track = this[trackIndex];
-				if(track.BaseLayer)
+				if(track.BaseLayer &&
+					track.Segments.Count(x =>
+						x.SegmentType == TrackSegmentType.Plot) > 0)
 				{
 					//	This track can be resolved.
 					maxDepth = track.TargetDepth;
@@ -1453,17 +1746,18 @@ namespace ShopTools
 								//	point.
 								FPoint.TransferValues(prevSegment.StartOffset, endOffset);
 								FPoint.TransferValues(prevSegment.EndOffset, startOffset);
-								if(lastLocation != startOffset)
-								{
-									//	Create a transit.
-									segment = new TrackSegmentItem()
-									{
-										SegmentType = TrackSegmentType.Transit
-									};
-									FPoint.TransferValues(lastLocation, segment.StartOffset);
-									FPoint.TransferValues(startOffset, segment.EndOffset);
-									segments.Add(segment);
-								}
+								//	In this version, lines must be connected to be contiguous.
+								//if(lastLocation != startOffset)
+								//{
+								//	//	Create a transit.
+								//	segment = new TrackSegmentItem()
+								//	{
+								//		SegmentType = TrackSegmentType.Transit
+								//	};
+								//	FPoint.TransferValues(lastLocation, segment.StartOffset);
+								//	FPoint.TransferValues(startOffset, segment.EndOffset);
+								//	segments.Add(segment);
+								//}
 								segment = new TrackSegmentItem()
 								{
 									Depth = depth,
@@ -1610,12 +1904,24 @@ namespace ShopTools
 			TrackToolCollection toolSet = new TrackToolCollection();
 			WorkpieceInfoItem workpiece = SessionWorkpieceInfo;
 
+			//	There may be explicit MoveTo actions dispersed throughout the
+			//	cut list. Each MoveTo, including those defined as first and last
+			//	moves, should be observed as being a specific break between tracks.
+			//	In the meantime, any implicit move-to actions that were inherited
+			//	with the starts or continuations of normal actions are absorbed
+			//	during the rendering process.
 			if(cutList?.Count > 0 && workpiece != null)
 			{
 				layouts = OperationLayoutCollection.CloneLayout(cutList);
 				lineList = new List<FLine>();
 				toolSet = new TrackToolCollection();
 				toolSet.Initialize(layouts);
+
+				//	TODO: !1 - Stopped here...
+				//	TODO: Fix the depth problem that occurs after a hard transit.
+				//	That must be found in GCode and TrackViewLayer, beause the 2D info + depth is clean here...
+
+				RelateExplicitMovements(layouts);
 
 				location = lastLocation =
 					TransformFromAbsolute(workpiece.RouterLocation);
@@ -1630,6 +1936,8 @@ namespace ShopTools
 				location = AdjustKerf();
 				//	*** RESOLVE TOOL PATH ***
 				location = ResolveToolPath(location);
+				//	*** APPEND ENDING TRANSITS ***
+				location = PlotEndingMovements(layouts, toolSet, location);
 				//	*** DRAWING SPACE TO PHYSICAL SPACE ***
 				foreach(TrackLayerItem layerItem in this)
 				{

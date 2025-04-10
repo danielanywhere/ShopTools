@@ -158,5 +158,25 @@ namespace ShopTools {
                 return ResourceManager.GetString("rxWordSpace", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ToolPin2445 {
+            get {
+                object obj = ResourceManager.GetObject("ToolPin2445", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UpTextIcon {
+            get {
+                object obj = ResourceManager.GetObject("UpTextIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

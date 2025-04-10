@@ -124,6 +124,7 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
+			mnuView3D = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -269,7 +270,7 @@ namespace ShopTools
 			// 
 			// mnuView
 			// 
-			mnuView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuViewGCode });
+			mnuView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuView3D, mnuViewGCode });
 			mnuView.Name = "mnuView";
 			mnuView.Size = new System.Drawing.Size(55, 24);
 			mnuView.Text = "&View";
@@ -277,7 +278,7 @@ namespace ShopTools
 			// mnuViewGCode
 			// 
 			mnuViewGCode.Name = "mnuViewGCode";
-			mnuViewGCode.Size = new System.Drawing.Size(141, 26);
+			mnuViewGCode.Size = new System.Drawing.Size(166, 26);
 			mnuViewGCode.Text = "&G-code";
 			// 
 			// mnuHelp
@@ -775,6 +776,12 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
+			// mnuView3D
+			// 
+			mnuView3D.Name = "mnuView3D";
+			mnuView3D.Size = new System.Drawing.Size(166, 26);
+			mnuView3D.Text = "&3D Preview";
+			// 
 			// frmMain
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -881,5 +888,6 @@ namespace ShopTools
 		private System.Windows.Forms.ImageList ilIcons;
 		private System.Windows.Forms.ComboBox cmboMaterialType;
 		private System.Windows.Forms.Label lblMaterialType;
+		private System.Windows.Forms.ToolStripMenuItem mnuView3D;
 	}
 }

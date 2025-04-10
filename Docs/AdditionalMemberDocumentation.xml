@@ -995,6 +995,11 @@
 		The view menu.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuView3D">
+	<summary>
+		The View / 3D Preview menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.mnuViewGCode">
 	<summary>
 		The View / G-code menu option.
@@ -1393,17 +1398,114 @@
 		Z Dimension textbox.
 	</summary>
 </member>
-<member name="F:ShopTools.frmTextView.btnCancel">
+<member name="F:ShopTools.frmView3D.btnCancel">
+	<summary>
+		The cancel button for closing the form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnFirst">
+	<summary>
+		First button. Click to move to the first keyframe in the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnLast">
+	<summary>
+		Last button. Click to move to the last keyframe in the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnNext">
+	<summary>
+		Next button. Click to move to the next keyframe in the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnOK">
+	<summary>
+		The OK button for closing the form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnPause">
+	<summary>
+		Pause button. Click to pause or continue the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnPlay">
+	<summary>
+		Play button. Click to play the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnPrevious">
+	<summary>
+		Previous button. Click to move to the previous keyframe in the animation.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.btnStop">
+	<summary>
+		Stop button. Click to stop the animation and reset the tool position.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.chkHideTracksUntilVisited">
+	<summary>
+		Check to hide tracks until they have been visited or uncheck to show all tracks at all times.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.chkLoopAnimation">
+	<summary>
+		Check to loop continuously through the animation or uncheck to stop at the end of the path.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.chkTurntable">
+	<summary>
+		Check to display the model on a continously turning turntable.
+		Uncheck to orbit with your mouse. The turntable will be disabled
+		automatically if you move your mouse over the image preview area.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.ilControls">
+	<summary>
+		Reusable window controls image list.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.lblStat">
+	<summary>
+		General status message label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.lblToolStat">
+	<summary>
+		Selected tool status message.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.lblZMag">
+	<summary>
+		Z magnification title label.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.menuView3D">
+	<summary>
+		The form-level menu for the 3D view form.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.pnlPreview">
+	<summary>
+		The image preview panel.
+	</summary>
+</member>
+<member name="F:ShopTools.frmView3D.udZMag">
+	<summary>
+		Z magnification up/down control.
+	</summary>
+</member>
+<member name="F:ShopTools.frmViewText.btnCancel">
 	<summary>
 		Cancel/Close button.
 	</summary>
 </member>
-<member name="F:ShopTools.frmTextView.btnOK">
+<member name="F:ShopTools.frmViewText.btnOK">
 	<summary>
 		OK button.
 	</summary>
 </member>
-<member name="F:ShopTools.frmTextView.txtText">
+<member name="F:ShopTools.frmViewText.txtText">
 	<summary>
 		The main content textbox.
 	</summary>

@@ -25,53 +25,31 @@ using System.Threading.Tasks;
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	LayoutActionType																												*
+	//*	TrackDrawModeEnum																												*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Enumeration of recognized layout actions.
+	/// Enumeration of available track drawing modes.
 	/// </summary>
-	public enum LayoutActionType
+	public enum TrackDrawModeEnum
 	{
 		/// <summary>
-		/// No layout action defined or unknown.
+		/// Don't draw tracks or mode undefined.
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Plot an arc.
+		/// Draw all of the tracks. No animation active.
 		/// </summary>
-		DrawArc,
+		DrawAllTracks,
 		/// <summary>
-		/// Plot an ellipse.
+		/// Begin with all tracks hiddent and draw the tracks as they become
+		/// visited during the animation.
 		/// </summary>
-		DrawEllipse,
+		DrawWhenVisited,
 		/// <summary>
-		/// Plot a line.
+		/// Begin with all tracks drawn and hide each one when it has become
+		/// visited.
 		/// </summary>
-		DrawLine,
-		/// <summary>
-		/// Plot a rectangle.
-		/// </summary>
-		DrawRectangle,
-		/// <summary>
-		/// Plot a filled ellipse.
-		/// </summary>
-		FillEllipse,
-		/// <summary>
-		/// Plot a filled rectangle.
-		/// </summary>
-		FillRectangle,
-		/// <summary>
-		/// Move the tool explicitly as a part of the project.
-		/// </summary>
-		MoveExplicit,
-		/// <summary>
-		/// Move the tool implicitly as a part of the present action.
-		/// </summary>
-		MoveImplicit,
-		/// <summary>
-		/// Drill a hole.
-		/// </summary>
-		Point
+		HideWhenVisited
 	}
 	//*-------------------------------------------------------------------------*
 

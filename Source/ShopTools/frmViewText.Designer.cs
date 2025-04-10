@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c). 2024 - 2025 Daniel Patterson, MCSD (danielanywhere).
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 namespace ShopTools
 {
-	partial class frmTextView
+	partial class frmViewText
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -84,7 +84,7 @@ namespace ShopTools
 			btnCancel.Text = "&Close";
 			btnCancel.UseVisualStyleBackColor = true;
 			// 
-			// frmTextView
+			// frmViewText
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -92,7 +92,7 @@ namespace ShopTools
 			Controls.Add(btnCancel);
 			Controls.Add(btnOK);
 			Controls.Add(txtText);
-			Name = "frmTextView";
+			Name = "frmViewText";
 			Text = "Text Viewer";
 			ResumeLayout(false);
 			PerformLayout();

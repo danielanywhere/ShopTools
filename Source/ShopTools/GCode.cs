@@ -46,173 +46,6 @@ namespace ShopTools
 		//*	Public																																*
 		//*************************************************************************
 		//*-----------------------------------------------------------------------*
-		//* GetPositionZAbs																												*
-		//*-----------------------------------------------------------------------*
-		/// <summary>
-		/// Return the absolute position of Z at the specified position type.
-		/// </summary>
-		/// <param name="zPositionType">
-		/// The type of position to which to check the Z-axis value.
-		/// </param>
-		/// <param name="depthOffset">
-		/// Optional depth offset to add to the found position.
-		/// </param>
-		/// <returns>
-		/// The absolute position of the Z-axis at the specified position type,
-		/// if known. Otherwise, 0.
-		/// </returns>
-		public static float GetPositionZAbs(TransitZEnum zPositionType,
-			float depthOffset = 0f)
-		{
-			float depth = 0f;
-			float extent = 0f;
-			float reach = 0f;
-			float result = 0f;
-
-			if(ConfigProfile != null)
-			{
-				//	A configuration is loaded.
-				reach = GetMillimeters(ConfigProfile.Depth);
-				depth = SessionWorkpieceInfo.Thickness;
-				if(reach != 0f)
-				{
-					switch(ConfigProfile.ZOrigin)
-					{
-						case OriginLocationEnum.Bottom:
-							//	The head's maximum depth is 0.
-							extent = reach;
-							switch(ConfigProfile.TravelZ)
-							{
-								case DirectionUpDownEnum.Down:
-									//	Fully extended, 0.
-									//	Fully retracted, -reach.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = 0f;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = 0f - extent;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = 0f - depth;
-											break;
-									}
-									result += depthOffset;
-									break;
-								case DirectionUpDownEnum.None:
-								case DirectionUpDownEnum.Up:
-									//	Fully extended, 0.
-									//	Fully retracted, +reach.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = 0f;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = extent;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = depth;
-											break;
-									}
-									result -= depthOffset;
-									break;
-							}
-							break;
-						case OriginLocationEnum.Center:
-						case OriginLocationEnum.None:
-							//	The head is homed in the center of its travel.
-							extent = reach / 2f;
-							switch(ConfigProfile.TravelZ)
-							{
-								case DirectionUpDownEnum.Down:
-									//	Fully extended, +reach / 2.
-									//	Fully retracted, -reach / 2.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = extent;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = 0f - extent;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = extent - depth;
-											break;
-									}
-									result += depthOffset;
-									break;
-								case DirectionUpDownEnum.None:
-								case DirectionUpDownEnum.Up:
-									//	Fully extended, -reach / 2.
-									//	Fully retracted, +reach / 2.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = 0f - extent;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = extent;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = (0f - extent) + depth;
-											break;
-									}
-									result -= depthOffset;
-									break;
-							}
-							break;
-						case OriginLocationEnum.Top:
-							//	The head is at 0 when fully retracted.
-							extent = reach;
-							switch(ConfigProfile.TravelZ)
-							{
-								case DirectionUpDownEnum.Down:
-									//	Fully extended, +reach.
-									//	Fully retracted, 0.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = extent;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = 0f;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = extent - depth;
-											break;
-									}
-									result += depthOffset;
-									break;
-								case DirectionUpDownEnum.None:
-								case DirectionUpDownEnum.Up:
-									//	Fully extended, -reach.
-									//	Fully retracted, 0.
-									switch(zPositionType)
-									{
-										case TransitZEnum.FullyExtended:
-											result = 0f - extent;
-											break;
-										case TransitZEnum.FullyRetracted:
-											result = 0f;
-											break;
-										case TransitZEnum.TopOfMaterial:
-											result = (0f - extent) + depth;
-											break;
-									}
-									result -= depthOffset;
-									break;
-							}
-							break;
-					}
-				}
-			}
-			return result;
-		}
-		//*-----------------------------------------------------------------------*
-
-		//*-----------------------------------------------------------------------*
 		//* PlotToPositionXYAbs																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -372,7 +205,7 @@ namespace ShopTools
 			string materialName = "Unknown";
 			float number = 0f;
 			List<string> results = new List<string>();
-			TrackSegmentItem segment = null;
+			//TrackSegmentItem segment = null;
 			int selectedIndex = 0;
 			string text = "";
 			string toolName = "";
@@ -476,21 +309,30 @@ namespace ShopTools
 						//builder.Append("M0 ");
 						builder.AppendLine($"(Please attach tool: {toolName})");
 					}
-					if(layerIndex > 0 && layerItem.Segments.Count > 0)
-					{
-						segment = layerItem.Segments[0];
-						if(segment.SegmentType == TrackSegmentType.Plot)
-						{
-							builder.AppendLine(
-								PlungeZAbs(
-									GetPositionZAbs(
-										TransitZEnum.TopOfMaterial,
-										segment.Depth),
-									feedRate));
-						}
-					}
+					//if(layerIndex > 0 && layerItem.Segments.Count > 0)
+					//{
+					//	//	On subsequent layers, plunge directly to the current relative
+					//	//	depth.
+					//	segment = layerItem.Segments[0];
+					//	if(segment.SegmentType == TrackSegmentType.Plot)
+					//	{
+					//		if(bRetracted)
+					//		{
+					//			builder.AppendLine(
+					//				TransitToPositionZAbs(TransitZEnum.TopOfMaterial));
+					//			bRetracted = false;
+					//		}
+					//		builder.AppendLine(
+					//			PlungeZAbs(
+					//				GetPositionZAbs(
+					//					TransitZEnum.TopOfMaterial,
+					//					segment.Depth),
+					//				feedRate));
+					//	}
+					//}
 					foreach(TrackSegmentItem segmentItem in layerItem.Segments)
 					{
+						//	Process each segment.
 						switch(segmentItem.SegmentType)
 						{
 							case TrackSegmentType.Plot:
@@ -500,8 +342,8 @@ namespace ShopTools
 									builder.AppendLine(
 										TransitToPositionZAbs(TransitZEnum.TopOfMaterial));
 								}
-								if(lastSegment?.SegmentType != TrackSegmentType.Plot)
-								{
+								//if(lastSegment?.SegmentType != TrackSegmentType.Plot)
+								//{
 									//	Dig in.
 									builder.AppendLine(
 										PlungeZAbs(
@@ -509,7 +351,7 @@ namespace ShopTools
 												TransitZEnum.TopOfMaterial,
 												segmentItem.Depth),
 											feedRate));
-								}
+								//}
 								builder.AppendLine(
 									PlotToPositionXYAbs(segmentItem.EndOffset,
 										feedRate));

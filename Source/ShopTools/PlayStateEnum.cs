@@ -25,53 +25,33 @@ using System.Threading.Tasks;
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	LayoutActionType																												*
+	//*	PlayStateEnum																														*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
-	/// Enumeration of recognized layout actions.
+	/// Enumeration of available play states.
 	/// </summary>
-	public enum LayoutActionType
+	public enum PlayStateEnum
 	{
 		/// <summary>
-		/// No layout action defined or unknown.
+		/// No play state defined or unknown.
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Plot an arc.
+		/// The player is stopped.
 		/// </summary>
-		DrawArc,
+		Stop,
 		/// <summary>
-		/// Plot an ellipse.
+		/// The player is playing.
 		/// </summary>
-		DrawEllipse,
+		Play,
 		/// <summary>
-		/// Plot a line.
+		/// The player is playing in reverse.
 		/// </summary>
-		DrawLine,
+		Reverse,
 		/// <summary>
-		/// Plot a rectangle.
+		/// The player is paused on the current frame.
 		/// </summary>
-		DrawRectangle,
-		/// <summary>
-		/// Plot a filled ellipse.
-		/// </summary>
-		FillEllipse,
-		/// <summary>
-		/// Plot a filled rectangle.
-		/// </summary>
-		FillRectangle,
-		/// <summary>
-		/// Move the tool explicitly as a part of the project.
-		/// </summary>
-		MoveExplicit,
-		/// <summary>
-		/// Move the tool implicitly as a part of the present action.
-		/// </summary>
-		MoveImplicit,
-		/// <summary>
-		/// Drill a hole.
-		/// </summary>
-		Point
+		Pause
 	}
 	//*-------------------------------------------------------------------------*
 

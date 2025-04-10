@@ -106,7 +106,7 @@ namespace ShopTools
 					//	Transit to the start point.
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(localLocation),
 						DisplayEndOffset = new FPoint(startOffset),
@@ -222,7 +222,7 @@ namespace ShopTools
 					//	Transit to the start point.
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(localLocation),
 						DisplayEndOffset = new FPoint(startOffset),
@@ -315,7 +315,7 @@ namespace ShopTools
 					//	Transit to the start point.
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(localLocation),
 						DisplayEndOffset = new FPoint(startOffset),
@@ -416,7 +416,7 @@ namespace ShopTools
 				}
 				element = new OperationLayoutItem()
 				{
-					ActionType = LayoutActionType.Move,
+					ActionType = LayoutActionType.MoveImplicit,
 					Operation = operation,
 					DisplayStartOffset = new FPoint(localLocation),
 					DisplayEndOffset = new FPoint(intersection),
@@ -528,8 +528,6 @@ namespace ShopTools
 			FPoint result = null;
 
 			if(operation != null && startPoint != null && endPoint != null &&
-				((endPoint.X - startPoint.X) != 0f ||
-				(endPoint.Y - startPoint.Y) != 0f) &&
 				location != null)
 			{
 				dx = startPoint.X - location.X;
@@ -539,7 +537,7 @@ namespace ShopTools
 					//	Transit to the starting location.
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(location),
 						DisplayEndOffset = new FPoint(startPoint)
@@ -548,18 +546,22 @@ namespace ShopTools
 					element.ToolEndOffset = new FPoint(element.DisplayEndOffset);
 					operation.LayoutElements.Add(element);
 				}
-				//	Draw the line.
-				element = new OperationLayoutItem()
+				if((endPoint.X - startPoint.X) != 0f ||
+					(endPoint.Y - startPoint.Y) != 0f)
 				{
-					ActionType = LayoutActionType.DrawLine,
-					Operation = operation,
-					DisplayStartOffset = new FPoint(startPoint),
-					DisplayEndOffset = new FPoint(endPoint)
-				};
-				element.ToolStartOffset = new FPoint(element.DisplayStartOffset);
-				element.ToolEndOffset = new FPoint(element.DisplayEndOffset);
-				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+					//	Draw the line.
+					element = new OperationLayoutItem()
+					{
+						ActionType = LayoutActionType.DrawLine,
+						Operation = operation,
+						DisplayStartOffset = new FPoint(startPoint),
+						DisplayEndOffset = new FPoint(endPoint)
+					};
+					element.ToolStartOffset = new FPoint(element.DisplayStartOffset);
+					element.ToolEndOffset = new FPoint(element.DisplayEndOffset);
+					operation.LayoutElements.Add(element);
+					result = new FPoint(element.ToolEndOffset);
+				}
 			}
 			if(result == null)
 			{
@@ -600,7 +602,7 @@ namespace ShopTools
 				//	//	Transit to the starting location.
 				//	element = new OperationLayoutItem()
 				//	{
-				//		ActionType = LayoutActionType.Move,
+				//		ActionType = LayoutActionType.MoveExplicit,
 				//		Operation = operation,
 				//		DisplayStartOffset = new FPoint(location),
 				//		DisplayEndOffset = new FPoint(startPoint),
@@ -612,7 +614,7 @@ namespace ShopTools
 				//	Perform the expected move.
 				element = new OperationLayoutItem()
 				{
-					ActionType = LayoutActionType.Move,
+					ActionType = LayoutActionType.MoveExplicit,
 					Operation = operation,
 					DisplayStartOffset = new FPoint(location),
 					DisplayEndOffset = new FPoint(endPoint),
@@ -661,7 +663,7 @@ namespace ShopTools
 					//	Transit to the starting location.
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(location),
 						DisplayEndOffset = new FPoint(offset),
@@ -780,7 +782,7 @@ namespace ShopTools
 				{
 					element = new OperationLayoutItem()
 					{
-						ActionType = LayoutActionType.Move,
+						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
 						DisplayStartOffset = new FPoint(localLocation),
 						DisplayEndOffset = new FPoint(intersection),
@@ -928,6 +930,193 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//*-----------------------------------------------------------------------*
+		//* FindAllContiguous																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a list of operation layout lists, where each list contains a
+		/// set of contiguous items matching the specified pattern.
+		/// </summary>
+		/// <param name="match">
+		/// Reference to the pattern predicate to match.
+		/// </param>
+		/// <returns>
+		/// Reference to a new list of operation layout lists where each list
+		/// represents a set of matching items. Otherwise, an empty list of lists.
+		/// </returns>
+		public List<List<OperationLayoutItem>> FindAllContiguous(
+			Predicate<OperationLayoutItem> match)
+		{
+			List<List<OperationLayoutItem>> result =
+				new List<List<OperationLayoutItem>>();
+			List<OperationLayoutItem> set = null;
+
+			if(match != null)
+			{
+				foreach(OperationLayoutItem layoutItem in this)
+				{
+					if(match(layoutItem))
+					{
+						//	A match was found.
+						if(set == null)
+						{
+							set = new List<OperationLayoutItem>();
+							result.Add(set);
+						}
+						set.Add(layoutItem);
+					}
+					else if(set != null)
+					{
+						//	Break the chain when non-matching item is encountered.
+						set = null;
+					}
+				}
+			}
+
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* FindAllEnding																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a list of all contiguous items at the end of the collection
+		/// matching the provided pattern.
+		/// </summary>
+		/// <param name="match">
+		/// Reference to the pattern predicate to match.
+		/// </param>
+		/// <returns>
+		/// Reference to the list of items at the end of the collection matching
+		/// the specified pattern, if found. Otherwise, an empty list.
+		/// </returns>
+		public List<OperationLayoutItem> FindAllEnding(
+			Predicate<OperationLayoutItem> match)
+		{
+			int count = this.Count;
+			int index = 0;
+			OperationLayoutItem item = null;
+			List<OperationLayoutItem> result = new List<OperationLayoutItem>();
+
+			if(match != null)
+			{
+				for(index = count - 1; index > -1; index --)
+				{
+					item = this[index];
+					if(match(item))
+					{
+						result.Insert(0, item);
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* GetIndexRanges																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a list of index ranges occupied by the items in the list of
+		/// operation layout item lists.
+		/// </summary>
+		/// <param name="contiguousSets">
+		/// List of operation layout item lists containing references to the
+		/// objects to index within the collection.
+		/// </param>
+		/// <returns>
+		/// Reference to an int range collection containing the beginning and
+		/// ending indices of each of the sets in the catalog.
+		/// </returns>
+		public IntRangeCollection GetIndexRanges(
+			List<List<OperationLayoutItem>> contiguousSets)
+		{
+			int index = 0;
+			int max = 0;
+			int min = 0;
+			IntRangeItem range = null;
+			IntRangeCollection result = new IntRangeCollection();
+
+			if(contiguousSets != null)
+			{
+				foreach(List<OperationLayoutItem> setItem in contiguousSets)
+				{
+					min = int.MaxValue;
+					max = 0;
+					foreach(OperationLayoutItem layoutItem in setItem)
+					{
+						index = IndexOf(layoutItem);
+						if(index > -1)
+						{
+							min = Math.Min(min, index);
+							max = Math.Max(max, index);
+						}
+					}
+					if(min < int.MaxValue)
+					{
+						range = new IntRangeItem();
+						range.Start = min;
+						range.End = max;
+						result.Add(range);
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* NextMatchAfter																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a reference to the next match after the specified current item.
+		/// </summary>
+		/// <param name="currentItem">
+		/// Reference to the current item under test.
+		/// </param>
+		/// <param name="match">
+		/// Reference to the pattern predicate to match.
+		/// </param>
+		/// <returns>
+		/// Reference to the next operation layout item matching the predicate
+		/// after the caller's specified item in the list, if found. Otherwise,
+		/// null.
+		/// </returns>
+		public OperationLayoutItem NextMatchAfter(OperationLayoutItem currentItem,
+			Predicate<OperationLayoutItem> match)
+		{
+			int count = 0;
+			int index = 0;
+			OperationLayoutItem item = null;
+			OperationLayoutItem result = null;
+
+			if(currentItem != null && match != null)
+			{
+				index = this.IndexOf(currentItem);
+				if(index > -1)
+				{
+					//	Item was found in the collection.
+					count = this.Count;
+					for(index++; index < count; index++)
+					{
+						item = this[index];
+						if(match(item))
+						{
+							//	Next match was found.
+							result = item;
+							break;
+						}
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
 
 	}
 	//*-------------------------------------------------------------------------*

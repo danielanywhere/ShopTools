@@ -1103,6 +1103,26 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* mnuView3D_Click																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The View / 3D Preview menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuView3D_Click(object sender, EventArgs e)
+		{
+			frmView3D dialog = new frmView3D();
+
+			dialog.ShowDialog();
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* mnuViewGCode_Click																										*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1117,7 +1137,7 @@ namespace ShopTools
 		private void mnuViewGCode_Click(object sender, EventArgs e)
 		{
 			string content = String.Join("\r\n", GCode.RenderGCode());
-			frmTextView dialog = new frmTextView();
+			frmViewText dialog = new frmViewText();
 
 			dialog.Text = content;
 			dialog.Title = "G-Code";
@@ -1983,7 +2003,9 @@ namespace ShopTools
 				//	Width.
 				SessionWorkpieceInfo.UserWidth = txtWorkpieceWidth.Text;
 				//	Depth.
-				SessionWorkpieceInfo.UserDepth = txtWorkpieceDepth.Text;
+				SessionWorkpieceInfo.UserDepth =
+					(txtWorkpieceDepth.Text.Length > 0 ?
+						txtWorkpieceDepth.Text : "3.175mm");
 				//	X.
 				SessionWorkpieceInfo.UserOffsetX = txtWorkpieceX.Text;
 				if(cmboWorkpieceX.SelectedIndex > -1)
@@ -2249,16 +2271,10 @@ namespace ShopTools
 			mCutButtonRowY2Offset = btnDeleteCut.Top - lvCutList.Bottom;
 			mCutButtonRowY3Offset = btnStop.Top - lblCutList.Bottom;
 
-			//mPaintTimer = new Timer()
-			//{
-			//	Enabled = false,
-			//	Interval = 500
-			//};
-			//mPaintTimer.Tick += mPaintTimer_Tick;
 			mToggleTimer = new Timer()
 			{
 				Enabled = false,
-				Interval = 100
+				Interval = 250
 			};
 			mToggleTimer.Tick += mToggleTimer_Tick;
 
@@ -2301,6 +2317,7 @@ namespace ShopTools
 			mnuFileSave.Click += mnuFileSave_Click;
 			mnuFileSaveAs.Click += mnuFileSaveAs_Click;
 			mnuHelpAbout.Click += mnuHelpAbout_Click;
+			mnuView3D.Click += mnuView3D_Click;
 			mnuViewGCode.Click += mnuViewGCode_Click;
 
 			mnuFileImportConfiguration.Enabled = false;

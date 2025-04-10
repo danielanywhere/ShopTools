@@ -724,6 +724,100 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		////*-----------------------------------------------------------------------*
+		////* CircleGetVertices																											*
+		////*-----------------------------------------------------------------------*
+		///// <summary>
+		///// Return a list of vertices for a circle of the specified size centered
+		///// at the provided location.
+		///// </summary>
+		///// <param name="center">
+		///// Reference to the point at which the circle is centered.
+		///// </param>
+		///// <param name="radius">
+		///// Radius of the circle.
+		///// </param>
+		///// <param name="vertexCount">
+		///// Count of vertices to return.
+		///// </param>
+		///// <param name="thetaOffset">
+		///// The optional rotation of the shape, in radians.
+		///// </param>
+		///// <returns>
+		///// Reference to a list of evenly-spaced vertices around the edge of the
+		///// indicated circle, if valid. Otherwise, an empty list.
+		///// </returns>
+		//public static List<FPoint> CircleGetVertices(FPoint center, float radius,
+		//	int vertexCount, float thetaOffset = 0f)
+		//{
+		//	float angle = thetaOffset;
+		//	int index = 0;
+		//	List<FPoint> result = new List<FPoint>();
+		//	float space = 0f;
+		//	//float spaceCount = 0f;
+
+		//	if(center != null && radius > 0f && vertexCount > 0)
+		//	{
+		//		angle = thetaOffset;
+		//		//spaceCount = (float)vertexCount - 1f;
+		//		//space = GeometryUtil.TwoPi / spaceCount;
+		//		space = GeometryUtil.TwoPi / (float)vertexCount;
+		//		for(index = 0; index < vertexCount; index ++)
+		//		{
+		//			result.Add(Trig.GetDestPoint(center, angle, radius));
+		//			angle += space;
+		//		}
+		//	}
+		//	return result;
+		//}
+		////*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* Clamp																																	*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Clamp the supplied value within the allowed minimum and maximum values.
+		/// </summary>
+		/// <param name="value">
+		/// The value to clamp.
+		/// </param>
+		/// <param name="minimum">
+		/// The minimum allowable value.
+		/// </param>
+		/// <param name="maximum">
+		/// The maximum allowable value.
+		/// </param>
+		/// <returns>
+		/// The caller's clamped value.
+		/// </returns>
+		public static float Clamp(float value,
+			float minimum = 0f, float maximum = 1f)
+		{
+			return Math.Max(minimum, Math.Min(value, maximum));
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Clamp the supplied value within the allowed minimum and maximum values.
+		/// </summary>
+		/// <param name="value">
+		/// The value to clamp.
+		/// </param>
+		/// <param name="minimum">
+		/// The minimum allowable value.
+		/// </param>
+		/// <param name="maximum">
+		/// The maximum allowable value.
+		/// </param>
+		/// <returns>
+		/// The caller's clamped value.
+		/// </returns>
+		public static int Clamp(int value,
+			int minimum = 0, int maximum = 1)
+		{
+			return Math.Max(minimum, Math.Min(value, maximum));
+		}
+		//*-----------------------------------------------------------------------*
+
 		//*-----------------------------------------------------------------------*
 		//* Clear																																	*
 		//*-----------------------------------------------------------------------*
@@ -775,6 +869,50 @@ namespace ShopTools
 		{
 			get { return mConfigurationFilename; }
 			set { mConfigurationFilename = value; }
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//*	ConvertRange																													*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Convert from one numeric range to another.
+		/// </summary>
+		/// <param name="value">
+		/// The value to convert.
+		/// </param>
+		/// <param name="fromMin">
+		/// Original range minimum limit.
+		/// </param>
+		/// <param name="fromMax">
+		/// Original range maximum limit.
+		/// </param>
+		/// <param name="toMin">
+		/// New range minimum limit.
+		/// </param>
+		/// <param name="toMax">
+		/// New range maximum limit.
+		/// </param>
+		/// <returns>
+		/// Specified value, converted to the new range.
+		/// </returns>
+		public static float ConvertRange(float value,
+			float fromMin, float fromMax, float toMin, float toMax)
+		{
+			float fromRange = (fromMax - fromMin);
+			float result = 0;
+			float toRange = 0f;
+
+			if(fromRange == 0f)
+			{
+				result = toMin;
+			}
+			else
+			{
+				toRange = (toMax - toMin);
+				result = (((value - fromMin) * toRange) / fromRange) + toMin;
+			}
+			return result;
 		}
 		//*-----------------------------------------------------------------------*
 
@@ -1306,7 +1444,8 @@ namespace ShopTools
 							g.DrawRectangle(drawPen, area);
 							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
-						case LayoutActionType.Move:
+						case LayoutActionType.MoveExplicit:
+						case LayoutActionType.MoveImplicit:
 							startCoordinate = GetDisplayCoordinate(
 								layoutItem.DisplayStartOffset, workspaceArea, scale);
 							endCoordinate = GetDisplayCoordinate(
@@ -2759,6 +2898,173 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* GetPositionZAbs																												*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return the absolute position of Z at the specified position type.
+		/// </summary>
+		/// <param name="zPositionType">
+		/// The type of position to which to check the Z-axis value.
+		/// </param>
+		/// <param name="depthOffset">
+		/// Optional depth offset to add to the found position.
+		/// </param>
+		/// <returns>
+		/// The absolute position of the Z-axis at the specified position type,
+		/// if known. Otherwise, 0.
+		/// </returns>
+		public static float GetPositionZAbs(TransitZEnum zPositionType,
+			float depthOffset = 0f)
+		{
+			float depth = 0f;
+			float extent = 0f;
+			float reach = 0f;
+			float result = 0f;
+
+			if(ConfigProfile != null)
+			{
+				//	A configuration is loaded.
+				reach = GetMillimeters(ConfigProfile.Depth);
+				depth = SessionWorkpieceInfo.Thickness;
+				if(reach != 0f)
+				{
+					switch(ConfigProfile.ZOrigin)
+					{
+						case OriginLocationEnum.Bottom:
+							//	The head's maximum depth is 0.
+							extent = reach;
+							switch(ConfigProfile.TravelZ)
+							{
+								case DirectionUpDownEnum.Down:
+									//	Fully extended, 0.
+									//	Fully retracted, -reach.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = 0f;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = 0f - extent;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = 0f - depth;
+											break;
+									}
+									result += depthOffset;
+									break;
+								case DirectionUpDownEnum.None:
+								case DirectionUpDownEnum.Up:
+									//	Fully extended, 0.
+									//	Fully retracted, +reach.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = 0f;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = extent;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = depth;
+											break;
+									}
+									result -= depthOffset;
+									break;
+							}
+							break;
+						case OriginLocationEnum.Center:
+						case OriginLocationEnum.None:
+							//	The head is homed in the center of its travel.
+							extent = reach / 2f;
+							switch(ConfigProfile.TravelZ)
+							{
+								case DirectionUpDownEnum.Down:
+									//	Fully extended, +reach / 2.
+									//	Fully retracted, -reach / 2.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = extent;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = 0f - extent;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = extent - depth;
+											break;
+									}
+									result += depthOffset;
+									break;
+								case DirectionUpDownEnum.None:
+								case DirectionUpDownEnum.Up:
+									//	Fully extended, -reach / 2.
+									//	Fully retracted, +reach / 2.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = 0f - extent;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = extent;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = (0f - extent) + depth;
+											break;
+									}
+									result -= depthOffset;
+									break;
+							}
+							break;
+						case OriginLocationEnum.Top:
+							//	The head is at 0 when fully retracted.
+							extent = reach;
+							switch(ConfigProfile.TravelZ)
+							{
+								case DirectionUpDownEnum.Down:
+									//	Fully extended, +reach.
+									//	Fully retracted, 0.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = extent;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = 0f;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = extent - depth;
+											break;
+									}
+									result += depthOffset;
+									break;
+								case DirectionUpDownEnum.None:
+								case DirectionUpDownEnum.Up:
+									//	Fully extended, -reach.
+									//	Fully retracted, 0.
+									switch(zPositionType)
+									{
+										case TransitZEnum.FullyExtended:
+											result = 0f - extent;
+											break;
+										case TransitZEnum.FullyRetracted:
+											result = 0f;
+											break;
+										case TransitZEnum.TopOfMaterial:
+											result = (0f - extent) + depth;
+											break;
+									}
+									result -= depthOffset;
+									break;
+							}
+							break;
+					}
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* GetRawEndOffset																												*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -4067,6 +4373,31 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ToPoint																																*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Convert a single precision floating point point to a
+		/// System.Drawing.Point.
+		/// </summary>
+		/// <param name="point">
+		/// Reference to the point to be converted.
+		/// </param>
+		/// <returns>
+		/// A System.Drawing.Point.
+		/// </returns>
+		public static Point ToPoint(FPoint point)
+		{
+			Point result = Point.Empty;
+
+			if(point != null)
+			{
+				result = new Point((int)point.X, (int)point.Y);
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* TransformFromAbsolute																									*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -4225,13 +4556,14 @@ namespace ShopTools
 						//	Top left to Bottom center.
 						//	TODO: Check top left to bottom center.
 						translation.Values[0] = 0f - (width / 2f);
-						translation.Values[1] = 0f - height;
+						translation.Values[1] =
+							(bFlipY ? height : 0f - height);
 						break;
 					case OriginLocationEnum.BottomLeft:
 						//	Bottom left to top left.
-						//	TODO: Check top left to bottom left.
 						translation.Values[0] = 0f;
-						translation.Values[1] = 0f - height;
+						translation.Values[1] =
+							(bFlipY ? height : 0f - height);
 						break;
 					case OriginLocationEnum.BottomRight:
 						//	Top left to bottom right.

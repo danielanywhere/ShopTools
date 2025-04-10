@@ -29,12 +29,12 @@ using System.Windows.Forms;
 namespace ShopTools
 {
 	//*-------------------------------------------------------------------------*
-	//*	frmTextView																															*
+	//*	frmViewText																															*
 	//*-------------------------------------------------------------------------*
 	/// <summary>
 	/// A dialog for viewing text.
 	/// </summary>
-	public partial class frmTextView : Form
+	public partial class frmViewText : Form
 	{
 		//*************************************************************************
 		//*	Private																																*
@@ -87,9 +87,9 @@ namespace ShopTools
 		//*	_Constructor																													*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
-		/// Create a new instance of the frmTextView Item.
+		/// Create a new instance of the frmViewText Item.
 		/// </summary>
-		public frmTextView()
+		public frmViewText()
 		{
 			InitializeComponent();
 

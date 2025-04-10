@@ -68,6 +68,9 @@ your material on the waste board, and your CNC does the rest.
 -   **One-time table setup**. Just set your dimensions, directions of
     travel, and origins. Done.
 
+-   **Check your cuts before exporting.** You can now review your cuts
+    on a scale-model orthogonal 3D view of your table.
+
 <p>&nbsp;</p>
 
 ## The Safest Way to Run Your Shop
