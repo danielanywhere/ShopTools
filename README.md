@@ -230,13 +230,6 @@ your CNC router:
 
 <p>&nbsp;</p>
 
-NOTE: Although the feature is planned, ShopTools doesn't yet have a
-real-time 3D toolpath preview. If you like to review your toolpaths as a
-general rule before sending them to your machine, I would recommend
-using <https://ncviewer.com/> by ToolPath Labs.
-
-<p>&nbsp;</p>
-
 ## Developing With ShopTools
 
 You can see the full SDK documentation for ShopTools here on the GitHub
