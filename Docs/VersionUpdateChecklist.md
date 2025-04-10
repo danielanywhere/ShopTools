@@ -20,7 +20,9 @@ Perform the following tasks when publishing a new version of *Dan's ShopTools De
  - [ ] Update the **MyAppVersion** at the top of **/Projects/ShopTools/SetupProject/ShopToolsSetup.iss**.
  - [ ] Compile the Setup project by running **/Projects/ShopTools/Scripts/BuildShopToolsSetup.cmd**.
  - [ ] If prompted, update **SignSignedUninstaller.cmd** with the new filename found in the folder **../Setup-SignedUninstaller**, then re-run **BuildShopToolsSetup.cmd**.
- - [ ] In the danielanywhere/ShopTools repository, create a new Release.
+ - [ ] In the **danielanywhere/ShopTools** GitHub repository, create a new Release.
+ - [ ] On the release draft page, click **Choose a tag** and enter the filename of the release note without the .MD extension.
+ - [ ] Set the version textbox to 'Version {Version}'.
  - [ ] Paste the release notes from the step above.
  - [ ] Drag the binary from the local Setups folder to the binary attachment section of the release page.
  
