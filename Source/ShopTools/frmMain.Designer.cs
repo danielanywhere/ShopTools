@@ -70,6 +70,7 @@ namespace ShopTools
 			mnuEditTemplates = new System.Windows.Forms.ToolStripMenuItem();
 			mnuEditSettings = new System.Windows.Forms.ToolStripMenuItem();
 			mnuView = new System.Windows.Forms.ToolStripMenuItem();
+			mnuView3D = new System.Windows.Forms.ToolStripMenuItem();
 			mnuViewGCode = new System.Windows.Forms.ToolStripMenuItem();
 			mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
 			mnuHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
@@ -124,7 +125,6 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
-			mnuView3D = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -274,6 +274,12 @@ namespace ShopTools
 			mnuView.Name = "mnuView";
 			mnuView.Size = new System.Drawing.Size(55, 24);
 			mnuView.Text = "&View";
+			// 
+			// mnuView3D
+			// 
+			mnuView3D.Name = "mnuView3D";
+			mnuView3D.Size = new System.Drawing.Size(166, 26);
+			mnuView3D.Text = "&3D Preview";
 			// 
 			// mnuViewGCode
 			// 
@@ -775,12 +781,6 @@ namespace ShopTools
 			splitWorkpiece.Size = new System.Drawing.Size(8, 396);
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
-			// 
-			// mnuView3D
-			// 
-			mnuView3D.Name = "mnuView3D";
-			mnuView3D.Size = new System.Drawing.Size(166, 26);
-			mnuView3D.Text = "&3D Preview";
 			// 
 			// frmMain
 			// 
