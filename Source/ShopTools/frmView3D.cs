@@ -1134,8 +1134,8 @@ namespace ShopTools
 					(((double)mElevationIndex / (double)mElevationPathCount) *
 					1.3962634015954636615389526147909d);
 
-				camPosition = FMatrix3.Rotate(center,
-					(float)elevationAngle, 0f, (float)orbitAngle);
+				camPosition = new FPoint3(FMatrix3.Rotate(center,
+					(float)elevationAngle, 0f, (float)orbitAngle));
 				camPosition += mCamera.LookAt;
 
 				mCamera.Position = camPosition;

@@ -375,12 +375,14 @@ namespace ShopTools
 									location = result.TransitToPositionZAbs(viewLayer, location,
 										TransitZEnum.TopOfMaterial);
 								}
-								//if(lastSegment?.SegmentType != TrackSegmentType.Plot)
-								//{
+								if(bRetracted ||
+									(lastSegment != null &&
+										lastSegment.Depth != segmentItem.Depth))
+								{
 									//	Dig in.
 									location =
 										result.PlungeZAbs(viewLayer, location, segmentItem);
-								//}
+								}
 								location =
 									result.PlotToPositionXYAbs(viewLayer, segmentItem, location);
 								bRetracted = false;

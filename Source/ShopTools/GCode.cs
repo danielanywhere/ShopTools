@@ -342,16 +342,18 @@ namespace ShopTools
 									builder.AppendLine(
 										TransitToPositionZAbs(TransitZEnum.TopOfMaterial));
 								}
-								//if(lastSegment?.SegmentType != TrackSegmentType.Plot)
-								//{
+								if(bRetracted ||
+									(lastSegment != null &&
+										lastSegment.Depth != segmentItem.Depth))
+								{
 									//	Dig in.
 									builder.AppendLine(
-										PlungeZAbs(
-											GetPositionZAbs(
-												TransitZEnum.TopOfMaterial,
-												segmentItem.Depth),
-											feedRate));
-								//}
+									PlungeZAbs(
+										GetPositionZAbs(
+											TransitZEnum.TopOfMaterial,
+											segmentItem.Depth),
+										feedRate));
+								}
 								builder.AppendLine(
 									PlotToPositionXYAbs(segmentItem.EndOffset,
 										feedRate));

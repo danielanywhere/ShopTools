@@ -4425,76 +4425,76 @@ namespace ShopTools
 				if(mConfigProfile.TravelX == DirectionLeftRightEnum.Left)
 				{
 					//	Flip X axis.
-					scale.Values[0] = -1f;
+					scale.X = -1f;
 				}
 				else
 				{
 					//	Normal X axis.
-					scale.Values[0] = 1f;
+					scale.X = 1f;
 				}
 				if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
 				{
 					//	Flip Y axis.
-					scale.Values[1] = -1f;
+					scale.Y = -1f;
 				}
 				else
 				{
 					//	Normal Y axis.
-					scale.Values[1] = 1f;
+					scale.Y = 1f;
 				}
 				target = FMatrix3.Scale((FVector2)absolutePoint, scale);
 				switch(mConfigProfile.XYOrigin)
 				{
 					case OriginLocationEnum.Bottom:
 						//	Bottom center to top left.
-						translation.Values[0] = width / 2f;
-						translation.Values[1] = height;
+						translation.X = width / 2f;
+						translation.Y = height;
 						break;
 					case OriginLocationEnum.BottomLeft:
 						//	Bottom left to top left.
-						translation.Values[0] = 0f;
-						translation.Values[1] = height;
+						translation.X = 0f;
+						translation.Y = height;
 						break;
 					case OriginLocationEnum.BottomRight:
 						//	Bottom right to top left.
-						translation.Values[0] = width;
-						translation.Values[1] = height;
+						translation.X = width;
+						translation.Y = height;
 						break;
 					case OriginLocationEnum.Center:
 						//	Center center to top left.
-						translation.Values[0] = width / 2f;
-						translation.Values[1] = height / 2f;
+						translation.X = width / 2f;
+						translation.Y = height / 2f;
 						break;
 					case OriginLocationEnum.Left:
 						//	Center left to top left.
-						translation.Values[0] = 0f;
-						translation.Values[1] = height / 2f;
+						translation.X = 0f;
+						translation.Y = height / 2f;
 						break;
 					case OriginLocationEnum.Right:
 						//	Center right to top left.
-						translation.Values[0] = width;
-						translation.Values[1] = height / 2f;
+						translation.X = width;
+						translation.Y = height / 2f;
 						break;
 					case OriginLocationEnum.Top:
 						//	Top center to top left.
-						translation.Values[0] = width / 2f;
-						translation.Values[1] = 0f;
+						translation.X = width / 2f;
+						translation.Y = 0f;
 						break;
 					case OriginLocationEnum.TopLeft:
 					case OriginLocationEnum.None:
 						break;
 					case OriginLocationEnum.TopRight:
 						//	Top right to top left.
-						translation.Values[0] = width;
-						translation.Values[1] = 0f;
+						translation.X = width;
+						translation.Y = 0f;
 						break;
 				}
-				if(translation.Values[0] != 0f ||
-					translation.Values[1] != 0f)
+				if(translation.X != 0f ||
+					translation.Y != 0f)
 				{
 					target = FMatrix3.Translate(target, translation);
 				}
-				result = target;
+				result = new FPoint(target);
 			}
 			return result;
 		}
@@ -4531,23 +4531,23 @@ namespace ShopTools
 				{
 					//	Flip X axis.
 					bFlipX = true;
-					scale.Values[0] = -1f;
+					scale.X = -1f;
 				}
 				else
 				{
 					//	Normal X axis.
-					scale.Values[0] = 1f;
+					scale.X = 1f;
 				}
 				if(mConfigProfile.TravelY == DirectionUpDownEnum.Up)
 				{
 					//	Flip Y axis.
 					bFlipY = true;
-					scale.Values[1] = -1f;
+					scale.Y = -1f;
 				}
 				else
 				{
 					//	Normal Y axis.
-					scale.Values[1] = 1f;
+					scale.Y = 1f;
 				}
 				target = FMatrix3.Scale((FVector2)displayPoint, scale);
 				switch(mConfigProfile.XYOrigin)
@@ -4555,48 +4555,48 @@ namespace ShopTools
 					case OriginLocationEnum.Bottom:
 						//	Top left to Bottom center.
 						//	TODO: Check top left to bottom center.
-						translation.Values[0] = 0f - (width / 2f);
-						translation.Values[1] =
+						translation.X = 0f - (width / 2f);
+						translation.Y =
 							(bFlipY ? height : 0f - height);
 						break;
 					case OriginLocationEnum.BottomLeft:
 						//	Bottom left to top left.
-						translation.Values[0] = 0f;
-						translation.Values[1] =
+						translation.X = 0f;
+						translation.Y =
 							(bFlipY ? height : 0f - height);
 						break;
 					case OriginLocationEnum.BottomRight:
 						//	Top left to bottom right.
-						translation.Values[0] =
+						translation.X =
 							(bFlipX ? width : 0f - width);
-						translation.Values[1] =
+						translation.Y =
 							(bFlipY ? height : 0f - height);
 						break;
 					case OriginLocationEnum.Center:
 						//	Top left to center center.
 						//	TODO: Check top left to center center.
-						translation.Values[0] =
+						translation.X =
 							(bFlipX ? width / 2f : 0f - (width / 2f));
-						translation.Values[1] =
+						translation.Y =
 							(bFlipY ? height / 2f : 0f - (height / 2f));
 						break;
 					case OriginLocationEnum.Left:
 						//	Center left to top left.
 						//	TODO: Check top left to center left.
-						translation.Values[0] = 0f;
-						translation.Values[1] = 0f - (height / 2f);
+						translation.X = 0f;
+						translation.Y = 0f - (height / 2f);
 						break;
 					case OriginLocationEnum.Right:
 						//	Center right to top left.
 						//	TODO: Check top left to center right.
-						translation.Values[0] = 0f - width;
-						translation.Values[1] = 0f - (height / 2f);
+						translation.X = 0f - width;
+						translation.Y = 0f - (height / 2f);
 						break;
 					case OriginLocationEnum.Top:
 						//	Top center to top left.
 						//	TODO: Check top left to top center.
-						translation.Values[0] = 0f - (width / 2f);
-						translation.Values[1] = 0f;
+						translation.X = 0f - (width / 2f);
+						translation.Y = 0f;
 						break;
 					case OriginLocationEnum.TopLeft:
 					case OriginLocationEnum.None:
@@ -4604,16 +4604,16 @@ namespace ShopTools
 					case OriginLocationEnum.TopRight:
 						//	Top right to top left.
 						//	TODO: Check top left to top right.
-						translation.Values[0] = 0f - width;
-						translation.Values[1] = 0f;
+						translation.X = 0f - width;
+						translation.Y = 0f;
 						break;
 				}
-				if(translation.Values[0] != 0f ||
-					translation.Values[1] != 0f)
+				if(translation.X != 0f ||
+					translation.Y != 0f)
 				{
 					target = FMatrix3.Translate(target, translation);
 				}
-				result = target;
+				result = new FPoint(target);
 			}
 			return result;
 		}
