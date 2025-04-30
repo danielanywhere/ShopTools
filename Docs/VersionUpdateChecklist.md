@@ -16,7 +16,7 @@ Perform the following tasks when publishing a new version of *Dan's ShopTools De
  - [ ] Check in SDK documentation on **danielanywhere.github.io**. Use the summary 'ShopTools SDK updates for version {Version}'.
  - [ ] Check in source changes on **danielanywhere/ShopTools**. Use the summary 'Updates for version {Version}'. Paste the release notes from above into the description.
  - [ ] Update or close any associated GitHub issues.
- - [ ] Make sure YubiKey is inserted.
+ - [ ] Make sure YubiKey is inserted. If it is not recognized by simply insertion, run YubiKey Manager, unplug the device, then plug it back in again, while the YubiKey Manager is still running.
  - [ ] Update the **MyAppVersion** at the top of **/Projects/ShopTools/SetupProject/ShopToolsSetup.iss**.
  - [ ] Compile the Setup project by running **/Projects/ShopTools/Scripts/BuildShopToolsSetup.cmd**.
  - [ ] If prompted, update **SignSignedUninstaller.cmd** with the new filename found in the folder **../Setup-SignedUninstaller**, then re-run **BuildShopToolsSetup.cmd**.
