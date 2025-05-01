@@ -242,16 +242,46 @@
 	<summary>
 		Template controls image list, containing button images, etc.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+		and would throw an exception during runtime wherever the use of
+		an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmEditTemplates.ilTemplateIcons">
 	<summary>
 		Template icons image list, containing list view icons.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmEditTemplates.ilTemplates">
 	<summary>
 		Templates image list, containing the custom pattern thumbnail icons.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmEditTemplates.lblDisplayFormat">
 	<summary>
@@ -746,17 +776,47 @@
 	<summary>
 		Image list containing general control icons.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmMain.ilPatterns">
 	<summary>
 		Image list containing icons for the patterns list.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmMain.ilPatternsSmall">
 	<summary>
 		Image list containing small copies of <see cref="ilPatterns">ilPatterns</see>
 		for use primarily in the cut list.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmMain.lblCutList">
 	<summary>
@@ -1464,6 +1524,16 @@
 	<summary>
 		Reusable window controls image list.
 	</summary>
+	<remarks>
+		<p>In .NET 8.0 and prior, BinaryFormatter was depreciated by Microsoft
+			and would throw an exception during runtime wherever the use of
+			an ImageList loaded with images was discovered.</p>
+		<p>This is mitigated temporarily with the use of the
+			PropertyGroup/GenerateResourceWarnOnBinaryFormatterUse = true node in
+			the project file. Note that this project setting should be able to be
+			removed in .NET 9.0, where BinaryFormatter has been upgraded to handle
+			most typical WindowsForms uses.</p>
+	</remarks>
 </member>
 <member name="F:ShopTools.frmView3D.lblStat">
 	<summary>
