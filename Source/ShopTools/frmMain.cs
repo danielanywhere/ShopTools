@@ -1140,7 +1140,7 @@ namespace ShopTools
 			frmViewText dialog = new frmViewText();
 
 			dialog.Text = content;
-			dialog.Title = "G-Code";
+			dialog.Title = "Preview G-Code";
 
 			dialog.ShowDialog();
 

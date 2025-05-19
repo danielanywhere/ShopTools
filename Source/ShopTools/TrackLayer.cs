@@ -1917,10 +1917,6 @@ namespace ShopTools
 				toolSet = new TrackToolCollection();
 				toolSet.Initialize(layouts);
 
-				//	TODO: !1 - Stopped here...
-				//	TODO: Fix the depth problem that occurs after a hard transit.
-				//	That must be found in GCode and TrackViewLayer, beause the 2D info + depth is clean here...
-
 				RelateExplicitMovements(layouts);
 
 				location = lastLocation =
