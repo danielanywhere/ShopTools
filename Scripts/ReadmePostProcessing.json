@@ -37,7 +37,7 @@
 	},
 	{
 		"Remarks": "Replace Image folder references.",
-		"FindPattern": "C:\\OneDrive\\Develop\\Shared\\ShopTools\\Images",
+		"FindPattern": "C:\\Files\\Dropbox\\Develop\\Shared\\ShopTools\\Images",
 		"ReplacePattern": "Images",
 		"UseRegEx": 0
 	},

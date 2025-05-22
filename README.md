@@ -1,4 +1,5 @@
-<img src="Images/media/image1.png"
+<img
+src="Images/media/image1.png"
 style="width:100%" />
 
 One of the biggest complaints I've heard about CNC routers in recent
@@ -10,12 +11,13 @@ saved time by just walking over to your traditional power tools and
 doing it manually. But that's about to change…
 
 Welcome to **ShopTools**, the application that finally makes CNC routing
-easier than using your old power tools - except now, you don’t have to
-touch those tools at all. That’s right: with no CAD, no CAM, no
-expensive software or steep learning curve - you can just **drag,
-drop,** and **cut**.
+easier than using your old power tools, except now, you don't have to
+touch those tools at all. That's right: with no CAD, no CAM, no
+expensive software or steep learning curve, you can just **drag, drop,**
+and **cut**.
 
-<img src="Images/media/image2.png"
+<img
+src="Images/media/image2.png"
 style="width:100%" />
 
 <p>&nbsp;</p>
@@ -44,7 +46,7 @@ over the following jobs.
 ## How It Works
 
 Imagine defining your cuts *faster than you could mark them with a
-straightedge and pencil*. That’s what ShopTools delivers. No marking. No
+straightedge and pencil*. That's what ShopTools delivers. No marking. No
 CAD. No CAM. No tool-path configurations. You just accurately position
 your material on the waste board, and your CNC does the rest.
 
@@ -75,8 +77,8 @@ your material on the waste board, and your CNC does the rest.
 
 ## The Safest Way to Run Your Shop
 
-Why get your hands near a spinning blade when you don’t have to? With
-ShopTools, the only time you touch the machine is when you’re
+Why get your hands near a spinning blade when you don't have to? With
+ShopTools, the only time you touch the machine is when you're
 **calibrating it, turning it on,** or **turning it off**. Everything in
 between is hands-free. Faster cuts, safer operation, and zero risk of
 kick-back or touching rotating equipment.
@@ -89,7 +91,7 @@ Improvements are coming along pretty rapidly but if you encounter
 something that hasn't been addressed, just add an Issue and we'll make
 sure it gets some attention.
 
-So, what’s stopping you? Your CNC is ready to go to work. **Why not let
+So, what's stopping you? Your CNC is ready to go to work. **Why not let
 it?**
 
 Download ShopTools today and make your shop run smoother than ever.
@@ -125,7 +127,7 @@ current version of ShopTools.
 
 -   Click **OK**.
 
--   Double-click ShopToolsSetup.exe to run the installat*on.*
+-   Double-click ShopToolsSetup.exe to run the installation*.*
 
 <p>&nbsp;</p>
 
@@ -159,7 +161,7 @@ safe website**.
 ## Our Commitment to Security, Privacy, and Transparency
 
 With ShopTools, our mission is to provide users with a powerful and
-efficient tool to enhance their productivity - nothing more, nothing
+efficient tool to enhance their productivity, nothing more, nothing
 less. We understand the importance of trust when it comes to using
 third-party software, and we take this responsibility seriously.
 
@@ -177,7 +179,7 @@ copy, free from any unauthorized modifications.
 ### Your Privacy Matters
 
 We firmly believe that your data is yours alone. ShopTools **<u>does
-not</u>** collect, store, or transmit any personal information - period.
+not</u>** collect, store, or transmit any personal information, period.
 Any data you generate, process, or exchange using our application
 remains entirely under your control. We have no access to it, nor do we
 ever attempt to monitor or retrieve it in any way. Our software is
@@ -190,7 +192,7 @@ To further reinforce our commitment to security and user trust,
 ShopTools is proudly open source. Our code is available for review on
 the GitHub **DanielAnywhere/ShopTools** repository. We encourage anyone
 in the community to inspect, audit, and verify that our software is
-exactly what we claim it to be - safe, transparent, and trustworthy. By
+exactly what we claim it to be, safe, transparent, and trustworthy. By
 making our source code publicly accessible, we aim to foster an open
 dialogue with users and developers alike, ensuring that ShopTools
 remains a reliable tool for all.
