@@ -78,28 +78,28 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddArcCenterOffsetXY(
+		public static FVector2 AddArcCenterOffsetXY(
 			PatternOperationItem operation,
-			FPoint center, FPoint startOffset, FPoint endOffset,
+			FVector2 center, FVector2 startOffset, FVector2 endOffset,
 			WindingOrientationEnum winding,
-			FPoint location)
+			FVector2 location)
 		{
 			float angleEnd = 0f;
 			float angleStart = 0f;
-			FPoint boxBR = null;
-			FPoint boxTL = null;
+			FVector2 boxBR = null;
+			FVector2 boxTL = null;
 			float distance = 0f;
 			OperationLayoutItem element = null;
-			FPoint actualEndOffset = null;
-			FPoint localLocation = null;
+			FVector2 actualEndOffset = null;
+			FVector2 localLocation = null;
 			float radius = 0f;
-			FPoint result = null;
+			FVector2 result = null;
 			float sweepAngle = 0f;
 
 			if(operation != null && startOffset != null && endOffset != null &&
 				location != null)
 			{
-				localLocation = new FPoint(location);
+				localLocation = new FVector2(location);
 				distance = Trig.GetLineDistance(location, startOffset);
 				if(Math.Abs(distance) > 0f)
 				{
@@ -108,13 +108,13 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(localLocation),
-						DisplayEndOffset = new FPoint(startOffset),
-						ToolStartOffset = new FPoint(localLocation),
-						ToolEndOffset = new FPoint(startOffset)
+						DisplayStartOffset = new FVector2(localLocation),
+						DisplayEndOffset = new FVector2(startOffset),
+						ToolStartOffset = new FVector2(localLocation),
+						ToolEndOffset = new FVector2(startOffset)
 					};
 					operation.LayoutElements.Add(element);
-					FPoint.TransferValues(element.ToolEndOffset, localLocation);
+					FVector2.TransferValues(element.ToolEndOffset, localLocation);
 				}
 				//	Plot the shape.
 				radius = Math.Abs(Trig.GetLineDistance(center, startOffset));
@@ -148,25 +148,25 @@ namespace ShopTools
 				sweepAngle = Trig.GetLineAngle(center, endOffset) - angleStart;
 				actualEndOffset =
 					Trig.GetDestPoint(center, angleStart + sweepAngle, radius);
-				boxTL = new FPoint(center.X - radius, center.Y - radius);
-				boxBR = new FPoint(center.X + radius, center.Y + radius);
+				boxTL = new FVector2(center.X - radius, center.Y - radius);
+				boxBR = new FVector2(center.X + radius, center.Y + radius);
 				element = new OperationLayoutItem()
 				{
 					ActionType = LayoutActionType.DrawArc,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(boxTL),
-					DisplayEndOffset = new FPoint(boxBR),
+					DisplayStartOffset = new FVector2(boxTL),
+					DisplayEndOffset = new FVector2(boxBR),
 					StartAngle = angleStart,
 					SweepAngle = sweepAngle,
-					ToolStartOffset = new FPoint(startOffset),
-					ToolEndOffset = new FPoint(actualEndOffset)
+					ToolStartOffset = new FVector2(startOffset),
+					ToolEndOffset = new FVector2(actualEndOffset)
 				};
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint();
+				result = new FVector2();
 			}
 			return result;
 		}
@@ -198,24 +198,24 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddArcCenterOffsetXYAngle(
+		public static FVector2 AddArcCenterOffsetXYAngle(
 			PatternOperationItem operation,
-			FPoint center, FPoint startOffset, float sweepAngle, FPoint location)
+			FVector2 center, FVector2 startOffset, float sweepAngle, FVector2 location)
 		{
 			float angleStart = 0f;
-			FPoint boxBR = null;
-			FPoint boxTL = null;
+			FVector2 boxBR = null;
+			FVector2 boxTL = null;
 			float distance = 0f;
 			OperationLayoutItem element = null;
-			FPoint actualEndOffset = null;
-			FPoint localLocation = null;
+			FVector2 actualEndOffset = null;
+			FVector2 localLocation = null;
 			float radius = 0f;
-			FPoint result = null;
+			FVector2 result = null;
 
 			if(operation != null && startOffset != null && sweepAngle != 0f &&
 				location != null)
 			{
-				localLocation = new FPoint(location);
+				localLocation = new FVector2(location);
 				distance = Trig.GetLineDistance(location, startOffset);
 				if(Math.Abs(distance) > 0f)
 				{
@@ -224,38 +224,38 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(localLocation),
-						DisplayEndOffset = new FPoint(startOffset),
-						ToolStartOffset = new FPoint(localLocation),
-						ToolEndOffset = new FPoint(startOffset)
+						DisplayStartOffset = new FVector2(localLocation),
+						DisplayEndOffset = new FVector2(startOffset),
+						ToolStartOffset = new FVector2(localLocation),
+						ToolEndOffset = new FVector2(startOffset)
 					};
 					operation.LayoutElements.Add(element);
-					FPoint.TransferValues(element.ToolEndOffset, localLocation);
+					FVector2.TransferValues(element.ToolEndOffset, localLocation);
 				}
 				//	Plot the shape.
 				radius = Math.Abs(Trig.GetLineDistance(center, startOffset));
 				angleStart = Trig.GetLineAngle(center, startOffset);
 				actualEndOffset =
 					Trig.GetDestPoint(center, angleStart + sweepAngle, radius);
-				boxTL = new FPoint(center.X - radius, center.Y - radius);
-				boxBR = new FPoint(center.X + radius, center.Y + radius);
+				boxTL = new FVector2(center.X - radius, center.Y - radius);
+				boxBR = new FVector2(center.X + radius, center.Y + radius);
 				element = new OperationLayoutItem()
 				{
 					ActionType = LayoutActionType.DrawArc,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(boxTL),
-					DisplayEndOffset = new FPoint(boxBR),
+					DisplayStartOffset = new FVector2(boxTL),
+					DisplayEndOffset = new FVector2(boxBR),
 					StartAngle = angleStart,
 					SweepAngle = sweepAngle,
-					ToolStartOffset = new FPoint(startOffset),
-					ToolEndOffset = new FPoint(actualEndOffset)
+					ToolStartOffset = new FVector2(startOffset),
+					ToolEndOffset = new FVector2(actualEndOffset)
 				};
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint();
+				result = new FVector2();
 			}
 			return result;
 		}
@@ -290,24 +290,24 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddArcCenterRadiusStartSweepAngle(
+		public static FVector2 AddArcCenterRadiusStartSweepAngle(
 			PatternOperationItem operation,
-			FPoint center, float radius, float startAngle, float sweepAngle,
-			FPoint location)
+			FVector2 center, float radius, float startAngle, float sweepAngle,
+			FVector2 location)
 		{
-			FPoint boxBR = null;
-			FPoint boxTL = null;
+			FVector2 boxBR = null;
+			FVector2 boxTL = null;
 			float distance = 0f;
 			OperationLayoutItem element = null;
-			FPoint actualEndOffset = null;
-			FPoint localLocation = null;
-			FPoint result = null;
-			FPoint startOffset = null;
+			FVector2 actualEndOffset = null;
+			FVector2 localLocation = null;
+			FVector2 result = null;
+			FVector2 startOffset = null;
 
 			if(operation != null && radius != 0f &&
 				sweepAngle != 0f && location != null)
 			{
-				localLocation = new FPoint(location);
+				localLocation = new FVector2(location);
 				startOffset = Trig.GetDestPoint(center, startAngle, radius);
 				distance = Trig.GetLineDistance(location, startOffset);
 				if(Math.Abs(distance) > 0f)
@@ -317,36 +317,36 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(localLocation),
-						DisplayEndOffset = new FPoint(startOffset),
-						ToolStartOffset = new FPoint(localLocation),
-						ToolEndOffset = new FPoint(startOffset)
+						DisplayStartOffset = new FVector2(localLocation),
+						DisplayEndOffset = new FVector2(startOffset),
+						ToolStartOffset = new FVector2(localLocation),
+						ToolEndOffset = new FVector2(startOffset)
 					};
 					operation.LayoutElements.Add(element);
-					FPoint.TransferValues(element.ToolEndOffset, localLocation);
+					FVector2.TransferValues(element.ToolEndOffset, localLocation);
 				}
 				//	Plot the shape.
 				actualEndOffset =
 					Trig.GetDestPoint(center, startAngle + sweepAngle, radius);
-				boxTL = new FPoint(center.X - radius, center.Y - radius);
-				boxBR = new FPoint(center.X + radius, center.Y + radius);
+				boxTL = new FVector2(center.X - radius, center.Y - radius);
+				boxBR = new FVector2(center.X + radius, center.Y + radius);
 				element = new OperationLayoutItem()
 				{
 					ActionType = LayoutActionType.DrawArc,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(boxTL),
-					DisplayEndOffset = new FPoint(boxBR),
+					DisplayStartOffset = new FVector2(boxTL),
+					DisplayEndOffset = new FVector2(boxBR),
 					StartAngle = startAngle,
 					SweepAngle = sweepAngle,
-					ToolStartOffset = new FPoint(startOffset),
-					ToolEndOffset = new FPoint(actualEndOffset)
+					ToolStartOffset = new FVector2(startOffset),
+					ToolEndOffset = new FVector2(actualEndOffset)
 				};
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint();
+				result = new FVector2();
 			}
 			return result;
 		}
@@ -381,24 +381,24 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddEllipseCenterRadius(
+		public static FVector2 AddEllipseCenterRadius(
 			PatternOperationItem operation,
-			FPoint center, float radiusX, float radiusY, FPoint location,
+			FVector2 center, float radiusX, float radiusY, FVector2 location,
 			bool filled)
 		{
 			float angle = 0f;
 			float distance = 0f;
 			OperationLayoutItem element = null;
-			FPoint intersection = null;
-			FPoint[] intersections = null;
-			FPoint localLocation = null;
-			FPoint outside = null;
-			FPoint result = null;
+			FVector2 intersection = null;
+			FVector2[] intersections = null;
+			FVector2 localLocation = null;
+			FVector2 outside = null;
+			FVector2 result = null;
 
 			if(operation != null && center != null &&
 				radiusX != 0f && radiusY != 0f && location != null)
 			{
-				localLocation = new FPoint(location);
+				localLocation = new FVector2(location);
 				//	Transit to the nearest side.
 				angle = Trig.GetLineAngle(center, localLocation);
 				distance = (float)Math.Max(radiusX, radiusY) * 2f;
@@ -412,38 +412,38 @@ namespace ShopTools
 				}
 				else
 				{
-					intersection = FPoint.Clone(localLocation);
+					intersection = FVector2.Clone(localLocation);
 				}
 				element = new OperationLayoutItem()
 				{
 					ActionType = LayoutActionType.MoveImplicit,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(localLocation),
-					DisplayEndOffset = new FPoint(intersection),
-					ToolStartOffset = new FPoint(localLocation),
-					ToolEndOffset = new FPoint(intersection)
+					DisplayStartOffset = new FVector2(localLocation),
+					DisplayEndOffset = new FVector2(intersection),
+					ToolStartOffset = new FVector2(localLocation),
+					ToolEndOffset = new FVector2(intersection)
 				};
 				operation.LayoutElements.Add(element);
-				FPoint.TransferValues(element.ToolEndOffset, localLocation);
+				FVector2.TransferValues(element.ToolEndOffset, localLocation);
 				//	Plot the shape.
 				element = new OperationLayoutItem()
 				{
 					ActionType = (filled ?
 						LayoutActionType.FillEllipse : LayoutActionType.DrawEllipse),
 					Operation = operation,
-					DisplayStartOffset = new FPoint(
+					DisplayStartOffset = new FVector2(
 						center.X - radiusX, center.Y - radiusY),
-					DisplayEndOffset = new FPoint(
+					DisplayEndOffset = new FVector2(
 						center.X + radiusX, center.Y + radiusY),
-					ToolStartOffset = new FPoint(localLocation)
+					ToolStartOffset = new FVector2(localLocation)
 				};
-				element.ToolEndOffset = new FPoint(element.ToolStartOffset);
+				element.ToolEndOffset = new FVector2(element.ToolStartOffset);
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint(location);
+				result = new FVector2(location);
 			}
 			return result;
 		}
@@ -478,18 +478,18 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddEllipseCornerRadius(
+		public static FVector2 AddEllipseCornerRadius(
 			PatternOperationItem operation,
-			FPoint corner, float radiusX, float radiusY, FPoint location,
+			FVector2 corner, float radiusX, float radiusY, FVector2 location,
 			bool filled)
 		{
-			FPoint center = null;
-			FPoint result = null;
+			FVector2 center = null;
+			FVector2 result = null;
 
 			if(operation != null && corner != null &&
 				radiusX != 0f && radiusY != 0f && location != null)
 			{
-				center = new FPoint(corner.X + radiusX, corner.Y + radiusY);
+				center = new FVector2(corner.X + radiusX, corner.Y + radiusY);
 				result = AddEllipseCenterRadius(operation, center, radiusX, radiusY,
 					location, filled);
 			}
@@ -519,13 +519,13 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the current last known traveling tool location.
 		/// </returns>
-		public static FPoint AddLine(PatternOperationItem operation,
-			FPoint startPoint, FPoint endPoint, FPoint location)
+		public static FVector2 AddLine(PatternOperationItem operation,
+			FVector2 startPoint, FVector2 endPoint, FVector2 location)
 		{
 			float dx = 0f;
 			float dy = 0f;
 			OperationLayoutItem element = null;
-			FPoint result = null;
+			FVector2 result = null;
 
 			if(operation != null && startPoint != null && endPoint != null &&
 				location != null)
@@ -539,11 +539,11 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(location),
-						DisplayEndOffset = new FPoint(startPoint)
+						DisplayStartOffset = new FVector2(location),
+						DisplayEndOffset = new FVector2(startPoint)
 					};
-					element.ToolStartOffset = new FPoint(element.DisplayStartOffset);
-					element.ToolEndOffset = new FPoint(element.DisplayEndOffset);
+					element.ToolStartOffset = new FVector2(element.DisplayStartOffset);
+					element.ToolEndOffset = new FVector2(element.DisplayEndOffset);
 					operation.LayoutElements.Add(element);
 				}
 				if((endPoint.X - startPoint.X) != 0f ||
@@ -554,18 +554,18 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.DrawLine,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(startPoint),
-						DisplayEndOffset = new FPoint(endPoint)
+						DisplayStartOffset = new FVector2(startPoint),
+						DisplayEndOffset = new FVector2(endPoint)
 					};
-					element.ToolStartOffset = new FPoint(element.DisplayStartOffset);
-					element.ToolEndOffset = new FPoint(element.DisplayEndOffset);
+					element.ToolStartOffset = new FVector2(element.DisplayStartOffset);
+					element.ToolEndOffset = new FVector2(element.DisplayEndOffset);
 					operation.LayoutElements.Add(element);
-					result = new FPoint(element.ToolEndOffset);
+					result = new FVector2(element.ToolEndOffset);
 				}
 			}
 			if(result == null)
 			{
-				result = new FPoint(location);
+				result = new FVector2(location);
 			}
 			return result;
 		}
@@ -589,11 +589,11 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the current last known traveling tool location.
 		/// </returns>
-		public static FPoint AddMove(PatternOperationItem operation,
-			FPoint endPoint, FPoint location)
+		public static FVector2 AddMove(PatternOperationItem operation,
+			FVector2 endPoint, FVector2 location)
 		{
 			OperationLayoutItem element = null;
-			FPoint result = null;
+			FVector2 result = null;
 
 			if(operation != null && endPoint != null && location != null)
 			{
@@ -604,10 +604,10 @@ namespace ShopTools
 				//	{
 				//		ActionType = LayoutActionType.MoveExplicit,
 				//		Operation = operation,
-				//		DisplayStartOffset = new FPoint(location),
-				//		DisplayEndOffset = new FPoint(startPoint),
-				//		ToolStartOffset = new FPoint(location),
-				//		ToolEndOffset = new FPoint(startPoint)
+				//		DisplayStartOffset = new FVector2(location),
+				//		DisplayEndOffset = new FVector2(startPoint),
+				//		ToolStartOffset = new FVector2(location),
+				//		ToolEndOffset = new FVector2(startPoint)
 				//	};
 				//	operation.LayoutElements.Add(element);
 				//}
@@ -616,17 +616,17 @@ namespace ShopTools
 				{
 					ActionType = LayoutActionType.MoveExplicit,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(location),
-					DisplayEndOffset = new FPoint(endPoint),
-					ToolStartOffset = new FPoint(location),
-					ToolEndOffset = new FPoint(endPoint)
+					DisplayStartOffset = new FVector2(location),
+					DisplayEndOffset = new FVector2(endPoint),
+					ToolStartOffset = new FVector2(location),
+					ToolEndOffset = new FVector2(endPoint)
 				};
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint(location);
+				result = new FVector2(location);
 			}
 			return result;
 		}
@@ -650,11 +650,11 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the current last known traveling tool location.
 		/// </returns>
-		public static FPoint AddPoint(PatternOperationItem operation,
-			FPoint offset, FPoint location)
+		public static FVector2 AddPoint(PatternOperationItem operation,
+			FVector2 offset, FVector2 location)
 		{
 			OperationLayoutItem element = null;
-			FPoint result = null;
+			FVector2 result = null;
 
 			if(operation != null && offset != null && location != null)
 			{
@@ -665,10 +665,10 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(location),
-						DisplayEndOffset = new FPoint(offset),
-						ToolStartOffset = new FPoint(location),
-						ToolEndOffset = new FPoint(offset)
+						DisplayStartOffset = new FVector2(location),
+						DisplayEndOffset = new FVector2(offset),
+						ToolStartOffset = new FVector2(location),
+						ToolEndOffset = new FVector2(offset)
 					};
 					operation.LayoutElements.Add(element);
 				}
@@ -677,17 +677,17 @@ namespace ShopTools
 				{
 					ActionType = LayoutActionType.Point,
 					Operation = operation,
-					DisplayStartOffset = new FPoint(offset),
-					DisplayEndOffset = new FPoint(offset),
-					ToolStartOffset = new FPoint(offset),
-					ToolEndOffset = new FPoint(offset)
+					DisplayStartOffset = new FVector2(offset),
+					DisplayEndOffset = new FVector2(offset),
+					ToolStartOffset = new FVector2(offset),
+					ToolEndOffset = new FVector2(offset)
 				};
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint(location);
+				result = new FVector2(location);
 			}
 			return result;
 		}
@@ -722,20 +722,20 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddRectangleCenterXY(
+		public static FVector2 AddRectangleCenterXY(
 			PatternOperationItem operation,
-			FPoint center, float lengthX, float lengthY, FPoint location,
+			FVector2 center, float lengthX, float lengthY, FVector2 location,
 			bool filled)
 		{
 			float angle = 0f;
 			float distance = 0f;
 			OperationLayoutItem element = null;
-			FPoint intersection = null;
+			FVector2 intersection = null;
 			FLine line = null;
 			FLine[] lines = null;
-			FPoint localLocation = null;
-			FPoint outside = null;
-			FPoint result = null;
+			FVector2 localLocation = null;
+			FVector2 outside = null;
+			FVector2 result = null;
 			float x1 = 0f;
 			float x2 = 0f;
 			float y1 = 0f;
@@ -744,17 +744,17 @@ namespace ShopTools
 			if(operation != null && center != null &&
 				lengthX != 0f && lengthY != 0f && location != null)
 			{
-				localLocation = new FPoint(location);
+				localLocation = new FVector2(location);
 				x1 = center.X - (lengthX / 2f);
 				y1 = center.Y - (lengthY / 2f);
 				x2 = center.X + (lengthX / 2f);
 				y2 = center.Y + (lengthY / 2f);
 				lines = new FLine[]
 				{
-					new FLine(new FPoint(x1, y1), new FPoint(x2, y1)),
-					new FLine(new FPoint(x1, y1), new FPoint(x1, y2)),
-					new FLine(new FPoint(x2, y1), new FPoint(x2, y2)),
-					new FLine(new FPoint(x1, y2), new FPoint(x2, y2))
+					new FLine(new FVector2(x1, y1), new FVector2(x2, y1)),
+					new FLine(new FVector2(x1, y1), new FVector2(x1, y2)),
+					new FLine(new FVector2(x2, y1), new FVector2(x2, y2)),
+					new FLine(new FVector2(x1, y2), new FVector2(x2, y2))
 				};
 				//	Transit to the nearest side.
 				angle = Trig.GetLineAngle(center, localLocation);
@@ -784,13 +784,13 @@ namespace ShopTools
 					{
 						ActionType = LayoutActionType.MoveImplicit,
 						Operation = operation,
-						DisplayStartOffset = new FPoint(localLocation),
-						DisplayEndOffset = new FPoint(intersection),
-						ToolStartOffset = new FPoint(localLocation),
-						ToolEndOffset = new FPoint(intersection)
+						DisplayStartOffset = new FVector2(localLocation),
+						DisplayEndOffset = new FVector2(intersection),
+						ToolStartOffset = new FVector2(localLocation),
+						ToolEndOffset = new FVector2(intersection)
 					};
 					operation.LayoutElements.Add(element);
-					FPoint.TransferValues(element.ToolEndOffset, localLocation);
+					FVector2.TransferValues(element.ToolEndOffset, localLocation);
 				}
 				//	Plot the shape.
 				element = new OperationLayoutItem()
@@ -799,17 +799,17 @@ namespace ShopTools
 						LayoutActionType.FillRectangle :
 						LayoutActionType.DrawRectangle),
 					Operation = operation,
-					DisplayStartOffset = new FPoint(x1, y1),
-					DisplayEndOffset = new FPoint(x2, y2),
-					ToolStartOffset = new FPoint(localLocation)
+					DisplayStartOffset = new FVector2(x1, y1),
+					DisplayEndOffset = new FVector2(x2, y2),
+					ToolStartOffset = new FVector2(localLocation)
 				};
-				element.ToolEndOffset = new FPoint(element.ToolStartOffset);
+				element.ToolEndOffset = new FVector2(element.ToolStartOffset);
 				operation.LayoutElements.Add(element);
-				result = new FPoint(element.ToolEndOffset);
+				result = new FVector2(element.ToolEndOffset);
 			}
 			if(result == null)
 			{
-				result = new FPoint(location);
+				result = new FVector2(location);
 			}
 			return result;
 		}
@@ -844,18 +844,18 @@ namespace ShopTools
 		/// Reference to the updated last known tool location, if found.
 		/// Otherwise, an empty coordinate.
 		/// </returns>
-		public static FPoint AddRectangleCornerXY(
+		public static FVector2 AddRectangleCornerXY(
 			PatternOperationItem operation,
-			FPoint corner, float lengthX, float lengthY, FPoint location,
+			FVector2 corner, float lengthX, float lengthY, FVector2 location,
 			bool filled)
 		{
-			FPoint center = null;
-			FPoint result = null;
+			FVector2 center = null;
+			FVector2 result = null;
 
 			if(operation != null && corner != null &&
 				lengthX != 0f && lengthY != 0f && location != null)
 			{
-				center = new FPoint(corner.X + (lengthX / 2f),
+				center = new FVector2(corner.X + (lengthX / 2f),
 					corner.Y + (lengthY / 2f));
 				result = AddRectangleCenterXY(operation, center, lengthX, lengthY,
 					location, filled);
@@ -1176,13 +1176,13 @@ namespace ShopTools
 				result = new OperationLayoutItem()
 				{
 					mActionType = item.mActionType,
-					mDisplayEndOffset = new FPoint(item.mDisplayEndOffset),
-					mDisplayStartOffset = new FPoint(item.mDisplayStartOffset),
+					mDisplayEndOffset = new FVector2(item.mDisplayEndOffset),
+					mDisplayStartOffset = new FVector2(item.mDisplayStartOffset),
 					mOperation = item.mOperation,
 					mStartAngle = item.mStartAngle,
 					mSweepAngle = item.mSweepAngle,
-					mToolEndOffset = new FPoint(item.mToolEndOffset),
-					mToolStartOffset = new FPoint(item.mToolStartOffset)
+					mToolEndOffset = new FVector2(item.mToolEndOffset),
+					mToolStartOffset = new FVector2(item.mToolStartOffset)
 				};
 			}
 			if(result == null)
@@ -1199,11 +1199,11 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="DisplayEndOffset">DisplayEndOffset</see>.
 		/// </summary>
-		private FPoint mDisplayEndOffset = new FPoint();
+		private FVector2 mDisplayEndOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the end offset of the display.
 		/// </summary>
-		public FPoint DisplayEndOffset
+		public FVector2 DisplayEndOffset
 		{
 			get { return mDisplayEndOffset; }
 			set { mDisplayEndOffset = value; }
@@ -1217,11 +1217,11 @@ namespace ShopTools
 		/// Private member for
 		/// <see cref="DisplayStartOffset">DisplayStartOffset</see>.
 		/// </summary>
-		private FPoint mDisplayStartOffset = new FPoint();
+		private FVector2 mDisplayStartOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the start offset of the display.
 		/// </summary>
-		public FPoint DisplayStartOffset
+		public FVector2 DisplayStartOffset
 		{
 			get { return mDisplayStartOffset; }
 			set { mDisplayStartOffset = value; }
@@ -1252,11 +1252,11 @@ namespace ShopTools
 		///// Private member for
 		///// <see cref="PreviousToolEndOffset">PreviousToolEndOffset</see>.
 		///// </summary>
-		//private FPoint mPreviousToolEndOffset = new FPoint();
+		//private FVector2 mPreviousToolEndOffset = new FVector2();
 		///// <summary>
 		///// Get/Set a reference to the previous end offset of the tool.
 		///// </summary>
-		//public FPoint PreviousToolEndOffset
+		//public FVector2 PreviousToolEndOffset
 		//{
 		//	get { return mPreviousToolEndOffset; }
 		//	set { mPreviousToolEndOffset = value; }
@@ -1270,11 +1270,11 @@ namespace ShopTools
 		///// Private member for
 		///// <see cref="PreviousToolStartOffset">PreviousToolStartOffset</see>.
 		///// </summary>
-		//private FPoint mPreviousToolStartOffset = new FPoint();
+		//private FVector2 mPreviousToolStartOffset = new FVector2();
 		///// <summary>
 		///// Get/Set a reference to the previous start offset of the tool.
 		///// </summary>
-		//public FPoint PreviousToolStartOffset
+		//public FVector2 PreviousToolStartOffset
 		//{
 		//	get { return mPreviousToolStartOffset; }
 		//	set { mPreviousToolStartOffset = value; }
@@ -1321,11 +1321,11 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="ToolEndOffset">ToolEndOffset</see>.
 		/// </summary>
-		private FPoint mToolEndOffset = new FPoint();
+		private FVector2 mToolEndOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the end offset of the tool.
 		/// </summary>
-		public FPoint ToolEndOffset
+		public FVector2 ToolEndOffset
 		{
 			get { return mToolEndOffset; }
 			set { mToolEndOffset = value; }
@@ -1338,11 +1338,11 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="ToolStartOffset">ToolStartOffset</see>.
 		/// </summary>
-		private FPoint mToolStartOffset = new FPoint();
+		private FVector2 mToolStartOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the start offset of the tool.
 		/// </summary>
-		public FPoint ToolStartOffset
+		public FVector2 ToolStartOffset
 		{
 			get { return mToolStartOffset; }
 			set { mToolStartOffset = value; }

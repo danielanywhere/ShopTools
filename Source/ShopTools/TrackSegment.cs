@@ -89,13 +89,13 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="EndOffset">EndOffset</see>.
 		/// </summary>
-		private FPoint mEndOffset = new FPoint();
+		private FVector2 mEndOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the ending offset.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
-		public FPoint EndOffset
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FVector2.htm">
+		/// FVector2 Documentation</seealso>
+		public FVector2 EndOffset
 		{
 			get { return mEndOffset; }
 			set { mEndOffset = value; }
@@ -160,13 +160,13 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="StartOffset">StartOffset</see>.
 		/// </summary>
-		private FPoint mStartOffset = new FPoint();
+		private FVector2 mStartOffset = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the starting offset.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
-		public FPoint StartOffset
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FVector2.htm">
+		/// FVector2 Documentation</seealso>
+		public FVector2 StartOffset
 		{
 			get { return mStartOffset; }
 			set { mStartOffset = value; }

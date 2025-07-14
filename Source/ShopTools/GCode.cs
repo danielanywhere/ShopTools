@@ -62,7 +62,7 @@ namespace ShopTools
 		/// specified XY coordinates at the specified feedrate, if
 		/// valid. Otherwise, an empty string.
 		/// </returns>
-		public static string PlotToPositionXYAbs(FPoint offset, float feedRate)
+		public static string PlotToPositionXYAbs(FVector2 offset, float feedRate)
 		{
 			StringBuilder builder = new StringBuilder();
 
@@ -199,7 +199,7 @@ namespace ShopTools
 			int layerIndex = 0;
 			string localExtension = "";
 			string localFilenameBase = "";
-			FPoint location = null;
+			FVector2 location = null;
 			float min = 0f;
 			MaterialTypeItem material = null;
 			string materialName = "Unknown";
@@ -266,7 +266,7 @@ namespace ShopTools
 				//	... otherwise, use the accepted minimum feed rate.
 
 				Clear(builder);
-				location = new FPoint();
+				location = new FVector2();
 				trackLayers = new TrackLayerCollection(workpiece.Cuts);
 				foreach(TrackLayerItem layerItem in trackLayers)
 				{
@@ -357,15 +357,15 @@ namespace ShopTools
 								builder.AppendLine(
 									PlotToPositionXYAbs(segmentItem.EndOffset,
 										feedRate));
-								FPoint.TransferValues(segmentItem.EndOffset, location);
+								FVector2.TransferValues(segmentItem.EndOffset, location);
 								bRetracted = false;
 								break;
 							case TrackSegmentType.Plunge:
-								if(!FPoint.Equals(segmentItem.StartOffset, location))
+								if(!FVector2.Equals(segmentItem.StartOffset, location))
 								{
 									builder.AppendLine(
 										TransitToPositionXYAbs(segmentItem.StartOffset));
-									FPoint.TransferValues(segmentItem.StartOffset, location);
+									FVector2.TransferValues(segmentItem.StartOffset, location);
 								}
 								builder.AppendLine(
 									TransitToPositionZAbs(TransitZEnum.TopOfMaterial)
@@ -389,7 +389,7 @@ namespace ShopTools
 								}
 								builder.AppendLine(
 									TransitToPositionXYAbs(segmentItem.EndOffset));
-								FPoint.TransferValues(segmentItem.EndOffset, location);
+								FVector2.TransferValues(segmentItem.EndOffset, location);
 								break;
 						}
 						lastSegment = segmentItem;
@@ -466,7 +466,7 @@ namespace ShopTools
 		/// specified XY coordinates at the maximum possible feedrate, if
 		/// valid. Otherwise, an empty string.
 		/// </returns>
-		public static string TransitToPositionXYAbs(FPoint offset)
+		public static string TransitToPositionXYAbs(FVector2 offset)
 		{
 			StringBuilder builder = new StringBuilder();
 

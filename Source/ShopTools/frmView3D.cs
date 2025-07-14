@@ -100,7 +100,7 @@ namespace ShopTools
 		/// </summary>
 		private Camera3D mCamera = new Camera3D()
 		{
-			LookAt = new FPoint3(0f, 0f, 0f),
+			LookAt = new FVector3(0f, 0f, 0f),
 			UpAxis = AxisType.Z,
 			Handedness = HandType.Right
 		};
@@ -111,7 +111,7 @@ namespace ShopTools
 		/// </summary>
 		private CameraOrtho mCamera = new CameraOrtho()
 		{
-			LookAt = new FPoint3(0f, 0f, 0f),
+			LookAt = new FVector3(0f, 0f, 0f),
 			UpAxis = AxisType.Z,
 			Handedness = HandType.Right
 		};
@@ -135,7 +135,7 @@ namespace ShopTools
 		/// <summary>
 		/// The polygon upon which the material is built.
 		/// </summary>
-		private List<FPoint3> mMaterialPolygon = new List<FPoint3>();
+		private List<FVector3> mMaterialPolygon = new List<FVector3>();
 		///// <summary>
 		///// Value indicating whether the mouse button is down.
 		///// </summary>
@@ -164,7 +164,7 @@ namespace ShopTools
 		///// A list of precalculated points constituting the camera's path
 		///// during an orbit.
 		///// </summary>
-		//private List<FPoint> mOrbitPath = null;
+		//private List<FVector2> mOrbitPath = null;
 		/// <summary>
 		/// The radius of the orbit camera.
 		/// </summary>
@@ -188,7 +188,7 @@ namespace ShopTools
 		/// <summary>
 		/// The polygon upon which the table is built.
 		/// </summary>
-		private List<FPoint3> mTablePolygon = new List<FPoint3>();
+		private List<FVector3> mTablePolygon = new List<FVector3>();
 		/// <summary>
 		/// General state timer.
 		/// </summary>
@@ -839,14 +839,14 @@ namespace ShopTools
 			};
 			Pen plotPen = new Pen(ColorTranslator.FromHtml("#ff02007f"), 1f);
 			Pen plungePen = new Pen(ColorTranslator.FromHtml("#ffff0000"), 1f);
-			FPoint point = null;
+			FVector2 point = null;
 			Point[] pointArray = null;
 			List<Point> pointList = new List<Point>();
 			float progress = 0f;
 			Brush surfaceBrush =
 				new SolidBrush(ColorTranslator.FromHtml("#faecb7"));
 			Image tool = ResourceMain.ToolPin2445;
-			FPoint3 toolLocation = new FPoint3();
+			FVector3 toolLocation = new FVector3();
 			Image upText = ResourceMain.UpTextIcon;
 			Pen xPen = new Pen(ColorTranslator.FromHtml("#7f0000"));
 			Pen yPen = new Pen(ColorTranslator.FromHtml("#007f00"));
@@ -857,7 +857,7 @@ namespace ShopTools
 			graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
 			//	Draw the table.
-			foreach(FPoint3 pointItem in mTablePolygon)
+			foreach(FVector3 pointItem in mTablePolygon)
 			{
 				point = mCamera.ProjectToScreen(pointItem);
 				pointList.Add(ToPoint(point));
@@ -884,7 +884,7 @@ namespace ShopTools
 
 			//	Draw the material.
 			pointList.Clear();
-			foreach(FPoint3 pointItem in mMaterialPolygon)
+			foreach(FVector3 pointItem in mMaterialPolygon)
 			{
 				point = mCamera.ProjectToScreen(pointItem);
 				pointList.Add(ToPoint(point));
@@ -895,7 +895,7 @@ namespace ShopTools
 
 			//	Draw the Up text.
 			point = mCamera.ProjectToScreen(
-				new FPoint3(mWorkArea[0, 3],
+				new FVector3(mWorkArea[0, 3],
 				mWorkArea[1, 1] - (mWorkArea[0, 1] * 0.1f), 0f));
 			graphics.DrawImage(upText,
 				(int)point.X - (upText.Width / 2),
@@ -912,7 +912,7 @@ namespace ShopTools
 					//	A first segment exists. Place the tool at the beginning of
 					//	that segment.
 					toolLocation =
-						FPoint3.Clone(mTrackLayers[0].Segments[0].StartOffset);
+						FVector3.Clone(mTrackLayers[0].Segments[0].StartOffset);
 				}
 				//	Where there is no first segment, the tool is placed at 0,0,0.
 			}
@@ -940,7 +940,7 @@ namespace ShopTools
 				{
 					//	When animation frame is zero, the tool is positioned at the
 					//	beginning of the line.
-					toolLocation = FPoint3.Clone(mAnimationKeyframeSegment.StartOffset);
+					toolLocation = FVector3.Clone(mAnimationKeyframeSegment.StartOffset);
 				}
 			}
 
@@ -1118,23 +1118,23 @@ namespace ShopTools
 		/// </summary>
 		private void UpdateOrbit()
 		{
-			FPoint3 camPosition = null;
-			FPoint3 center = null;
+			FVector3 camPosition = null;
+			FVector3 center = null;
 			double elevationAngle = 0d;
 			double orbitAngle = 0d;
-			//FPoint point = null;
+			//FVector2 point = null;
 
 			if(mOrbitIndex < mOrbitPathCount &&
 				mElevationIndex < mElevationPathCount)
 			{
-				center = new FPoint3(0f, mOrbitRadius, 0f);
+				center = new FVector3(0f, mOrbitRadius, 0f);
 				orbitAngle = ((double)mOrbitIndex / (double)mOrbitPathCount) *
 					(double)GeometryUtil.TwoPi;
 				elevationAngle = 0.01745329251994329576923690768489 +
 					(((double)mElevationIndex / (double)mElevationPathCount) *
 					1.3962634015954636615389526147909d);
 
-				camPosition = new FPoint3(FMatrix3.Rotate(center,
+				camPosition = new FVector3(FMatrix3.Rotate(center,
 					(float)elevationAngle, 0f, (float)orbitAngle));
 				camPosition += mCamera.LookAt;
 
@@ -1247,9 +1247,9 @@ namespace ShopTools
 		/// </summary>
 		public frmView3D()
 		{
-			FPoint absPoint = null;
+			FVector2 absPoint = null;
 			FArea area = null;
-			FPoint3 camPosition = null;
+			FVector3 camPosition = null;
 			float col = 0f;
 			float gridCount = 8;
 			float row = 0f;
@@ -1393,22 +1393,22 @@ namespace ShopTools
 #endif
 
 			//	Create the table polygon.
-			mTablePolygon.Add(new FPoint3(mWorkArea[0, 1], mWorkArea[1, 1], 0f));
-			mTablePolygon.Add(new FPoint3(mWorkArea[0, 1], mWorkArea[1, 2], 0f));
-			mTablePolygon.Add(new FPoint3(mWorkArea[0, 2], mWorkArea[1, 2], 0f));
-			mTablePolygon.Add(new FPoint3(mWorkArea[0, 2], mWorkArea[1, 1], 0f));
+			mTablePolygon.Add(new FVector3(mWorkArea[0, 1], mWorkArea[1, 1], 0f));
+			mTablePolygon.Add(new FVector3(mWorkArea[0, 1], mWorkArea[1, 2], 0f));
+			mTablePolygon.Add(new FVector3(mWorkArea[0, 2], mWorkArea[1, 2], 0f));
+			mTablePolygon.Add(new FVector3(mWorkArea[0, 2], mWorkArea[1, 1], 0f));
 
 
 			//	Create the material polygon.
 			area = SessionWorkpieceInfo.Area;
-			absPoint = TransformToAbsolute(new FPoint(area.Left, area.Top));
-			mMaterialPolygon.Add(new FPoint3(absPoint.X, absPoint.Y, 0f));
-			absPoint = TransformToAbsolute(new FPoint(area.Left, area.Bottom));
-			mMaterialPolygon.Add(new FPoint3(absPoint.X, absPoint.Y, 0f));
-			absPoint = TransformToAbsolute(new FPoint(area.Right, area.Bottom));
-			mMaterialPolygon.Add(new FPoint3(absPoint.X, absPoint.Y, 0f));
-			absPoint = TransformToAbsolute(new FPoint(area.Right, area.Top));
-			mMaterialPolygon.Add(new FPoint3(absPoint.X, absPoint.Y, 0f));
+			absPoint = TransformToAbsolute(new FVector2(area.Left, area.Top));
+			mMaterialPolygon.Add(new FVector3(absPoint.X, absPoint.Y, 0f));
+			absPoint = TransformToAbsolute(new FVector2(area.Left, area.Bottom));
+			mMaterialPolygon.Add(new FVector3(absPoint.X, absPoint.Y, 0f));
+			absPoint = TransformToAbsolute(new FVector2(area.Right, area.Bottom));
+			mMaterialPolygon.Add(new FVector3(absPoint.X, absPoint.Y, 0f));
+			absPoint = TransformToAbsolute(new FVector2(area.Right, area.Top));
+			mMaterialPolygon.Add(new FVector3(absPoint.X, absPoint.Y, 0f));
 
 			//	Create the X grid.
 			for(row = 0f; row <= gridCount; row ++)
@@ -1416,8 +1416,8 @@ namespace ShopTools
 				y = mWorkArea[1, 1] +
 					(row * ((mWorkArea[1, 2] - mWorkArea[1, 1]) / gridCount));
 				mTableGridX.Add(new FLine3(
-					new FPoint3(mWorkArea[0, 1], y, 0f),
-					new FPoint3(mWorkArea[0, 2], y, 0f),
+					new FVector3(mWorkArea[0, 1], y, 0f),
+					new FVector3(mWorkArea[0, 2], y, 0f),
 					new FColor4(0.8f, 0.5f, 0f, 0f)
 					));
 			}
@@ -1427,8 +1427,8 @@ namespace ShopTools
 				x = mWorkArea[0, 1] +
 					(col * ((mWorkArea[0, 2] - mWorkArea[0, 1]) / gridCount));
 				mTableGridY.Add(new FLine3(
-					new FPoint3(x, mWorkArea[1, 1], 0f),
-					new FPoint3(x, mWorkArea[1, 2], 0f),
+					new FVector3(x, mWorkArea[1, 1], 0f),
+					new FVector3(x, mWorkArea[1, 2], 0f),
 					new FColor4(0.8f, 0f, 0.5f, 0f)
 					));
 			}
@@ -1447,12 +1447,12 @@ namespace ShopTools
 				Math.Max(GetMillimeters(ConfigProfile.XDimension),
 					GetMillimeters(ConfigProfile.YDimension)) + 100f;
 #endif
-			mCamera.LookAt = new FPoint3(mWorkArea[0, 3], mWorkArea[1, 3], 0f);
+			mCamera.LookAt = new FVector3(mWorkArea[0, 3], mWorkArea[1, 3], 0f);
 			////	NORM: Orbit horizontally around object.
-			//camPosition = new FPoint3(
+			//camPosition = new FVector3(
 			//	point.X, point.Y, mOrbitRadius / 4f);
 			////	TEST: Orbit vertically around object.
-			//camPosition = new FPoint3(
+			//camPosition = new FVector3(
 			//	0f, point.Y, point.X);
 			//Trace.WriteLine(
 			//	$"Pos: '{mOrbitIndex.ToString().PadLeft(2, '0')}', " +

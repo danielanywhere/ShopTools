@@ -1288,7 +1288,7 @@ namespace ShopTools
 		private void pnlWorkspace_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics graphics = e.Graphics;
-			FPoint location = null;
+			FVector2 location = null;
 			CutProfileItem profile = null;
 			float scale = 1f;
 			SizeF systemSize = GetSystemSize();
@@ -1312,7 +1312,7 @@ namespace ShopTools
 			//	Draw the main table.
 			DrawTable(pnlWorkspace, SessionWorkpieceInfo, graphics);
 			//	Draw the starting router position.
-			location = FPoint.Clone(SessionWorkpieceInfo.RouterLocation);
+			location = FVector2.Clone(SessionWorkpieceInfo.RouterLocation);
 			location = TransformFromAbsolute(location);
 			DrawRouter(location, StartEndEnum.Start, graphics, workspaceArea, scale);
 
@@ -1658,8 +1658,8 @@ namespace ShopTools
 				YDimension = "1219.2mm",
 				XYOrigin = OriginLocationEnum.BottomRight
 			};
-			FPoint absPoint = new FPoint(0f, 0f);
-			FPoint displayPoint = TransformFromAbsolute(absPoint);
+			FVector2 absPoint = new FVector2(0f, 0f);
+			FVector2 displayPoint = TransformFromAbsolute(absPoint);
 			Trace.WriteLine(
 				$"Transfer from {ConfigProfile.XYOrigin} origin - " +
 				$"{absPoint} -> {displayPoint}");
@@ -1712,18 +1712,18 @@ namespace ShopTools
 			string content = "";
 			CutProfileItem profile2 = new CutProfileItem()
 			{
-				EndLocation = new FPoint(10f, 20f),
-				StartLocation = new FPoint(50f, 60f)
+				EndLocation = new FVector2(10f, 20f),
+				StartLocation = new FVector2(50f, 60f)
 			};
 			CutProfileItem profile1 = new CutProfileItem()
 			{
 				DisplayFormat = "a display format",
-				EndLocation = new FPoint(10f, 20f),
+				EndLocation = new FVector2(10f, 20f),
 				IconFilename = "long/icon/filename.img",
 				Orientation = TemplateOrientationEnum.Workpiece,
 				PatternLength = "30in",
 				PatternWidth = "40mm",
-				StartLocation = new FPoint(50f, 60f),
+				StartLocation = new FVector2(50f, 60f),
 				TemplateName = "random name",
 				ToolSequenceStrict = false
 			};

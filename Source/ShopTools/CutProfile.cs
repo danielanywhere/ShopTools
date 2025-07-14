@@ -45,7 +45,6 @@ namespace ShopTools
 		//*************************************************************************
 		//*	Public																																*
 		//*************************************************************************
-
 		//*-----------------------------------------------------------------------*
 		//* Clone																																	*
 		//*-----------------------------------------------------------------------*
@@ -62,9 +61,9 @@ namespace ShopTools
 		{
 			CutProfileCollection result = new CutProfileCollection();
 
-			if(items?.Count > 0)
+			if (items?.Count > 0)
 			{
-				foreach(CutProfileItem profileItem in items)
+				foreach (CutProfileItem profileItem in items)
 				{
 					result.Add(CutProfileItem.Clone(profileItem));
 				}
@@ -191,9 +190,9 @@ namespace ShopTools
 		/// </summary>
 		public CutProfileItem() : base()
 		{
-			mEndLocation = new FPoint();
+			mEndLocation = new FVector2();
 			mEndLocation.CoordinateChanged += mEndLocation_CoordinateChanged;
-			mStartLocation = new FPoint();
+			mStartLocation = new FVector2();
 			mStartLocation.CoordinateChanged += mStartLocation_CoordinateChanged;
 		}
 		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
@@ -256,8 +255,8 @@ namespace ShopTools
 				{
 					DisplayFormat = item.DisplayFormat,
 					IconFilename = item.IconFilename,
-					mEndLocation = FPoint.Clone(item.mEndLocation),
-					mStartLocation = FPoint.Clone(item.mStartLocation),
+					mEndLocation = FVector2.Clone(item.mEndLocation),
+					mStartLocation = FVector2.Clone(item.mStartLocation),
 					//Orientation = item.Orientation,
 					//PatternLength = item.PatternLength,
 					PatternTemplateId = item.PatternTemplateId,
@@ -292,14 +291,14 @@ namespace ShopTools
 		/// <summary>
 		/// Internal EndLocation member <see cref="EndLocation"/>
 		/// </summary>
-		private FPoint mEndLocation = null;
+		private FVector2 mEndLocation = null;
 		/// <summary>
 		/// Get/Set a reference to the end location of the router for this cut.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FVector2.htm">
+		/// FVector2 Documentation</seealso>
 		[JsonIgnore]
-		public FPoint EndLocation
+		public FVector2 EndLocation
 		{
 			get { return mEndLocation; }
 			set
@@ -333,14 +332,14 @@ namespace ShopTools
 		/// <summary>
 		/// Internal StartLocation member <see cref="StartLocation"/>.
 		/// </summary>
-		private FPoint mStartLocation = new FPoint();
+		private FVector2 mStartLocation = new FVector2();
 		/// <summary>
 		/// Get/Set a reference to the start location of the router for this cut.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FVector2.htm">
+		/// FVector2 Documentation</seealso>
 		[JsonIgnore]
-		public FPoint StartLocation
+		public FVector2 StartLocation
 		{
 			get { return mStartLocation; }
 			set
@@ -390,8 +389,8 @@ namespace ShopTools
 			{
 				target.DisplayFormat = source.DisplayFormat;
 				target.IconFilename = source.IconFilename;
-				FPoint.TransferValues(source.mEndLocation, target.mEndLocation);
-				FPoint.TransferValues(source.mStartLocation, target.mStartLocation);
+				FVector2.TransferValues(source.mEndLocation, target.mEndLocation);
+				FVector2.TransferValues(source.mStartLocation, target.mStartLocation);
 				//target.Orientation = source.Orientation;
 				//target.PatternLength = source.PatternLength;
 				target.PatternTemplateId = source.PatternTemplateId;

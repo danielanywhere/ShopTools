@@ -70,13 +70,13 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the last-known current location.
 		/// </returns>
-		private FPoint AddPrecedingExplicitMoves(OperationLayoutCollection layouts,
+		private FVector2 AddPrecedingExplicitMoves(OperationLayoutCollection layouts,
 			int layoutIndex, IntRangeCollection moveIndices, TrackToolItem tool,
-			FPoint location)
+			FVector2 location)
 		{
 			int index = 0;
 			OperationLayoutItem layout = null;
-			FPoint localLocation = FPoint.Clone(location);
+			FVector2 localLocation = FVector2.Clone(location);
 			IntRangeItem moveIndex = null;
 			TrackLayerItem trackLayer = null;
 
@@ -119,15 +119,15 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last-known location.
 		/// </returns>
-		private FPoint AdjustKerf()
+		private FVector2 AdjustKerf()
 		{
 			int count = 0;
 			FLine line1 = new FLine();
 			FLine line2 = new FLine();
 			int index = 0;
 			float kerfClearance = 0f;
-			FPoint lastLocation = null;
-			FPoint location = null;
+			FVector2 lastLocation = null;
+			FVector2 location = null;
 			TrackSegmentCollection kerfSegments = null;
 			TrackSegmentItem newSegment = null;
 			TrackSegmentItem nextSegment = null;
@@ -202,7 +202,7 @@ namespace ShopTools
 									}
 									location = FLine.Intersect(line1, line2, true);
 									//	Update the starting location on the current segment.
-									FPoint.TransferValues(location, line1.PointA);
+									FVector2.TransferValues(location, line1.PointA);
 								}
 							}
 							//	Blend with next.
@@ -231,17 +231,17 @@ namespace ShopTools
 									}
 									location = FLine.Intersect(line1, line2, true);
 									//	Update the ending location on the current segment.
-									FPoint.TransferValues(location, line1.PointB);
+									FVector2.TransferValues(location, line1.PointB);
 								}
 							}
 							newSegment = DeepClone(segment);
-							FPoint.TransferValues(line1.PointA, newSegment.StartOffset);
-							FPoint.TransferValues(line1.PointB, newSegment.EndOffset);
+							FVector2.TransferValues(line1.PointA, newSegment.StartOffset);
+							FVector2.TransferValues(line1.PointB, newSegment.EndOffset);
 							kerfSegments.Add(newSegment);
 							prevSegment = segment;
 						}
 						//	Heal the start/end locations on transits.
-						lastLocation = new FPoint();
+						lastLocation = new FVector2();
 						prevSegment = null;
 						for(index = 0; index < count; index++)
 						{
@@ -255,19 +255,19 @@ namespace ShopTools
 								if(prevSegment != null)
 								{
 									//	Connect the current start to previous end.
-									FPoint.TransferValues(
+									FVector2.TransferValues(
 										prevSegment.EndOffset, segment.StartOffset);
 								}
 								if(nextSegment != null)
 								{
 									//	Connect the current end to the next start.
-									FPoint.TransferValues(
+									FVector2.TransferValues(
 										nextSegment.StartOffset, segment.EndOffset);
 								}
 							}
 							else
 							{
-								FPoint.TransferValues(segment.EndOffset, lastLocation);
+								FVector2.TransferValues(segment.EndOffset, lastLocation);
 							}
 							prevSegment = segment;
 						}
@@ -300,20 +300,20 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint DrawArc(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 DrawArc(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			float angle = 0f;
 			float angleIncrement = 0f;
 			float cutDepth = 0f;
 			FEllipse ellipse = null;
 			float endAngle = 0f;
-			FPoint endOffset = null;
-			FPoint localLocation = new FPoint(location);
+			FVector2 endOffset = null;
+			FVector2 localLocation = new FVector2(location);
 			float radiusX = 0f;
 			float radiusY = 0f;
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float toolOffset = 0f;
 			float targetDepth = 0f;
 
@@ -351,10 +351,10 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 				if(angleIncrement != 0f)
 				{
@@ -370,14 +370,14 @@ namespace ShopTools
 							{
 								Operation = layoutItem.Operation,
 								SegmentType = TrackSegmentType.Plot,
-								StartOffset = new FPoint(startOffset),
-								EndOffset = new FPoint(endOffset),
+								StartOffset = new FVector2(startOffset),
+								EndOffset = new FVector2(endOffset),
 								Depth = cutDepth,
 								TargetDepth = targetDepth
 							};
 							track.Segments.Add(segment);
-							FPoint.TransferValues(segment.EndOffset, startOffset);
-							FPoint.TransferValues(segment.EndOffset, localLocation);
+							FVector2.TransferValues(segment.EndOffset, startOffset);
+							FVector2.TransferValues(segment.EndOffset, localLocation);
 						}
 					}
 					else
@@ -391,14 +391,14 @@ namespace ShopTools
 							{
 								Operation = layoutItem.Operation,
 								SegmentType = TrackSegmentType.Plot,
-								StartOffset = new FPoint(startOffset),
-								EndOffset = new FPoint(endOffset),
+								StartOffset = new FVector2(startOffset),
+								EndOffset = new FVector2(endOffset),
 								Depth = cutDepth,
 								TargetDepth = targetDepth
 							};
 							track.Segments.Add(segment);
-							FPoint.TransferValues(segment.EndOffset, startOffset);
-							FPoint.TransferValues(segment.EndOffset, localLocation);
+							FVector2.TransferValues(segment.EndOffset, startOffset);
+							FVector2.TransferValues(segment.EndOffset, localLocation);
 						}
 					}
 					//	Finalize the path.
@@ -409,13 +409,13 @@ namespace ShopTools
 						{
 							Operation = layoutItem.Operation,
 							SegmentType = TrackSegmentType.Plot,
-							StartOffset = new FPoint(startOffset),
-							EndOffset = new FPoint(endOffset),
+							StartOffset = new FVector2(startOffset),
+							EndOffset = new FVector2(endOffset),
 							Depth = cutDepth,
 							TargetDepth = targetDepth
 						};
 						track.Segments.Add(segment);
-						FPoint.TransferValues(segment.EndOffset, localLocation);
+						FVector2.TransferValues(segment.EndOffset, localLocation);
 					}
 				}
 			}
@@ -442,21 +442,21 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint DrawEllipse(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 DrawEllipse(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			float angle = 0f;
 			float angleIncrement = 0f;
 			float cutDepth = 0f;
 			FEllipse ellipse = null;
-			FPoint endOffset = null;
+			FVector2 endOffset = null;
 			float facetIndex = 0f;
 			float facetCount = 50f;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			float radiusX = 0f;
 			float radiusY = 0f;
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float toolOffset = 0f;
 			float targetDepth = 0f;
 
@@ -493,10 +493,10 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 				if(angleIncrement != 0f)
 				{
@@ -510,14 +510,14 @@ namespace ShopTools
 						{
 							Operation = layoutItem.Operation,
 							SegmentType = TrackSegmentType.Plot,
-							StartOffset = new FPoint(startOffset),
-							EndOffset = new FPoint(endOffset),
+							StartOffset = new FVector2(startOffset),
+							EndOffset = new FVector2(endOffset),
 							Depth = cutDepth,
 							TargetDepth = targetDepth
 						};
 						track.Segments.Add(segment);
-						FPoint.TransferValues(segment.EndOffset, startOffset);
-						FPoint.TransferValues(segment.EndOffset, localLocation);
+						FVector2.TransferValues(segment.EndOffset, startOffset);
+						FVector2.TransferValues(segment.EndOffset, localLocation);
 					}
 					//	Finalize the path.
 					endOffset = layoutItem.ToolEndOffset;
@@ -527,13 +527,13 @@ namespace ShopTools
 						{
 							Operation = layoutItem.Operation,
 							SegmentType = TrackSegmentType.Plot,
-							StartOffset = new FPoint(startOffset),
-							EndOffset = new FPoint(endOffset),
+							StartOffset = new FVector2(startOffset),
+							EndOffset = new FVector2(endOffset),
 							Depth = cutDepth,
 							TargetDepth = targetDepth
 						};
 						track.Segments.Add(segment);
-						FPoint.TransferValues(segment.EndOffset, localLocation);
+						FVector2.TransferValues(segment.EndOffset, localLocation);
 					}
 				}
 			}
@@ -560,14 +560,14 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint DrawLine(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 DrawLine(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			float cutDepth = 0f;
-			FPoint endOffset = null;
-			FPoint localLocation = new FPoint(location);
+			FVector2 endOffset = null;
+			FVector2 localLocation = new FVector2(location);
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float targetDepth = 0f;
 
 			if(layoutItem != null && track != null)
@@ -584,8 +584,8 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
 				}
 				segment = new TrackSegmentItem()
@@ -595,10 +595,10 @@ namespace ShopTools
 					Depth = cutDepth,
 					TargetDepth = targetDepth
 				};
-				FPoint.TransferValues(startOffset, segment.StartOffset);
-				FPoint.TransferValues(endOffset, segment.EndOffset);
+				FVector2.TransferValues(startOffset, segment.StartOffset);
+				FVector2.TransferValues(endOffset, segment.EndOffset);
 				track.Segments.Add(segment);
-				FPoint.TransferValues(endOffset, localLocation);
+				FVector2.TransferValues(endOffset, localLocation);
 			}
 			return localLocation;
 		}
@@ -623,13 +623,13 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint DrawRectangle(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 DrawRectangle(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			FArea boundingBox = null;
 			int count = 0;
 			float cutDepth = 0f;
-			FPoint endOffset = null;
+			FVector2 endOffset = null;
 			int index = 0;
 			FLine line = null;
 			int lineIndex = 0;
@@ -637,10 +637,10 @@ namespace ShopTools
 			FLine lineRemainder = null;
 			List<FLine> lines = null;
 			List<FLine> linesMatching = null;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			TrackSegmentItem segment = null;
 			FLine startLine = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float targetDepth = 0f;
 
 			if(layoutItem != null && track != null)
@@ -664,8 +664,8 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
 				}
 				if(FArea.IsPointAtCorner(boundingBox, layoutItem.ToolStartOffset))
@@ -701,11 +701,11 @@ namespace ShopTools
 								Depth = cutDepth,
 								TargetDepth = targetDepth
 							};
-							FPoint.TransferValues(line.PointA,
+							FVector2.TransferValues(line.PointA,
 								segment.StartOffset);
-							FPoint.TransferValues(line.PointB,
+							FVector2.TransferValues(line.PointB,
 								segment.EndOffset);
-							FPoint.TransferValues(segment.EndOffset, localLocation);
+							FVector2.TransferValues(segment.EndOffset, localLocation);
 						}
 					}
 				}
@@ -729,7 +729,7 @@ namespace ShopTools
 								//	intersection.
 								lineRemainder = new FLine(line.PointA,
 									layoutItem.ToolStartOffset);
-								line.PointA = new FPoint(layoutItem.ToolStartOffset);
+								line.PointA = new FVector2(layoutItem.ToolStartOffset);
 								lineList.Add(line);
 							}
 							else
@@ -750,11 +750,11 @@ namespace ShopTools
 								Depth = cutDepth,
 								TargetDepth = targetDepth
 							};
-							FPoint.TransferValues(line.PointA,
+							FVector2.TransferValues(line.PointA,
 								segment.StartOffset);
-							FPoint.TransferValues(line.PointB,
+							FVector2.TransferValues(line.PointB,
 								segment.EndOffset);
-							FPoint.TransferValues(segment.EndOffset, localLocation);
+							FVector2.TransferValues(segment.EndOffset, localLocation);
 						}
 					}
 				}
@@ -784,20 +784,20 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint DrillHoles(OperationLayoutCollection layouts,
-			TrackToolCollection tools, FPoint location)
+		private FVector2 DrillHoles(OperationLayoutCollection layouts,
+			TrackToolCollection tools, FVector2 location)
 		{
 			string defaultToolName = "";
-			FPoint endOffset = null;
+			FVector2 endOffset = null;
 			int layoutIndex = 0;
 			List<List<OperationLayoutItem>> layoutSetsMatching = null;
 			//List<OperationLayoutItem> layoutsMatching = null;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			MinMaxItem minMax = null;
 			IntRangeCollection moveIndices = null;
 			List<List<OperationLayoutItem>> moveSets = null;
-			FPoint newLocation = null;
-			FPoint startOffset = null;
+			FVector2 newLocation = null;
+			FVector2 startOffset = null;
 			TrackToolItem tool = null;
 			List<string> toolNames = null;
 			TrackLayerItem trackLayer = null;
@@ -871,8 +871,8 @@ namespace ShopTools
 											Operation = layoutItem.Operation,
 											SegmentType = TrackSegmentType.Transit
 										};
-										FPoint.TransferValues(localLocation, segment.StartOffset);
-										FPoint.TransferValues(startOffset, segment.EndOffset);
+										FVector2.TransferValues(localLocation, segment.StartOffset);
+										FVector2.TransferValues(startOffset, segment.EndOffset);
 										segments.Add(segment);
 										//	Drill the site.
 										segment = new TrackSegmentItem()
@@ -881,11 +881,11 @@ namespace ShopTools
 											SegmentType = TrackSegmentType.Plunge,
 											Depth = ResolveDepth(layoutItem.Operation)
 										};
-										FPoint.TransferValues(startOffset, segment.StartOffset);
-										FPoint.TransferValues(endOffset, segment.EndOffset);
+										FVector2.TransferValues(startOffset, segment.StartOffset);
+										FVector2.TransferValues(endOffset, segment.EndOffset);
 										segments.Add(segment);
 									}
-									FPoint.TransferValues(newLocation, localLocation);
+									FVector2.TransferValues(newLocation, localLocation);
 								}
 								if(segments.Count > 0)
 								{
@@ -922,24 +922,24 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint FillEllipse(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 FillEllipse(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			FArea boundingBox = null;
-			FPoint boxEndOffset = null;
-			FPoint boxStartOffset = null;
+			FVector2 boxEndOffset = null;
+			FVector2 boxStartOffset = null;
 			float cutDepth = 0f;
 			FEllipse ellipse = null;
-			FPoint endOffset = null;
-			FPoint[] ends = null;
+			FVector2 endOffset = null;
+			FVector2[] ends = null;
 			int index = 0;
 			FLine line = null;
 			float lineY = 0f;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			float radiusX = 0f;
 			float radiusY = 0f;
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float targetDepth = 0f;
 			float toolOffset = 0f;
 
@@ -961,13 +961,13 @@ namespace ShopTools
 					radiusY - toolOffset
 					);
 				boundingBox = FEllipse.BoundingBox(ellipse);
-				boxStartOffset = new FPoint(boundingBox.Left, boundingBox.Top);
-				boxEndOffset = new FPoint(boundingBox.Right, boundingBox.Bottom);
+				boxStartOffset = new FVector2(boundingBox.Left, boundingBox.Top);
+				boxEndOffset = new FVector2(boundingBox.Right, boundingBox.Bottom);
 				//	Further increments will be by radius.
 				toolOffset /= 2f;
 				line = new FLine(
-					new FPoint(startOffset.X, boundingBox.Top + toolOffset),
-					new FPoint(endOffset.X, boundingBox.Top + toolOffset));
+					new FVector2(startOffset.X, boundingBox.Top + toolOffset),
+					new FVector2(endOffset.X, boundingBox.Top + toolOffset));
 				ends = FEllipse.FindIntersections(ellipse, line, false);
 				//	Reassign Start/End offsets to per-line usage.
 				startOffset = null;
@@ -986,10 +986,10 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 				//	Draw a radiator pattern of lines from the top to the bottom
 				//	coordinates.
@@ -1019,11 +1019,11 @@ namespace ShopTools
 							SegmentType = TrackSegmentType.Plot,
 							Depth = cutDepth,
 							TargetDepth = targetDepth,
-							StartOffset = new FPoint(localLocation.X, localLocation.Y),
-							EndOffset = new FPoint(startOffset.X, startOffset.Y)
+							StartOffset = new FVector2(localLocation.X, localLocation.Y),
+							EndOffset = new FVector2(startOffset.X, startOffset.Y)
 						};
 						track.Segments.Add(segment);
-						FPoint.TransferValues(segment.EndOffset, localLocation);
+						FVector2.TransferValues(segment.EndOffset, localLocation);
 					}
 					//	Plot across the row.
 					segment = new TrackSegmentItem()
@@ -1032,11 +1032,11 @@ namespace ShopTools
 						SegmentType = TrackSegmentType.Plot,
 						Depth = cutDepth,
 						TargetDepth = targetDepth,
-						StartOffset = new FPoint(startOffset.X, startOffset.Y),
-						EndOffset = new FPoint(endOffset.X, endOffset.Y)
+						StartOffset = new FVector2(startOffset.X, startOffset.Y),
+						EndOffset = new FVector2(endOffset.X, endOffset.Y)
 					};
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 			}
 			return localLocation;
@@ -1062,22 +1062,22 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint FillRectangle(OperationLayoutItem layoutItem,
-			TrackLayerItem track, FPoint location)
+		private FVector2 FillRectangle(OperationLayoutItem layoutItem,
+			TrackLayerItem track, FVector2 location)
 		{
 			FArea boundingBox = null;
-			FPoint boxEndOffset = null;
+			FVector2 boxEndOffset = null;
 			float boxLeft = 0f;
 			float boxRight = 0f;
-			FPoint boxStartOffset = null;
+			FVector2 boxStartOffset = null;
 			float cutDepth = 0f;
-			FPoint endOffset = null;
+			FVector2 endOffset = null;
 			int index = 0;
 			List<FLine> lines = null;
 			float lineY = 0f;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float targetDepth = 0f;
 			float toolOffset = 0f;
 
@@ -1102,14 +1102,14 @@ namespace ShopTools
 				boundingBox.Bottom -= toolOffset;
 				boxLeft = boundingBox.Left;
 				boxRight = boundingBox.Right;
-				boxStartOffset = new FPoint(boundingBox.Left, boundingBox.Top);
-				boxEndOffset = new FPoint(boundingBox.Right, boundingBox.Bottom);
+				boxStartOffset = new FVector2(boundingBox.Left, boundingBox.Top);
+				boxEndOffset = new FVector2(boundingBox.Right, boundingBox.Bottom);
 				//	Reassign Start/End offsets to per-line usage.
 				startOffset = null;
 				endOffset = null;
 				lines = FArea.GetLines(boundingBox);
-				startOffset = new FPoint(boxStartOffset);
-				endOffset = new FPoint(boundingBox.Right, boundingBox.Top);
+				startOffset = new FVector2(boxStartOffset);
+				endOffset = new FVector2(boundingBox.Right, boundingBox.Top);
 				//	Transit to site, if applicable.
 				if(startOffset != localLocation)
 				{
@@ -1118,10 +1118,10 @@ namespace ShopTools
 						Operation = layoutItem.Operation,
 						SegmentType = TrackSegmentType.Transit
 					};
-					FPoint.TransferValues(localLocation, segment.StartOffset);
-					FPoint.TransferValues(startOffset, segment.EndOffset);
+					FVector2.TransferValues(localLocation, segment.StartOffset);
+					FVector2.TransferValues(startOffset, segment.EndOffset);
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 				//	Draw a radiator pattern of lines from the top left to the bottom
 				//	right coordinates.
@@ -1150,11 +1150,11 @@ namespace ShopTools
 							SegmentType = TrackSegmentType.Plot,
 							Depth = cutDepth,
 							TargetDepth = targetDepth,
-							StartOffset = new FPoint(localLocation.X, localLocation.Y),
-							EndOffset = new FPoint(startOffset.X, startOffset.Y)
+							StartOffset = new FVector2(localLocation.X, localLocation.Y),
+							EndOffset = new FVector2(startOffset.X, startOffset.Y)
 						};
 						track.Segments.Add(segment);
-						FPoint.TransferValues(segment.EndOffset, localLocation);
+						FVector2.TransferValues(segment.EndOffset, localLocation);
 					}
 					//	Plot across the row.
 					segment = new TrackSegmentItem()
@@ -1163,11 +1163,11 @@ namespace ShopTools
 						SegmentType = TrackSegmentType.Plot,
 						Depth = cutDepth,
 						TargetDepth = targetDepth,
-						StartOffset = new FPoint(startOffset.X, startOffset.Y),
-						EndOffset = new FPoint(endOffset.X, endOffset.Y)
+						StartOffset = new FVector2(startOffset.X, startOffset.Y),
+						EndOffset = new FVector2(endOffset.X, endOffset.Y)
 					};
 					track.Segments.Add(segment);
-					FPoint.TransferValues(segment.EndOffset, localLocation);
+					FVector2.TransferValues(segment.EndOffset, localLocation);
 				}
 			}
 			return localLocation;
@@ -1187,14 +1187,14 @@ namespace ShopTools
 		/// Reference to the piont with the lowest x-axis value in the set, if
 		/// found. Otherwise, null.
 		/// </returns>
-		private static FPoint GetLeftPoint(FPoint[] points)
+		private static FVector2 GetLeftPoint(FVector2[] points)
 		{
-			FPoint match = null;
-			FPoint result = null;
+			FVector2 match = null;
+			FVector2 result = null;
 
 			if(points?.Length > 0)
 			{
-				foreach(FPoint pointItem in points)
+				foreach(FVector2 pointItem in points)
 				{
 					if(match == null || pointItem.X < match.X)
 					{
@@ -1267,14 +1267,14 @@ namespace ShopTools
 		/// Reference to the piont with the highest x-axis value in the set, if
 		/// found. Otherwise, null.
 		/// </returns>
-		private static FPoint GetRightPoint(FPoint[] points)
+		private static FVector2 GetRightPoint(FVector2[] points)
 		{
-			FPoint match = null;
-			FPoint result = null;
+			FVector2 match = null;
+			FVector2 result = null;
 
 			if(points?.Length > 0)
 			{
-				foreach(FPoint pointItem in points)
+				foreach(FVector2 pointItem in points)
 				{
 					if(match == null || pointItem.X > match.X)
 					{
@@ -1304,13 +1304,13 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated current location.
 		/// </returns>
-		private FPoint MoveExplicit(OperationLayoutItem layoutItem,
-			TrackLayerItem trackLayer, FPoint location)
+		private FVector2 MoveExplicit(OperationLayoutItem layoutItem,
+			TrackLayerItem trackLayer, FVector2 location)
 		{
-			FPoint endOffset = null;
-			FPoint localLocation = FPoint.Clone(location);
+			FVector2 endOffset = null;
+			FVector2 localLocation = FVector2.Clone(location);
 			TrackSegmentItem segment = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 
 			if(layoutItem != null && trackLayer != null)
 			{
@@ -1322,10 +1322,10 @@ namespace ShopTools
 					Operation = layoutItem.Operation,
 					SegmentType = TrackSegmentType.Transit
 				};
-				FPoint.TransferValues(startOffset, segment.StartOffset);
-				FPoint.TransferValues(endOffset, segment.EndOffset);
+				FVector2.TransferValues(startOffset, segment.StartOffset);
+				FVector2.TransferValues(endOffset, segment.EndOffset);
 				trackLayer.Segments.Add(segment);
-				FPoint.TransferValues(endOffset, localLocation);
+				FVector2.TransferValues(endOffset, localLocation);
 			}
 			return localLocation;
 		}
@@ -1352,12 +1352,12 @@ namespace ShopTools
 		/// Reference to the last-known current location after the movements have
 		/// been applied.
 		/// </returns>
-		private FPoint PlotEndingMovements(OperationLayoutCollection layouts,
-			TrackToolCollection trackTools, FPoint location)
+		private FVector2 PlotEndingMovements(OperationLayoutCollection layouts,
+			TrackToolCollection trackTools, FVector2 location)
 		{
 			bool bToolSet = false;
 			List<OperationLayoutItem> layoutsMatching = null;
-			FPoint localLocation = FPoint.Clone(location);
+			FVector2 localLocation = FVector2.Clone(location);
 			TrackLayerItem trackLayer = null;
 
 			if(layouts?.Count > 0 && trackTools != null)
@@ -1414,15 +1414,15 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated last known location.
 		/// </returns>
-		private FPoint PlotLinesAndShapes(OperationLayoutCollection layouts,
-			TrackToolCollection tools, FPoint location)
+		private FVector2 PlotLinesAndShapes(OperationLayoutCollection layouts,
+			TrackToolCollection tools, FVector2 location)
 		{
 			string defaultToolName = "";
 			//OperationLayoutItem last = null;
 			int layoutIndex = 0;
 			List<List<OperationLayoutItem>> layoutSetsMatching = null;
 			//List<OperationLayoutItem> layoutsMatching = null;
-			FPoint localLocation = new FPoint(location);
+			FVector2 localLocation = new FVector2(location);
 			MinMaxItem minMax = null;
 			IntRangeCollection moveIndices = null;
 			//List<OperationLayoutItem> moveSet = null;
@@ -1675,21 +1675,21 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the last known location.
 		/// </returns>
-		private FPoint ResolveToolPath(FPoint location)
+		private FVector2 ResolveToolPath(FVector2 location)
 		{
 			int count = 0;
 			float depth = 0f;
-			FPoint endOffset = null;
+			FVector2 endOffset = null;
 			int index = 0;
 			TrackLayerItem lastLayer = null;
-			FPoint lastLocation = new FPoint(location);
+			FVector2 lastLocation = new FVector2(location);
 			TrackLayerItem layer = null;
 			float maxDepth = 0f;
 			float maxDepthPerPass = 0f;
 			TrackSegmentItem prevSegment = null;
 			TrackSegmentItem segment = null;
 			TrackSegmentCollection segments = null;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			TrackLayerItem track = null;
 			int trackCount = 0;
 			int trackIndex = 0;
@@ -1721,8 +1721,8 @@ namespace ShopTools
 					maxDepthPerPass = track.Tool.Diameter / 2f;
 					depth = Math.Min(maxDepth,
 						track.CurrentDepth + maxDepthPerPass);
-					startOffset = new FPoint();
-					endOffset = new FPoint();
+					startOffset = new FVector2();
+					endOffset = new FVector2();
 					lastLayer = track;
 					layer = new TrackLayerItem()
 					{
@@ -1744,8 +1744,8 @@ namespace ShopTools
 							{
 								//	The previous ending point will be the current starting
 								//	point.
-								FPoint.TransferValues(prevSegment.StartOffset, endOffset);
-								FPoint.TransferValues(prevSegment.EndOffset, startOffset);
+								FVector2.TransferValues(prevSegment.StartOffset, endOffset);
+								FVector2.TransferValues(prevSegment.EndOffset, startOffset);
 								//	In this version, lines must be connected to be contiguous.
 								//if(lastLocation != startOffset)
 								//{
@@ -1754,8 +1754,8 @@ namespace ShopTools
 								//	{
 								//		SegmentType = TrackSegmentType.Transit
 								//	};
-								//	FPoint.TransferValues(lastLocation, segment.StartOffset);
-								//	FPoint.TransferValues(startOffset, segment.EndOffset);
+								//	FVector2.TransferValues(lastLocation, segment.StartOffset);
+								//	FVector2.TransferValues(startOffset, segment.EndOffset);
 								//	segments.Add(segment);
 								//}
 								segment = new TrackSegmentItem()
@@ -1764,10 +1764,10 @@ namespace ShopTools
 									SegmentType = prevSegment.SegmentType,
 									TargetDepth = prevSegment.TargetDepth
 								};
-								FPoint.TransferValues(startOffset, segment.StartOffset);
-								FPoint.TransferValues(endOffset, segment.EndOffset);
+								FVector2.TransferValues(startOffset, segment.StartOffset);
+								FVector2.TransferValues(endOffset, segment.EndOffset);
 								segments.Add(segment);
-								FPoint.TransferValues(endOffset, lastLocation);
+								FVector2.TransferValues(endOffset, lastLocation);
 							}
 						}
 						depth += maxDepthPerPass;
@@ -1895,12 +1895,12 @@ namespace ShopTools
 		/// </param>
 		public void GenerateTracks(CutProfileCollection cutList)
 		{
-			FPoint lastLocation = null;
+			FVector2 lastLocation = null;
 			OperationLayoutCollection layouts = null;
 			FLine line1 = new FLine();
 			FLine line2 = new FLine();
 			List<FLine> lineList = null;
-			FPoint location = null;
+			FVector2 location = null;
 			TrackToolCollection toolSet = new TrackToolCollection();
 			WorkpieceInfoItem workpiece = SessionWorkpieceInfo;
 

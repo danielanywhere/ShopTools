@@ -53,7 +53,7 @@ namespace ShopTools
 		/// first time.
 		/// </summary>
 		private bool mActivated = false;
-		//private FPoint mEndLocation = new FPoint();
+		//private FVector2 mEndLocation = new FVector2();
 		/// <summary>
 		/// Entry names for Direction Left Right Enumeration.
 		/// </summary>
@@ -105,7 +105,7 @@ namespace ShopTools
 			Enabled = true,
 			Interval = 250
 		};
-		//private FPoint mStartLocation = new FPoint();
+		//private FVector2 mStartLocation = new FVector2();
 		///// <summary>
 		///// The list of realtime working values aligned with the property values in
 		///// the data table.
@@ -735,14 +735,14 @@ namespace ShopTools
 		private void pnlPreview_Paint(object sender, PaintEventArgs e)
 		{
 			Graphics graphics = e.Graphics;
-			FPoint location = FPoint.Clone(mCutProfile.StartLocation);
+			FVector2 location = FVector2.Clone(mCutProfile.StartLocation);
 			float[] moveDashes = { 4, 4 };
 			Pen movePen = new Pen(ColorTranslator.FromHtml("#f0007f00"), 2f)
 			{
 				DashPattern = moveDashes
 			};
-			FPoint offset = new FPoint();
-			//FPoint offsetLocation = null;
+			FVector2 offset = new FVector2();
+			//FVector2 offsetLocation = null;
 			float scale = 1.0f;
 			SizeF systemSize = GetSystemSize();
 			Rectangle targetArea = new Rectangle(0, 0, 16, 16);
@@ -899,12 +899,12 @@ namespace ShopTools
 		/// </summary>
 		private void UpdateWorkpiece()
 		{
-			FPoint location = new FPoint();
+			FVector2 location = new FVector2();
 			List<OperationVariableItem> variables =
 				new List<OperationVariableItem>();
 
 			mResolvedOperations.Clear();
-			location = FPoint.Clone(mCutProfile.StartLocation);
+			location = FVector2.Clone(mCutProfile.StartLocation);
 			location = TransformFromAbsolute(location);
 
 			//	Transfer user variables to operation.
@@ -1066,16 +1066,16 @@ namespace ShopTools
 		/// Reference to the starting router location for this cut, in absolute
 		/// terms.
 		/// </param>
-		public void CreateFromTemplate(PatternTemplateItem template, FPoint
-			startLocation)
+		public void CreateFromTemplate(PatternTemplateItem template,
+			FVector2 startLocation)
 		{
-			FPoint start = startLocation;
+			FVector2 start = startLocation;
 
 			if(template != null)
 			{
 				if(start == null)
 				{
-					start = new FPoint();
+					start = new FVector2();
 				}
 				mCutProfile = new CutProfileItem(template);
 				mCutProfile.StartLocation = start;

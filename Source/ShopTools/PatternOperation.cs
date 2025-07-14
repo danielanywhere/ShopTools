@@ -551,10 +551,10 @@ namespace ShopTools
 		/// Reference to a coordinate representing the user's resolved DiameterXY
 		/// parameter.
 		/// </returns>
-		public static FPoint GetDiameterXYParameter(PatternOperationItem operation,
+		public static FVector2 GetDiameterXYParameter(PatternOperationItem operation,
 			WorkpieceInfoItem workpiece)
 		{
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 			float valueX = 0f;
 			float valueY = 0f;
 
@@ -601,12 +601,12 @@ namespace ShopTools
 		/// Reference to a coordinate representing the user's resolved EndOffset
 		/// parameter.
 		/// </returns>
-		public static FPoint GetEndOffsetParameter(PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint defaultLocation)
+		public static FVector2 GetEndOffsetParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece, FVector2 defaultLocation)
 		{
 			float positionX = 0f;
 			float positionY = 0f;
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 
 			if(operation != null && workpiece != null && defaultLocation != null)
 			{
@@ -658,9 +658,9 @@ namespace ShopTools
 		/// <returns>
 		/// The X and Y distances represented by the caller's length and width.
 		/// </returns>
-		public static FPoint GetLengthWidthXYParameter(float length, float width)
+		public static FVector2 GetLengthWidthXYParameter(float length, float width)
 		{
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 
 			if(LengthIsX())
 			{
@@ -698,12 +698,12 @@ namespace ShopTools
 		/// Reference to a coordinate representing the user's resolved Offset
 		/// parameter.
 		/// </returns>
-		public static FPoint GetOffsetParameter(PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint defaultLocation)
+		public static FVector2 GetOffsetParameter(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece, FVector2 defaultLocation)
 		{
 			float positionX = 0f;
 			float positionY = 0f;
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 
 			if(operation != null && workpiece != null && defaultLocation != null)
 			{
@@ -759,10 +759,10 @@ namespace ShopTools
 		/// Reference to a coordinate representing the user's resolved RadiusXY
 		/// parameter.
 		/// </returns>
-		public static FPoint GetRadiusXYParameter(PatternOperationItem operation,
+		public static FVector2 GetRadiusXYParameter(PatternOperationItem operation,
 			WorkpieceInfoItem workpiece)
 		{
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 			float valueX = 0f;
 			float valueY = 0f;
 
@@ -811,22 +811,22 @@ namespace ShopTools
 		///// Reference to the location at which the current operation will end,
 		///// in system units.
 		///// </returns>
-		//public static FPoint GetResultingLocation(
+		//public static FVector2 GetResultingLocation(
 		//	PatternOperationItem operation,
-		//	WorkpieceInfoItem workpiece, FPoint startingLocation,
+		//	WorkpieceInfoItem workpiece, FVector2 startingLocation,
 		//	string previousToolName)
 		//{
-		//	FPoint location = null;
+		//	FVector2 location = null;
 
 		//	if(operation != null && workpiece != null)
 		//	{
-		//		location = FPoint.Clone(startingLocation);
+		//		location = FVector2.Clone(startingLocation);
 		//		location = GetOperationStartLocation(operation, workpiece, location);
 		//		location = GetOperationEndLocation(operation, workpiece, location);
 		//	}
 		//	if(location == null)
 		//	{
-		//		location = new FPoint();
+		//		location = new FVector2();
 		//	}
 		//	return location;
 		//}
@@ -894,13 +894,13 @@ namespace ShopTools
 		/// Reference to a coordinate representing the user's resolved StartOffset
 		/// parameter.
 		/// </returns>
-		public static FPoint GetStartOffsetParameter(
+		public static FVector2 GetStartOffsetParameter(
 			PatternOperationItem operation, WorkpieceInfoItem workpiece,
-			FPoint defaultLocation)
+			FVector2 defaultLocation)
 		{
 			float positionX = 0f;
 			float positionY = 0f;
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 
 			if(operation != null && workpiece != null && defaultLocation != null)
 			{

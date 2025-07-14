@@ -181,9 +181,9 @@ namespace ShopTools
 		/// to an from each operational site.
 		/// </para>
 		/// </remarks>
-		public static FPoint CalculateLayout()
+		public static FVector2 CalculateLayout()
 		{
-			FPoint location =
+			FVector2 location =
 				TransformFromAbsolute(mSessionWorkpieceInfo.RouterLocation);
 			foreach(CutProfileItem profileItem in mSessionWorkpieceInfo.Cuts)
 			{
@@ -217,20 +217,20 @@ namespace ShopTools
 		/// contain additional transitions not specified in the source collection
 		/// so the tool head is moved properly to an from each operational site.
 		/// </remarks>
-		public static FPoint CalculateLayout(CutProfileItem pattern,
-			WorkpieceInfoItem workpiece, FPoint startLocation)
+		public static FVector2 CalculateLayout(CutProfileItem pattern,
+			WorkpieceInfoItem workpiece, FVector2 startLocation)
 		{
 			float angle = 0f;
 			float diameter = 0f;
-			FPoint diameterXY = null;
-			FPoint endOffset = null;
+			FVector2 diameterXY = null;
+			FVector2 endOffset = null;
 			float length = 0f;
-			FPoint location = null;
-			FPoint offset = null;
+			FVector2 location = null;
+			FVector2 offset = null;
 			float radius = 0f;
-			FPoint radiusXY = null;
+			FVector2 radiusXY = null;
 			float startAngle = 0f;
-			FPoint startOffset = null;
+			FVector2 startOffset = null;
 			float sweepAngle = 0f;
 			float width = 0f;
 
@@ -238,7 +238,7 @@ namespace ShopTools
 			{
 				if(startLocation != null)
 				{
-					location = new FPoint(startLocation);
+					location = new FVector2(startLocation);
 				}
 				//	Pattern start.
 				foreach(PatternOperationItem operationItem in pattern.Operations)
@@ -392,7 +392,7 @@ namespace ShopTools
 								operationItem, workpiece, location);
 							endOffset = PatternOperationItem.GetEndOffsetParameter(
 								operationItem, workpiece, startOffset);
-							radiusXY = new FPoint()
+							radiusXY = new FVector2()
 							{
 								X = (endOffset.X - startOffset.X) / 2f,
 								Y = (endOffset.Y - startOffset.Y) / 2f
@@ -476,7 +476,7 @@ namespace ShopTools
 								operationItem, workpiece, location);
 							endOffset = PatternOperationItem.GetEndOffsetParameter(
 								operationItem, workpiece, startOffset);
-							diameterXY = new FPoint(endOffset.X - startOffset.X,
+							diameterXY = new FVector2(endOffset.X - startOffset.X,
 								endOffset.Y - startOffset.Y);
 							location = OperationLayoutCollection.AddRectangleCornerXY(
 								operationItem, offset, diameterXY.X, diameterXY.Y, location,
@@ -587,7 +587,7 @@ namespace ShopTools
 								operationItem, workpiece, location);
 							endOffset = PatternOperationItem.GetEndOffsetParameter(
 								operationItem, workpiece, startOffset);
-							radiusXY = new FPoint()
+							radiusXY = new FVector2()
 							{
 								X = (endOffset.X - startOffset.X) / 2f,
 								Y = (endOffset.Y - startOffset.Y) / 2f
@@ -631,7 +631,7 @@ namespace ShopTools
 								operationItem, workpiece, location);
 							endOffset = PatternOperationItem.GetEndOffsetParameter(
 								operationItem, workpiece, startOffset);
-							diameterXY = new FPoint(endOffset.X - startOffset.X,
+							diameterXY = new FVector2(endOffset.X - startOffset.X,
 								endOffset.Y - startOffset.Y);
 							location = OperationLayoutCollection.AddRectangleCornerXY(
 								operationItem, offset, diameterXY.X, diameterXY.Y, location,
@@ -673,7 +673,7 @@ namespace ShopTools
 			}
 			if(location == null)
 			{
-				location = new FPoint();
+				location = new FVector2();
 			}
 			return location;
 		}
@@ -747,12 +747,12 @@ namespace ShopTools
 		///// Reference to a list of evenly-spaced vertices around the edge of the
 		///// indicated circle, if valid. Otherwise, an empty list.
 		///// </returns>
-		//public static List<FPoint> CircleGetVertices(FPoint center, float radius,
+		//public static List<FVector2> CircleGetVertices(FVector2 center, float radius,
 		//	int vertexCount, float thetaOffset = 0f)
 		//{
 		//	float angle = thetaOffset;
 		//	int index = 0;
-		//	List<FPoint> result = new List<FPoint>();
+		//	List<FVector2> result = new List<FVector2>();
 		//	float space = 0f;
 		//	//float spaceCount = 0f;
 
@@ -1002,7 +1002,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawEllipseCenterDiameter(FPoint centerOffset,
+		public static void DrawEllipseCenterDiameter(FVector2 centerOffset,
 			float diameterX, float diameterY, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
@@ -1058,7 +1058,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawEllipseCenterRadius(FPoint centerOffset,
+		public static void DrawEllipseCenterRadius(FVector2 centerOffset,
 			float radiusX, float radiusY, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
@@ -1112,7 +1112,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawEllipseDiameter(FPoint start,
+		public static void DrawEllipseDiameter(FVector2 start,
 			float diameterX, float diameterY, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
@@ -1166,7 +1166,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawEllipseRadius(FPoint start,
+		public static void DrawEllipseRadius(FVector2 start,
 			float radiusX, float radiusY, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
@@ -1217,7 +1217,7 @@ namespace ShopTools
 		/// selected.
 		/// </param>
 		public static void DrawHole(
-			FPoint displayLocation, Graphics graphics,
+			FVector2 displayLocation, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
 			Rectangle targetArea = new Rectangle(0, 0, 12, 12);
@@ -1287,7 +1287,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// Scale to apply to the points.
 		/// </param>
-		public static void DrawLine(FPoint start, FPoint end,
+		public static void DrawLine(FVector2 start, FVector2 end,
 			Graphics graphics, Pen pen, Rectangle workspaceArea, float scale)
 		{
 			int x1 = 0;
@@ -1342,9 +1342,9 @@ namespace ShopTools
 		/// Reference to the location at which the current operation will end,
 		/// in system units.
 		/// </returns>
-		public static FPoint DrawOperation(
+		public static FVector2 DrawOperation(
 			PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint startingLocation,
+			WorkpieceInfoItem workpiece, FVector2 startingLocation,
 			string previousToolName, Graphics g, Rectangle workspaceArea,
 			float scale, bool selected = false)
 		{
@@ -1357,7 +1357,7 @@ namespace ShopTools
 			int height = 0;
 			Pen movePen = null;
 			Pen[] penSet = null;
-			FPoint result = new FPoint(startingLocation);
+			FVector2 result = new FVector2(startingLocation);
 			Point startCoordinate = Point.Empty;
 			int width = 0;
 
@@ -1384,7 +1384,7 @@ namespace ShopTools
 							area = new Rectangle(
 								startCoordinate.X, startCoordinate.Y, width, height);
 							g.DrawArc(drawPen, area, angleStart, angleStart);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.DrawEllipse:
 							startCoordinate = GetDisplayCoordinate(
@@ -1396,7 +1396,7 @@ namespace ShopTools
 							area = new Rectangle(
 								startCoordinate.X, startCoordinate.Y, width, height);
 							g.DrawEllipse(drawPen, area);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.DrawLine:
 							startCoordinate = GetDisplayCoordinate(
@@ -1404,7 +1404,7 @@ namespace ShopTools
 							endCoordinate = GetDisplayCoordinate(
 								layoutItem.DisplayEndOffset, workspaceArea, scale);
 							g.DrawLine(drawPen, startCoordinate, endCoordinate);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.DrawRectangle:
 							startCoordinate = GetDisplayCoordinate(
@@ -1416,7 +1416,7 @@ namespace ShopTools
 							area = new Rectangle(
 								startCoordinate.X, startCoordinate.Y, width, height);
 							g.DrawRectangle(drawPen, area);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.FillEllipse:
 							startCoordinate = GetDisplayCoordinate(
@@ -1429,7 +1429,7 @@ namespace ShopTools
 								startCoordinate.X, startCoordinate.Y, width, height);
 							g.FillEllipse(brush, area);
 							g.DrawEllipse(drawPen, area);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.FillRectangle:
 							startCoordinate = GetDisplayCoordinate(
@@ -1442,7 +1442,7 @@ namespace ShopTools
 								startCoordinate.X, startCoordinate.Y, width, height);
 							g.FillRectangle(brush, area);
 							g.DrawRectangle(drawPen, area);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.MoveExplicit:
 						case LayoutActionType.MoveImplicit:
@@ -1451,12 +1451,12 @@ namespace ShopTools
 							endCoordinate = GetDisplayCoordinate(
 								layoutItem.DisplayEndOffset, workspaceArea, scale);
 							g.DrawLine(movePen, startCoordinate, endCoordinate);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 						case LayoutActionType.Point:
 							DrawHole(layoutItem.DisplayStartOffset,
 								g, workspaceArea, scale, selected);
-							FPoint.TransferValues(layoutItem.ToolEndOffset, result);
+							FVector2.TransferValues(layoutItem.ToolEndOffset, result);
 							break;
 					}
 				}
@@ -1492,7 +1492,7 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawRectangle(FPoint start,
+		public static void DrawRectangle(FVector2 start,
 			float length, float width, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
@@ -1553,8 +1553,8 @@ namespace ShopTools
 		/// <param name="scale">
 		/// The scale to apply to the shape.
 		/// </param>
-		public static void DrawRectangle(FPoint start,
-			FPoint end, Graphics graphics, Pen pen,
+		public static void DrawRectangle(FVector2 start,
+			FVector2 end, Graphics graphics, Pen pen,
 			Rectangle workspaceArea, float scale)
 		{
 			int x1 = 0;
@@ -1597,7 +1597,7 @@ namespace ShopTools
 		/// Scale to apply to the positioning of the symbol on the drawing area.
 		/// </param>
 		public static void DrawRouter(
-			FPoint displayLocation, StartEndEnum startEnd, Graphics graphics,
+			FVector2 displayLocation, StartEndEnum startEnd, Graphics graphics,
 			Rectangle workspaceArea, float scale)
 		{
 			Rectangle targetArea = new Rectangle(0, 0, 16, 16);
@@ -1670,7 +1670,7 @@ namespace ShopTools
 				new Pen(ColorTranslator.FromHtml(mColorWorkspaceBorderPen), 2f);
 			int index = 0;
 			Rectangle offsetArea = Rectangle.Empty;
-			FPoint offsetLocation = new FPoint();
+			FVector2 offsetLocation = new FVector2();
 			float scale = 1f;
 			string[] shadowLevels = new string[]
 			{
@@ -1846,7 +1846,7 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillEllipseCenterDiameter(FPoint centerOffset,
+		public static void FillEllipseCenterDiameter(FVector2 centerOffset,
 			float diameterX, float diameterY, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
@@ -1917,7 +1917,7 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillEllipseCenterRadius(FPoint centerOffset,
+		public static void FillEllipseCenterRadius(FVector2 centerOffset,
 			float radiusX, float radiusY, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
@@ -1987,7 +1987,7 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillEllipseDiameter(FPoint start,
+		public static void FillEllipseDiameter(FVector2 start,
 			float diameterX, float diameterY, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
@@ -2057,7 +2057,7 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillEllipseRadius(FPoint start,
+		public static void FillEllipseRadius(FVector2 start,
 			float radiusX, float radiusY, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
@@ -2126,7 +2126,7 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillRectangle(FPoint start,
+		public static void FillRectangle(FVector2 start,
 			float length, float width, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
@@ -2202,8 +2202,8 @@ namespace ShopTools
 		/// Optional value indicating whether the shape is selected in the
 		/// editor.
 		/// </param>
-		public static void FillRectangle(FPoint start,
-			FPoint end, Graphics graphics,
+		public static void FillRectangle(FVector2 start,
+			FVector2 end, Graphics graphics,
 			Rectangle workspaceArea, float scale, bool selected = false)
 		{
 			Brush brush = null;
@@ -2579,7 +2579,7 @@ namespace ShopTools
 		/// The coordinate on the target canvas cooresponding to the caller's
 		/// offset.
 		/// </returns>
-		public static Point GetDisplayCoordinate(FPoint offset,
+		public static Point GetDisplayCoordinate(FVector2 offset,
 			Rectangle workspaceArea, float scale)
 		{
 			Point result = Point.Empty;
@@ -3083,12 +3083,12 @@ namespace ShopTools
 		/// Reference to a coordinate representing the ending offset for the
 		/// specified operation.
 		/// </returns>
-		public static FPoint GetRawEndOffset(PatternOperationItem operation,
-			WorkpieceInfoItem workpiece, FPoint location)
+		public static FVector2 GetRawEndOffset(PatternOperationItem operation,
+			WorkpieceInfoItem workpiece, FVector2 location)
 		{
 			float positionX = 0f;
 			float positionY = 0f;
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 
 			if(operation != null && workpiece != null && location != null)
 			{
@@ -4385,7 +4385,7 @@ namespace ShopTools
 		/// <returns>
 		/// A System.Drawing.Point.
 		/// </returns>
-		public static Point ToPoint(FPoint point)
+		public static Point ToPoint(FVector2 point)
 		{
 			Point result = Point.Empty;
 
@@ -4411,10 +4411,10 @@ namespace ShopTools
 		/// Reference to the point corresponding to the caller's absolute
 		/// coordinate.
 		/// </returns>
-		public static FPoint TransformFromAbsolute(FPoint absolutePoint)
+		public static FVector2 TransformFromAbsolute(FVector2 absolutePoint)
 		{
 			float height = GetMillimeters(mConfigProfile.YDimension);
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 			FVector2 scale = new FVector2();
 			FVector2 target = null;
 			FVector2 translation = new FVector2();
@@ -4494,7 +4494,7 @@ namespace ShopTools
 				{
 					target = FMatrix3.Translate(target, translation);
 				}
-				result = new FPoint(target);
+				result = new FVector2(target);
 			}
 			return result;
 		}
@@ -4514,12 +4514,12 @@ namespace ShopTools
 		/// Reference to the absolute point corresponding to the caller's display
 		/// coordinate.
 		/// </returns>
-		public static FPoint TransformToAbsolute(FPoint displayPoint)
+		public static FVector2 TransformToAbsolute(FVector2 displayPoint)
 		{
 			bool bFlipX = false;
 			bool bFlipY = false;
 			float height = GetMillimeters(mConfigProfile.YDimension);
-			FPoint result = new FPoint();
+			FVector2 result = new FVector2();
 			FVector2 scale = new FVector2();
 			FVector2 target = null;
 			FVector2 translation = new FVector2();
@@ -4613,7 +4613,7 @@ namespace ShopTools
 				{
 					target = FMatrix3.Translate(target, translation);
 				}
-				result = new FPoint(target);
+				result = new FVector2(target);
 			}
 			return result;
 		}
@@ -4783,7 +4783,7 @@ namespace ShopTools
 				switch(offsetType)
 				{
 					case OffsetTopBottomEnum.Absolute:
-						result = TransformFromAbsolute(new FPoint(0f, offset)).Y;
+						result = TransformFromAbsolute(new FVector2(0f, offset)).Y;
 						break;
 					case OffsetTopBottomEnum.Bottom:
 						result = area.Bottom - subjectHeight +
@@ -4867,7 +4867,7 @@ namespace ShopTools
 				switch(offsetType)
 				{
 					case OffsetLeftRightEnum.Absolute:
-						result = TransformFromAbsolute(new FPoint(offset, 0f)).X;
+						result = TransformFromAbsolute(new FVector2(offset, 0f)).X;
 						break;
 					case OffsetLeftRightEnum.Center:
 						result = (area.Left + (area.Width / 2f) +

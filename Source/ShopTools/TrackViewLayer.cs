@@ -64,10 +64,10 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the absolute end coordinate of the current path.
 		/// </returns>
-		private FPoint3 PlotToPositionXYAbs(TrackViewLayerItem layer,
-			TrackSegmentItem sourceSegment, FPoint3 location)
+		private FVector3 PlotToPositionXYAbs(TrackViewLayerItem layer,
+			TrackSegmentItem sourceSegment, FVector3 location)
 		{
-			FPoint3 localLocation = FPoint3.Clone(location);
+			FVector3 localLocation = FVector3.Clone(location);
 			TrackViewSegmentItem segment = null;
 			float vertical = SessionWorkpieceInfo.Thickness * mZMagnification;
 
@@ -88,14 +88,14 @@ namespace ShopTools
 				segment.EndOffset.X = sourceSegment.EndOffset.X;
 				segment.EndOffset.Y = sourceSegment.EndOffset.Y;
 				segment.EndOffset.Z = segment.StartOffset.Z;
-				FPoint3.TransferValues(segment.StartOffset, segment.Line.PointA);
-				FPoint3.TransferValues(segment.EndOffset, segment.Line.PointB);
-				localLocation = FPoint3.Clone(segment.EndOffset);
+				FVector3.TransferValues(segment.StartOffset, segment.Line.PointA);
+				FVector3.TransferValues(segment.EndOffset, segment.Line.PointB);
+				localLocation = FVector3.Clone(segment.EndOffset);
 				layer.Segments.Add(segment);
 			}
 			if(localLocation == null)
 			{
-				localLocation = new FPoint3();
+				localLocation = new FVector3();
 			}
 			return localLocation;
 		}
@@ -129,21 +129,21 @@ namespace ShopTools
 		/// of the Z-axis.
 		/// </para>
 		/// </remarks>
-		private FPoint3 PlungeZAbs(TrackViewLayerItem layer,
-			FPoint3 location, TrackSegmentItem sourceSegment)
+		private FVector3 PlungeZAbs(TrackViewLayerItem layer,
+			FVector3 location, TrackSegmentItem sourceSegment)
 		{
-			FPoint3 localLocation = FPoint3.Clone(location);
+			FVector3 localLocation = FVector3.Clone(location);
 			TrackViewSegmentItem segment = null;
 
 			if(layer != null && location != null)
 			{
 				segment = new TrackViewSegmentItem();
-				FPoint3.TransferValues(localLocation, segment.StartOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointA);
+				FVector3.TransferValues(localLocation, segment.StartOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointA);
 				localLocation.Z = (SessionWorkpieceInfo.Thickness * mZMagnification) -
 					(sourceSegment.Depth * mZMagnification);
-				FPoint3.TransferValues(localLocation, segment.EndOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointB);
+				FVector3.TransferValues(localLocation, segment.EndOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointB);
 				segment.Depth = localLocation.Z;
 				segment.SegmentType = TrackSegmentType.Plunge;
 				segment.ParentLayer = layer;
@@ -168,21 +168,21 @@ namespace ShopTools
 		/// <returns>
 		/// Reference to the updated tool position.
 		/// </returns>
-		private FPoint3 RetractTool(TrackViewLayerItem layer,
-			FPoint3 location)
+		private FVector3 RetractTool(TrackViewLayerItem layer,
+			FVector3 location)
 		{
-			FPoint3 localLocation = FPoint3.Clone(location);
+			FVector3 localLocation = FVector3.Clone(location);
 			TrackViewSegmentItem segment = null;
 			float zDimension = GetMillimeters(ConfigProfile.Depth) * mZMagnification;
 
 			if(layer != null && location != null)
 			{
 				segment = new TrackViewSegmentItem();
-				FPoint3.TransferValues(localLocation, segment.StartOffset);
-				FPoint3.TransferValues(localLocation,  segment.Line.PointA);
+				FVector3.TransferValues(localLocation, segment.StartOffset);
+				FVector3.TransferValues(localLocation,  segment.Line.PointA);
 				localLocation.Z = zDimension;
-				FPoint3.TransferValues(localLocation, segment.EndOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointB);
+				FVector3.TransferValues(localLocation, segment.EndOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointB);
 				segment.Depth = localLocation.Z;
 				segment.SegmentType = TrackSegmentType.Transit;
 				segment.ParentLayer = layer;
@@ -211,21 +211,21 @@ namespace ShopTools
 		/// Reference to the new 3D location, in world coordinates at the end
 		/// of the transit.
 		/// </returns>
-		private FPoint3 TransitToPositionXYAbs(TrackViewLayerItem layer,
-			FPoint3 location, FPoint xyLocation)
+		private FVector3 TransitToPositionXYAbs(TrackViewLayerItem layer,
+			FVector3 location, FVector2 xyLocation)
 		{
-			FPoint3 localLocation = FPoint3.Clone(location);
+			FVector3 localLocation = FVector3.Clone(location);
 			TrackViewSegmentItem segment = null;
 
 			if(layer != null && location != null && xyLocation != null)
 			{
 				segment = new TrackViewSegmentItem();
-				FPoint3.TransferValues(localLocation, segment.StartOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointA);
+				FVector3.TransferValues(localLocation, segment.StartOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointA);
 				localLocation.X = xyLocation.X;
 				localLocation.Y = xyLocation.Y;
-				FPoint3.TransferValues(localLocation, segment.EndOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointB);
+				FVector3.TransferValues(localLocation, segment.EndOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointB);
 				segment.Depth = localLocation.Z;
 				segment.SegmentType = TrackSegmentType.Transit;
 				segment.ParentLayer = layer;
@@ -254,18 +254,18 @@ namespace ShopTools
 		/// Reference to the new absolute world coordinate of the tool after the
 		/// transit.
 		/// </returns>
-		private FPoint3 TransitToPositionZAbs(TrackViewLayerItem layer,
-			FPoint3 location, TransitZEnum transitZEnum)
+		private FVector3 TransitToPositionZAbs(TrackViewLayerItem layer,
+			FVector3 location, TransitZEnum transitZEnum)
 		{
-			FPoint3 localLocation = FPoint3.Clone(location);
+			FVector3 localLocation = FVector3.Clone(location);
 			TrackViewSegmentItem segment = null;
 			float zDimension = GetMillimeters(ConfigProfile.Depth) * mZMagnification;
 
 			if(layer != null && location != null)
 			{
 				segment = new TrackViewSegmentItem();
-				FPoint3.TransferValues(localLocation, segment.StartOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointA);
+				FVector3.TransferValues(localLocation, segment.StartOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointA);
 				switch(transitZEnum)
 				{
 					case TransitZEnum.FullyExtended:
@@ -280,8 +280,8 @@ namespace ShopTools
 						localLocation.Z = zDimension;
 						break;
 				}
-				FPoint3.TransferValues(localLocation, segment.EndOffset);
-				FPoint3.TransferValues(localLocation, segment.Line.PointB);
+				FVector3.TransferValues(localLocation, segment.EndOffset);
+				FVector3.TransferValues(localLocation, segment.Line.PointB);
 				segment.Depth = localLocation.Z;
 				segment.SegmentType = TrackSegmentType.Transit;
 				segment.ParentLayer = layer;
@@ -321,7 +321,7 @@ namespace ShopTools
 			bool bRetracted = true;
 			TrackSegmentItem lastSegment = null;
 			int layerIndex = 0;
-			FPoint3 location = new FPoint3();
+			FVector3 location = new FVector3();
 			//TrackSegmentItem plotSegment = null;
 			TrackViewLayerCollection result = new TrackViewLayerCollection();
 			TrackViewLayerItem viewLayer = null;
@@ -332,7 +332,7 @@ namespace ShopTools
 			if(tracks?.Count > 0)
 			{
 				result.mZMagnification = zMagnification;
-				location = new FPoint3(0f, 0f, zDimension);
+				location = new FVector3(0f, 0f, zDimension);
 				foreach(TrackLayerItem layerItem in tracks)
 				{
 					//	Each layer.
@@ -388,7 +388,7 @@ namespace ShopTools
 								bRetracted = false;
 								break;
 							case TrackSegmentType.Plunge:
-								if(!FPoint.Equals(segmentItem.StartOffset, location))
+								if(!FVector2.Equals(segmentItem.StartOffset, location))
 								{
 									location = result.TransitToPositionXYAbs(viewLayer, location,
 										segmentItem.StartOffset);

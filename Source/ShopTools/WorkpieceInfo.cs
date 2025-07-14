@@ -174,7 +174,7 @@ namespace ShopTools
 				PropertyName = "Cuts"
 			};
 			mCuts.CollectionChanged += OnCollectionChanged;
-			mRouterLocation = new FPoint();
+			mRouterLocation = new FVector2();
 			mRouterLocation.CoordinateChanged += mRouterLocation_CoordinateChanged;
 			mWorkspaceArea = new FArea();
 			mWorkspaceArea.BottomChanged += mWorkspaceArea_ValueChanged;
@@ -465,7 +465,7 @@ namespace ShopTools
 					mArea = FArea.Clone(item.mArea),
 					mCuts = CutProfileCollection.Clone(item.mCuts),
 					mMaterialTypeName = item.mMaterialTypeName,
-					mRouterLocation = FPoint.Clone(item.mRouterLocation),
+					mRouterLocation = FVector2.Clone(item.mRouterLocation),
 					mThickness = item.mThickness,
 					mUserDepth = item.mUserDepth,
 					mUserLength = item.mUserLength,
@@ -610,14 +610,14 @@ namespace ShopTools
 		/// <summary>
 		/// Private member for <see cref="RouterLocation">RouterLocation</see>.
 		/// </summary>
-		private FPoint mRouterLocation = new FPoint();
+		private FVector2 mRouterLocation = new FVector2();
 		/// <summary>
 		/// Get/Set the current calculated location of the router.
 		/// </summary>
-		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FPoint.htm">
-		/// FPoint Documentation</seealso>
+		/// <seealso href="https://danielanywhere.github.io/Geometry/html/T_Geometry_FVector2.htm">
+		/// FVector2 Documentation</seealso>
 		[JsonIgnore]
-		public FPoint RouterLocation
+		public FVector2 RouterLocation
 		{
 			get { return mRouterLocation; }
 			set
