@@ -34,7 +34,7 @@ using System.Windows.Forms;
 
 using Geometry;
 using Newtonsoft.Json;
-
+using SvgPlotting;
 using static ShopTools.ShopToolsUtil;
 
 namespace ShopTools
@@ -916,6 +916,221 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* mnuFileImportSvgDrawing_Click																					*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// The File / Import / SVG Drawing menu option has been clicked.
+		/// </summary>
+		/// <param name="sender">
+		/// The object raising this event.
+		/// </param>
+		/// <param name="e">
+		/// Standard event arguments.
+		/// </param>
+		private void mnuFileImportSvgDrawing_Click(object sender, EventArgs e)
+		{
+			string content = "";
+			FVector2 currentPoint = null;
+			OpenFileDialog dialog = new OpenFileDialog();
+			Html.HtmlDocument doc = null;
+			PatternOperationItem operation = null;
+			//PlotPointItem plotPoint = null;
+			FVector2 point = SessionWorkpieceInfo.RouterLocation;
+			PlotPointCollection points = null;
+			CutProfileItem profile = null;
+			SvgImageItem svg = null;
+			PatternTemplateItem templateLine = null;
+			PatternTemplateItem templateMove = null;
+			//DateTime timeEnd = DateTime.Now;
+			//TimeSpan timer = TimeSpan.Zero;
+			//DateTime timeStart = DateTime.Now;
+
+			dialog.AddExtension = true;
+			dialog.AutoUpgradeEnabled = true;
+			dialog.CheckFileExists = true;
+			dialog.DefaultExt = ".svg";
+			dialog.DereferenceLinks = true;
+			dialog.Filter =
+				"SVG Files " +
+				"(*.svg)|" +
+				"*.svg;|" +
+				"HTML Files " +
+				"(*.html)|" +
+				"*.html;|" +
+				"Text Files " +
+				"(*.txt)|" +
+				"*.txt;|" +
+				"All Files (*.*)|*.*";
+			dialog.FilterIndex = 0;
+			dialog.Multiselect = false;
+			dialog.SupportMultiDottedExtensions = true;
+			dialog.Title = "Open SVG File";
+			dialog.ValidateNames = true;
+			if(dialog.ShowDialog() == DialogResult.OK)
+			{
+				this.Cursor = Cursors.WaitCursor;
+
+				content = File.ReadAllText(dialog.FileName);
+
+				//timeStart = DateTime.Now;
+				//timeEnd = DateTime.Now;
+				//timer += timeEnd.Subtract(timeStart);
+				//timeStart = timeEnd;
+				//Trace.WriteLine($"Read HTML Start: {timer:ss\\.fffffff}");
+				doc = new Html.HtmlDocument(content);
+
+				//timeEnd = DateTime.Now;
+				//timer += timeEnd.Subtract(timeStart);
+				//timeStart = timeEnd;
+				//Trace.WriteLine($"Read SVG Start: {timer:ss\\.fffffff}");
+				svg = new SvgImageItem(doc, 10);
+
+				//	Remove duplicates.
+				RemoveDuplicates(svg.PlotPoints);
+
+				//	Remove the initial non-drawing movements.
+				while(svg.PlotPoints.Count > 0 &&
+					svg.PlotPoints[0].PenStatus == PlotPointPenStatus.PenUp)
+				{
+					svg.PlotPoints.RemoveAt(0);
+				}
+
+				//	Move the center of the object to the current router position.
+				point = PlotPointCollection.GetCenter(svg.PlotPoints);
+				point = FVector2.Negate(point);
+				point += SessionWorkpieceInfo.RouterLocation;
+				foreach(PlotPointItem plotPointItem in svg.PlotPoints)
+				{
+					plotPointItem.Point += point;
+				}
+
+				//	The so-called polarization of the SVG file is bottom+, right+,
+				//	whereas the polarization of the table is probably different.
+				//	We want the image to appear on the table with the same orientation
+				//	that it appears on the drawing editor.
+				//	The easiest way to make this conversion is to convert the entire
+				//	collection to relative measurements, then to set polarization
+				//	flags, if necessary, for any axes that need to be flipped before
+				//	display.
+				//DumpPoints(svg.PlotPoints);
+				points = ConvertToRelative(svg.PlotPoints);
+				if(ConfigProfile.TravelX == DirectionLeftRightEnum.Left)
+				{
+					foreach(PlotPointItem plotPointItem in points)
+					{
+						plotPointItem.Point.X *= -1f;
+					}
+				}
+				if(ConfigProfile.TravelY == DirectionUpDownEnum.Up)
+				{
+					foreach(PlotPointItem plotPointItem in points)
+					{
+						plotPointItem.Point.Y *= -1f;
+					}
+				}
+				//DumpPoints(points);
+
+				//timeEnd = DateTime.Now;
+				//timer += timeEnd.Subtract(timeStart);
+				//timeStart = timeEnd;
+				//Trace.WriteLine($"Import Start: {timer:ss\\.fffffff}");
+				templateLine = ConfigProfile.PatternTemplates.FirstOrDefault(x =>
+					x.PatternTemplateId == "26342ee6-786a-4c47-bdbf-01f9afeb290f");
+				templateMove = ConfigProfile.PatternTemplates.FirstOrDefault(x =>
+					x.PatternTemplateId == "ed4b0b5e-3b3e-4a28-97a9-b34b7f026f09");
+				if(templateLine != null && templateMove != null)
+				{
+					mWorkpieceBusy = true;
+					point = SessionWorkpieceInfo.RouterLocation;
+					foreach(PlotPointItem plotPointItem in points)
+					{
+						//timeEnd = DateTime.Now;
+						//timer += timeEnd.Subtract(timeStart);
+						//timeStart = timeEnd;
+						//Trace.WriteLine($"Item Start: {timer:ss\\.fffffff}");
+						currentPoint = plotPointItem.Point;
+						if(plotPointItem.PenStatus == PlotPointPenStatus.PenDown)
+						{
+							profile = new CutProfileItem(templateLine);
+							profile.StartLocation = point;
+							profile.EndLocation = currentPoint;
+							operation = profile.Operations[0];
+							operation.EndOffsetX = $"{currentPoint.X:0.###}mm";
+							operation.EndOffsetY = $"{currentPoint.Y:0.###}mm";
+							operation.EndOffsetXOrigin = OffsetLeftRightEnum.Relative;
+							operation.EndOffsetYOrigin = OffsetTopBottomEnum.Relative;
+						}
+						else
+						{
+							profile = new CutProfileItem(templateMove);
+							profile.StartLocation = point;
+							profile.EndLocation = currentPoint;
+							operation = profile.Operations[0];
+							operation.OffsetX = $"{currentPoint.X:0.###}mm";
+							operation.OffsetY = $"{currentPoint.Y:0.###}mm";
+							operation.OffsetXOrigin = OffsetLeftRightEnum.Relative;
+							operation.OffsetYOrigin = OffsetTopBottomEnum.Relative;
+						}
+						SessionWorkpieceInfo.Cuts.Add(profile);
+						FVector2.TransferValues(currentPoint, point);
+					}
+					////	Join the last point to the first.
+					//if(points.Count > 0)
+					//{
+					//	plotPoint = points[0];
+					//	currentPoint = plotPoint.Point;
+					//	if(plotPoint.PenStatus == PlotPointPenStatus.PenDown)
+					//	{
+					//		profile = new CutProfileItem(templateLine);
+					//		profile.StartLocation = point;
+					//		profile.EndLocation = currentPoint;
+					//		operation = profile.Operations[0];
+					//		operation.EndOffsetX = $"{currentPoint.X:0.###}mm";
+					//		operation.EndOffsetY = $"{currentPoint.Y:0.###}mm";
+					//		operation.EndOffsetXOrigin = OffsetLeftRightEnum.Relative;
+					//		operation.EndOffsetYOrigin = OffsetTopBottomEnum.Relative;
+					//	}
+					//	else
+					//	{
+					//		profile = new CutProfileItem(templateMove);
+					//		profile.StartLocation = point;
+					//		profile.EndLocation = currentPoint;
+					//		operation = profile.Operations[0];
+					//		operation.OffsetX = $"{currentPoint.X:0.###}mm";
+					//		operation.OffsetY = $"{currentPoint.Y:0.###}mm";
+					//		operation.OffsetXOrigin = OffsetLeftRightEnum.Relative;
+					//		operation.OffsetYOrigin = OffsetTopBottomEnum.Relative;
+					//	}
+					//	SessionWorkpieceInfo.Cuts.Add(profile);
+					//	FVector2.TransferValues(currentPoint, point);
+					//}
+					//timeEnd = DateTime.Now;
+					//timer += timeEnd.Subtract(timeStart);
+					//timeStart = timeEnd;
+					//Trace.WriteLine($"Items completed: {timer:ss\\.fffffff}");
+					mWorkpieceBusy = false;
+					UpdateCutList();
+					//timeEnd = DateTime.Now;
+					//timer += timeEnd.Subtract(timeStart);
+					//timeStart = timeEnd;
+					//Trace.WriteLine($"Cut-list updated: {timer:ss\\.fffffff}");
+					mCutListChanged = true;
+					UpdateForm();
+					//timeEnd = DateTime.Now;
+					//timer += timeEnd.Subtract(timeStart);
+					//timeStart = timeEnd;
+					//Trace.WriteLine($"Form updated: {timer:ss\\.fffffff}");
+					UpdateWorkpieceUI();
+					statMessage.Text = "File opened...";
+					UpdateForm();
+				}
+				this.Refresh();
+				this.Cursor = Cursors.Default;
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* mnuFileExportPatterns_Click																						*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1467,7 +1682,6 @@ namespace ShopTools
 		/// </summary>
 		private void RefreshControls()
 		{
-
 			statWorkspace.Text =
 				$"{ConfigProfile.XDimension} x {ConfigProfile.YDimension}";
 			if(IsXFeed())
@@ -1895,6 +2109,7 @@ namespace ShopTools
 		}
 		//*-----------------------------------------------------------------------*
 
+		//	TODO: Improve the speed of frmMain.UpdateCutList.
 		//*-----------------------------------------------------------------------*
 		//* UpdateCutList																													*
 		//*-----------------------------------------------------------------------*
@@ -2312,6 +2527,7 @@ namespace ShopTools
 			mnuFileExportPatterns.Click += mnuFileExportPatterns_Click;
 			mnuFileImportConfiguration.Click += mnuFileImportConfiguration_Click;
 			mnuFileImportPatterns.Click += mnuFileImportPatterns_Click;
+			mnuFileImportSvgDrawing.Click += mnuFileImportSvgDrawing_Click;
 			mnuFileNewCutList.Click += mnuFileNewCutList_Click;
 			mnuFileOpen.Click += mnuFileOpen_Click;
 			mnuFileSave.Click += mnuFileSave_Click;

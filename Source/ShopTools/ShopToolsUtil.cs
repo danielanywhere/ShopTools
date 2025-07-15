@@ -35,6 +35,7 @@ using System.Windows.Forms;
 
 using Geometry;
 using Newtonsoft.Json;
+using SvgPlotting;
 
 namespace ShopTools
 {
@@ -917,6 +918,108 @@ namespace ShopTools
 		//*-----------------------------------------------------------------------*
 
 		//*-----------------------------------------------------------------------*
+		//* ConvertToRelative																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Return a collection of points that are relative to the supplied
+		/// absolute points.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to the collection of absolute points to be converted to
+		/// relative.
+		/// </param>
+		/// <param name="closeShape">
+		/// Optional value indicating whether to close the shape. Default = true.
+		/// </param>
+		/// <returns>
+		/// Reference to a newly created collection of points with meaurements
+		/// relative to the caller's reference values.
+		/// </returns>
+		public static List<FVector2> ConvertToRelative(List<FVector2> points,
+			bool closeShape = true)
+		{
+			FVector2 point = null;
+			List<FVector2> result = new List<FVector2>();
+
+			if(points?.Count > 0)
+			{
+				point = new FVector2();
+				foreach(FVector2 pointItem in points)
+				{
+					result.Add(new FVector2()
+					{
+						X = pointItem.X - point.X,
+						Y = pointItem.Y - point.Y
+					});
+					point = pointItem;
+				}
+				if(closeShape)
+				{
+					result.Add(new FVector2()
+					{
+						X = points[0].X - point.X,
+						Y = points[0].Y - point.Y
+					});
+				}
+			}
+			return result;
+		}
+		//*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
+		/// <summary>
+		/// Return a collection of points that are relative to the supplied
+		/// absolute points.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to the collection of absolute points to be converted to
+		/// relative.
+		/// </param>
+		/// <param name="closeShape">
+		/// Optional value indicating whether to close the shape. Default = true.
+		/// </param>
+		/// <returns>
+		/// Reference to a newly created collection of points with meaurements
+		/// relative to the caller's reference values.
+		/// </returns>
+		public static PlotPointCollection ConvertToRelative(
+			PlotPointCollection points, bool closeShape = true)
+		{
+			int index = 0;
+			PlotPointItem point = null;
+			PlotPointCollection result = new PlotPointCollection();
+
+			if(points?.Count > 0)
+			{
+				point = new PlotPointItem();
+				foreach(PlotPointItem pointItem in points)
+				{
+					result.Add(new PlotPointItem()
+					{
+						PenStatus = (index == 0 ?
+							PlotPointPenStatus.PenUp : pointItem.PenStatus),
+						//PenStatus = pointItem.PenStatus,
+						Point = new FVector2(
+							pointItem.Point.X - point.Point.X,
+							pointItem.Point.Y - point.Point.Y)
+					});
+					point = pointItem;
+					index++;
+				}
+				if(closeShape)
+				{
+					result.Add(new PlotPointItem()
+					{
+						PenStatus = points[points.Count - 1].PenStatus,
+						Point = new FVector2(
+							points[0].Point.X - point.Point.X,
+							points[0].Point.Y - point.Point.Y)
+					});
+				}
+			}
+			return result;
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
 		//* DeepClone																															*
 		//*-----------------------------------------------------------------------*
 		/// <summary>
@@ -1767,6 +1870,30 @@ namespace ShopTools
 				graphics.DrawLine(shadowPen,
 					new Point(x1, y1),
 					new Point(x2, y2));
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* DumpPoints																														*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Dump the coordinates of the points to the local trace channel.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to the collection of points to dump.
+		/// </param>
+		public static void DumpPoints(PlotPointCollection points)
+		{
+			if(points?.Count > 0)
+			{
+				foreach(PlotPointItem plotPointItem in points)
+				{
+					Trace.Write(plotPointItem.PenStatus == PlotPointPenStatus.PenUp ?
+						"U" : "D");
+					Trace.Write(": ");
+					Trace.WriteLine(plotPointItem.Point);
+				}
 			}
 		}
 		//*-----------------------------------------------------------------------*
@@ -3936,6 +4063,60 @@ namespace ShopTools
 						$"Error operation property definition file: {ex.Message}",
 						"Read Operation Property Definition File");
 					System.Environment.Exit(1);
+				}
+			}
+		}
+		//*-----------------------------------------------------------------------*
+
+		//*-----------------------------------------------------------------------*
+		//* RemoveDuplicates																											*
+		//*-----------------------------------------------------------------------*
+		/// <summary>
+		/// Remove all duplicate values from the caller's plot point collection.
+		/// </summary>
+		/// <param name="points">
+		/// Reference to the collection of points in which to identify duplicate
+		/// values.
+		/// </param>
+		/// <param name="epsilonDecimalPoints">
+		/// Number of decimal points to consider as within the epsilon value.
+		/// </param>
+		public static void RemoveDuplicates(PlotPointCollection points,
+			int epsilonDecimalPoints = 3)
+		{
+			int count = 0;
+			float currentX = 0f;
+			float currentY = 0f;
+			string format = "0";
+			int index = 0;
+			float lastX = 0f;
+			float lastY = 0f;
+			FVector2 point = null;
+
+			if(points?.Count > 0)
+			{
+				if(epsilonDecimalPoints > 0)
+				{
+					format += "." + new String('0', epsilonDecimalPoints);
+				}
+				count = points.Count;
+				for(index = 0; index < count; index ++)
+				{
+					point = points[index].Point;
+					currentX = ToFloat(point.X.ToString(format));
+					currentY = ToFloat(point.Y.ToString(format));
+					if(index > 0)
+					{
+						if(currentX == lastX && currentY == lastY)
+						{
+							//	This item matches the previous item.
+							points.RemoveAt(index);
+							index--;		//	Deindex.
+							count--;		//	Discount.
+						}
+					}
+					lastX = currentX;
+					lastY = currentY;
 				}
 			}
 		}

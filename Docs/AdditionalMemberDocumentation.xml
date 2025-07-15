@@ -1005,6 +1005,11 @@
 		The File / Import / Patterns menu option.
 	</summary>
 </member>
+<member name="F:ShopTools.frmMain.mnuFileImportSvgDrawing">
+	<summary>
+		File / Import SVG Drawing menu option.
+	</summary>
+</member>
 <member name="F:ShopTools.frmMain.mnuFileNewCutList">
 	<summary>
 		The File / New Cut-List menu option.

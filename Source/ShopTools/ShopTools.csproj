@@ -8,7 +8,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
 			 <GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
 				<Title>Dan's ShopTools Desktop</Title>
-				<Version>25.2429.4649</Version>
+				<Version>25.2715.4228</Version>
 				<Description>Dan's ShopTools desktop application for Windows.</Description>
 				<Copyright>Copyright(c) 2025. Daniel Patterson, MCSD (danielanywhere)</Copyright>
 				<PackageProjectUrl>https://github.com/danielanywhere/ShopTools</PackageProjectUrl>
@@ -62,6 +62,7 @@
   <ItemGroup>
     <PackageReference Include="Dans.ConversionCalc.Library" Version="25.1109.1402" />
     <PackageReference Include="Dans.Geometry.Library" Version="25.2714.4042" />
+    <PackageReference Include="Dans.SvgPlotting.Library" Version="25.2714.4126" />
     <PackageReference Include="Flee" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

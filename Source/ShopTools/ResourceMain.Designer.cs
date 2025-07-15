@@ -133,7 +133,7 @@ namespace ShopTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (?i:(?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+))|(?&lt;numeric&gt;(-{0,1}(([0-9]+\.[0-9]+)|[0-9]+|\.[0-9]+)))|(?&lt;symbol&gt;\*|/|\+|\-|\^|\%)|(?&lt;paren&gt;\(|\))|(?&lt;unit&gt;[&apos;\&quot;]|[a-z]+)).
+        ///   Looks up a localized string similar to (?i:(?&lt;fraction&gt;(?&lt;numerator&gt;\d+)/(?&lt;denominator&gt;\d+))|(?&lt;numeric&gt;(-{0,1}(([0-9]+\.[0-9]+(e-{0,1}[0-9]+){0,1})|[0-9]+(e-{0,1}[0-9]+){0,1}|\.[0-9]+)))|(?&lt;symbol&gt;\*|/|\+|\-|\^|\%)|(?&lt;paren&gt;\(|\))|(?&lt;unit&gt;[&apos;\&quot;]|[a-z]+)).
         /// </summary>
         internal static string rxMeasurementExpression {
             get {
@@ -142,7 +142,7 @@ namespace ShopTools {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (?i:\s*(?&lt;numeric&gt;(-{0,1}([0-9]+\s+){0,1}[0-9]+\s*/\s*[0-9]+)|(-{0,1}[0-9]*(\.{0,1}[0-9]+){0,1}))\s*(?&lt;nonnumeric&gt;[&apos;\&quot;]|[a-z]*)).
+        ///   Looks up a localized string similar to (?i:\s*(?&lt;numeric&gt;(-{0,1}([0-9]+\s+){0,1}[0-9]+\s*/\s*[0-9]+)|(-{0,1}[0-9]*(\.{0,1}[0-9]+){0,1}(e-{0,1}[0-9]+){0,1}))\s*(?&lt;nonnumeric&gt;[&apos;\&quot;]|[a-z]*)).
         /// </summary>
         internal static string rxNumericNonNumeric {
             get {

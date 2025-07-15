@@ -2,6 +2,19 @@
 src="Images/media/image1.png"
 style="width:100%" />
 
+---
+
+*New in version 25.2715.4228*. **Import SVG Files** to perfectly emulate
+your scroll saw, band saw, and sabre saw!
+
+---
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+## Introduction
+
 One of the biggest complaints I've heard about CNC routers in recent
 years is that, even when you want to use your machine for simple ad-hoc
 drills and cuts, the time it takes to plan everything out, draft it in
@@ -229,6 +242,20 @@ your CNC router:
     steps.
 
 -   Export your file to g-code and pass that file to your machine.
+
+<p>&nbsp;</p>
+
+### Tips and Tricks
+
+Following are some tips and tricks that could save you some time.
+
+-   In most numeric textboxes, you can use basic expressions like
+<pre>0 - (190.84 - 139.7)mm</pre>.
+
+-   When importing an SVG file, the absolute center of the object is
+    aligned with the router starting location, allowing you to adjust
+    the starting router location to perfectly offset your shape on your
+    work area.
 
 <p>&nbsp;</p>
 

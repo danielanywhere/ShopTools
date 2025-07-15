@@ -125,6 +125,7 @@ namespace ShopTools
 			lblRouterPosition = new System.Windows.Forms.Label();
 			lblWorkpiece = new System.Windows.Forms.Label();
 			splitWorkpiece = new System.Windows.Forms.Splitter();
+			mnuFileImportSvgDrawing = new System.Windows.Forms.ToolStripMenuItem();
 			mnuMain.SuspendLayout();
 			statusMain.SuspendLayout();
 			pnlControl.SuspendLayout();
@@ -191,7 +192,7 @@ namespace ShopTools
 			// 
 			// mnuFileImport
 			// 
-			mnuFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileImportConfiguration, mnuFileImportPatterns });
+			mnuFileImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuFileImportConfiguration, mnuFileImportPatterns, mnuFileImportSvgDrawing });
 			mnuFileImport.Name = "mnuFileImport";
 			mnuFileImport.Size = new System.Drawing.Size(235, 26);
 			mnuFileImport.Text = "&Import";
@@ -199,13 +200,13 @@ namespace ShopTools
 			// mnuFileImportConfiguration
 			// 
 			mnuFileImportConfiguration.Name = "mnuFileImportConfiguration";
-			mnuFileImportConfiguration.Size = new System.Drawing.Size(183, 26);
+			mnuFileImportConfiguration.Size = new System.Drawing.Size(224, 26);
 			mnuFileImportConfiguration.Text = "&Configuration";
 			// 
 			// mnuFileImportPatterns
 			// 
 			mnuFileImportPatterns.Name = "mnuFileImportPatterns";
-			mnuFileImportPatterns.Size = new System.Drawing.Size(183, 26);
+			mnuFileImportPatterns.Size = new System.Drawing.Size(224, 26);
 			mnuFileImportPatterns.Text = "&Patterns";
 			// 
 			// mnuFileExport
@@ -782,6 +783,12 @@ namespace ShopTools
 			splitWorkpiece.TabIndex = 7;
 			splitWorkpiece.TabStop = false;
 			// 
+			// mnuFileImportSvgDrawing
+			// 
+			mnuFileImportSvgDrawing.Name = "mnuFileImportSvgDrawing";
+			mnuFileImportSvgDrawing.Size = new System.Drawing.Size(224, 26);
+			mnuFileImportSvgDrawing.Text = "&SVG Drawing";
+			// 
 			// frmMain
 			// 
 			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -889,5 +896,6 @@ namespace ShopTools
 		private System.Windows.Forms.ComboBox cmboMaterialType;
 		private System.Windows.Forms.Label lblMaterialType;
 		private System.Windows.Forms.ToolStripMenuItem mnuView3D;
+		private System.Windows.Forms.ToolStripMenuItem mnuFileImportSvgDrawing;
 	}
 }
