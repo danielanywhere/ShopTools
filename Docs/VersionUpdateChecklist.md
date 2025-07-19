@@ -25,5 +25,8 @@ Perform the following tasks when publishing a new version of *Dan's ShopTools De
  - [ ] Set the version textbox to 'Version {Version}'.
  - [ ] Paste the release notes from the step above.
  - [ ] Drag the binary from the local Setups folder to the binary attachment section of the release page.
+ - [ ] Click **Publish release**.
+
+
  
 
