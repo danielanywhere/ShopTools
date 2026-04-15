@@ -191,6 +191,7 @@ namespace ShopTools
 		{
 			bool bFeed = false;
 			bool bRetracted = false;
+			bool bSpindleRunning = false;
 			StringBuilder builder = new StringBuilder();
 			int count = 0;
 			float feedRate = 100f;
@@ -330,6 +331,12 @@ namespace ShopTools
 					//				feedRate));
 					//	}
 					//}
+					if(layerItem.Segments.Exists(x => x.SegmentType == TrackSegmentType.Plot) &&
+						!bSpindleRunning)
+					{
+						builder.AppendLine("M3 S5000");
+						bSpindleRunning = true;
+					}
 					foreach(TrackSegmentItem segmentItem in layerItem.Segments)
 					{
 						//	Process each segment.
@@ -406,6 +413,10 @@ namespace ShopTools
 						builder.AppendLine(
 							TransitToPositionZAbs(TransitZEnum.FullyRetracted));
 						bRetracted = true;
+					}
+					if(bSpindleRunning)
+					{
+						builder.AppendLine("M5");
 					}
 					if(builder.Length > 0)
 					{
